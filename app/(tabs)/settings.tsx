@@ -20,19 +20,9 @@ export default function SettingsScreen() {
           <View className="flex-row items-center justify-between px-4 py-3">
             <View className="flex-row items-center">
               {theme === "dark" ? (
-                <MoonIcon
-                  color={
-                    theme === "dark" ? "rgb(248, 250, 252)" : "rgb(2, 8, 23)"
-                  }
-                  size={20}
-                />
+                <MoonIcon color="rgb(2, 8, 23)" size={20} />
               ) : (
-                <SunIcon
-                  color={
-                    theme === "dark" ? "rgb(248, 250, 252)" : "rgb(2, 8, 23)"
-                  }
-                  size={20}
-                />
+                <SunIcon color="rgb(248, 250, 252)" size={20} />
               )}
               <Text className="ml-3 text-foreground font-medium">
                 Dark Mode
