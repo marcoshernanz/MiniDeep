@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Audio } from "expo-av";
 import { Play, Pause, RotateCcw, Plus, Minus } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
