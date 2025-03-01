@@ -24,9 +24,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const colorScheme = useColorScheme();
 
   useEffect(() => {
-    theme;
     setTheme(colorScheme === "dark" ? "dark" : "light");
-  }, []);
+  }, [colorScheme]);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>

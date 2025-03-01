@@ -11,5 +11,14 @@
   "eslint.format.enable": true,
   "editor.formatOnSave": false,
   "javascript.format.enable": false,
-  "typescript.format.enable": false
+  "typescript.format.enable": false,
+  
+  // Add these important settings:
+  "eslint.enable": true,
+  "eslint.useESLintClass": true,  // Required for ESLint v9+
+  "eslint.useFlatConfig": true,  // Required for flat config
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "eslint.workingDirectories": [
+    { "mode": "auto" }
+  ]
 }
