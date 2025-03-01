@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { BarChartIcon, HomeIcon, SettingsIcon } from "lucide-react-native";
+import { BarChartIcon, BrainIcon, SettingsIcon } from "lucide-react-native";
 import useColors from "@/lib/hooks/useColors";
 import { Pressable } from "react-native";
 
@@ -22,16 +22,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarLabel: "Home",
+          tabBarLabel: "Deep Work",
           tabBarIcon: ({ color, size }) => (
-            <HomeIcon color={color} size={size} />
+            <BrainIcon color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="stats"
+        name="statistics"
         options={{
-          tabBarLabel: "Stats",
+          tabBarLabel: "Statistics",
           tabBarIcon: ({ color, size }) => (
             <BarChartIcon color={color} size={size} />
           ),
