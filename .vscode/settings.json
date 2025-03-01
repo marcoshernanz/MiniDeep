@@ -8,10 +8,6 @@
     "typescript",
     "typescriptreact"
   ],
-  "eslint.format.enable": true,
-  "editor.formatOnSave": false,
-  "javascript.format.enable": false,
-  "typescript.format.enable": false,
   
   // Add these important settings:
   "eslint.enable": true,

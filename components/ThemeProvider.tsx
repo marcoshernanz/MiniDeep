@@ -1,39 +1,82 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View } from "react-native";
 
-type Theme = "dark" | "light" | "system";
-
-type ThemeProviderProps = {
-  children: React.ReactNode;
-};
+type Theme = "light" | "dark" | "system";
 
 type ThemeContextType = {
   theme: Theme;
+  resolvedTheme: "light" | "dark";
   setTheme: (theme: Theme) => void;
 };
 
-const initialState: ThemeContextType = {
-  theme: "light",
-  setTheme: () => null,
-};
+const ThemeContext = createContext<ThemeContextType>({
+  theme: "system",
+  resolvedTheme: "light",
+  setTheme: (theme: Theme) => {},
+});
 
-const ThemeContext = createContext<ThemeContextType>(initialState);
+const THEME_STORAGE_KEY = "@theme_preference";
 
-export function ThemeProvider({ children }: ThemeProviderProps) {
+interface Props {
+  children: React.ReactNode;
+}
+
+export default function ThemeProvider({ children }: Props) {
   const [theme, setTheme] = useState<Theme>("system");
-  const colorScheme = useColorScheme();
+  const systemColorScheme = useColorScheme() || "light";
 
+  // Determine the actual theme to use
+  const resolvedTheme = theme === "system" ? systemColorScheme : theme;
+
+  // Load saved theme from AsyncStorage on mount
   useEffect(() => {
-    setTheme(colorScheme === "dark" ? "dark" : "light");
-  }, [colorScheme]);
+    const loadTheme = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme && ["light", "dark", "system"].includes(savedTheme)) {
+          setTheme(savedTheme as Theme);
+        }
+      } catch (error) {
+        console.error("Failed to load theme preference:", error);
+      }
+    };
+
+    loadTheme();
+  }, []);
+
+  // Update and save theme
+  const handleSetTheme = async (newTheme: Theme) => {
+    setTheme(newTheme);
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme);
+    } catch (error) {
+      console.error("Failed to save theme preference:", error);
+    }
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
+    <ThemeContext.Provider
+      value={{
+        theme,
+        resolvedTheme,
+        setTheme: handleSetTheme,
+      }}
+    >
+      {/* Apply dark class when in dark mode as required by NativeWind */}
+      <View className={`flex-1 ${resolvedTheme === "dark" ? "dark" : ""}`}>
+        {children}
+      </View>
     </ThemeContext.Provider>
   );
 }
 
-export function useTheme() {
-  return useContext(ThemeContext);
-}
+// Custom hook to use the theme context
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
+};
