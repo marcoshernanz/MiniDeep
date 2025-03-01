@@ -1,6 +1,8 @@
 import useColors from "@/lib/hooks/useColors";
 import { Tabs } from "expo-router";
-import { BarChartIcon, BrainIcon, SettingsIcon } from "lucide-react-native";
+import { BrainIcon } from "@/lib/icons/BrainIcon";
+import { BarChartIcon } from "@/lib/icons/BarChartIcon";
+import { SettingsIcon } from "@/lib/icons/SettingsIcon";
 
 export default function TabLayout() {
   const colors = useColors();
