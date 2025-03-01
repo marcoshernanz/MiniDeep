@@ -1,23 +1,19 @@
 import { Tabs } from "expo-router";
 import { BarChartIcon, HomeIcon, SettingsIcon } from "lucide-react-native";
-import { useTheme } from "@/components/ThemeProvider";
+import useColors from "@/lib/hooks/useColors";
 
 export default function TabLayout() {
-  const { theme } = useTheme();
+  const colors = useColors();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor:
-          theme === "dark" ? "rgb(249, 115, 22)" : "rgb(234, 88, 12)", // primary color
-        tabBarInactiveTintColor:
-          theme === "dark" ? "rgb(148, 163, 184)" : "rgb(100, 116, 139)", // muted foreground
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.mutedForeground,
         tabBarStyle: {
-          backgroundColor:
-            theme === "dark" ? "rgb(2, 8, 23)" : "rgb(255, 255, 255)", // background
-          borderTopColor:
-            theme === "dark" ? "rgb(30, 41, 59)" : "rgb(226, 232, 240)", // border
+          backgroundColor: colors.background,
+          borderTopColor: colors.border,
         },
       }}
     >
