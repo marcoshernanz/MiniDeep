@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function StatsScreen() {
@@ -12,41 +12,41 @@ export default function StatsScreen() {
           </Text>
         </View>
 
-        <View className="mb-4 rounded-lg bg-card p-4 border border-border">
+        <View className="mb-4 rounded-lg border border-border bg-card p-4">
           <Text className="text-xl font-semibold text-card-foreground">
             Weekly Summary
           </Text>
-          <View className="h-40 mt-4 flex-row justify-around items-end">
+          <View className="mt-4 h-40 flex-row items-end justify-around">
             <View
               style={{ height: "40%" }}
-              className="w-8 bg-chart-1 rounded-t-sm"
+              className="w-8 rounded-t-sm bg-chart-1"
             ></View>
             <View
               style={{ height: "70%" }}
-              className="w-8 bg-chart-2 rounded-t-sm"
+              className="w-8 rounded-t-sm bg-chart-2"
             ></View>
             <View
               style={{ height: "30%" }}
-              className="w-8 bg-chart-3 rounded-t-sm"
+              className="w-8 rounded-t-sm bg-chart-3"
             ></View>
             <View
               style={{ height: "80%" }}
-              className="w-8 bg-chart-4 rounded-t-sm"
+              className="w-8 rounded-t-sm bg-chart-4"
             ></View>
             <View
               style={{ height: "50%" }}
-              className="w-8 bg-chart-5 rounded-t-sm"
+              className="w-8 rounded-t-sm bg-chart-5"
             ></View>
             <View
               style={{ height: "65%" }}
-              className="w-8 bg-primary rounded-t-sm"
+              className="w-8 rounded-t-sm bg-primary"
             ></View>
             <View
               style={{ height: "45%" }}
-              className="w-8 bg-secondary rounded-t-sm"
+              className="w-8 rounded-t-sm bg-secondary"
             ></View>
           </View>
-          <View className="flex-row justify-around mt-2">
+          <View className="mt-2 flex-row justify-around">
             <Text className="text-xs text-muted-foreground">Mon</Text>
             <Text className="text-xs text-muted-foreground">Tue</Text>
             <Text className="text-xs text-muted-foreground">Wed</Text>
@@ -57,7 +57,7 @@ export default function StatsScreen() {
           </View>
         </View>
 
-        <View className="mb-4 rounded-lg bg-card p-4 border border-border">
+        <View className="mb-4 rounded-lg border border-border bg-card p-4">
           <Text className="text-xl font-semibold text-card-foreground">
             Performance Metrics
           </Text>
@@ -68,10 +68,10 @@ export default function StatsScreen() {
                 <Text className="text-foreground">Endurance</Text>
                 <Text className="text-foreground">75%</Text>
               </View>
-              <View className="h-2 bg-muted rounded-full mt-1">
+              <View className="mt-1 h-2 rounded-full bg-muted">
                 <View
                   style={{ width: "75%" }}
-                  className="h-2 bg-primary rounded-full"
+                  className="h-2 rounded-full bg-primary"
                 ></View>
               </View>
             </View>
@@ -81,10 +81,10 @@ export default function StatsScreen() {
                 <Text className="text-foreground">Strength</Text>
                 <Text className="text-foreground">60%</Text>
               </View>
-              <View className="h-2 bg-muted rounded-full mt-1">
+              <View className="mt-1 h-2 rounded-full bg-muted">
                 <View
                   style={{ width: "60%" }}
-                  className="h-2 bg-blue rounded-full"
+                  className="h-2 rounded-full bg-blue"
                 ></View>
               </View>
             </View>
@@ -94,30 +94,30 @@ export default function StatsScreen() {
                 <Text className="text-foreground">Flexibility</Text>
                 <Text className="text-foreground">45%</Text>
               </View>
-              <View className="h-2 bg-muted rounded-full mt-1">
+              <View className="mt-1 h-2 rounded-full bg-muted">
                 <View
                   style={{ width: "45%" }}
-                  className="h-2 bg-green rounded-full"
+                  className="h-2 rounded-full bg-green"
                 ></View>
               </View>
             </View>
           </View>
         </View>
 
-        <View className="mb-4 rounded-lg bg-card p-4 border border-border">
+        <View className="mb-4 rounded-lg border border-border bg-card p-4">
           <Text className="text-xl font-semibold text-card-foreground">
             Monthly Goals
           </Text>
-          <View className="flex-row mt-4 items-center">
-            <View className="h-24 w-24 rounded-full border-4 border-primary justify-center items-center">
+          <View className="mt-4 flex-row items-center">
+            <View className="h-24 w-24 items-center justify-center rounded-full border-4 border-primary">
               <Text className="text-2xl font-bold text-foreground">68%</Text>
               <Text className="text-xs text-muted-foreground">Complete</Text>
             </View>
             <View className="ml-4 flex-1">
-              <Text className="text-foreground font-medium">
+              <Text className="font-medium text-foreground">
                 You're making great progress!
               </Text>
-              <Text className="text-sm text-muted-foreground mt-1">
+              <Text className="mt-1 text-sm text-muted-foreground">
                 Keep up the good work to reach your monthly targets.
               </Text>
             </View>

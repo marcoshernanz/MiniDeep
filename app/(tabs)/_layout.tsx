@@ -1,6 +1,7 @@
 import { Tabs } from "expo-router";
 import { BarChartIcon, HomeIcon, SettingsIcon } from "lucide-react-native";
 import useColors from "@/lib/hooks/useColors";
+import { Pressable } from "react-native";
 
 export default function TabLayout() {
   const colors = useColors();
