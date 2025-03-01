@@ -5,7 +5,6 @@ type Theme = "dark" | "light" | "system";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
-  value?: Theme;
 };
 
 type ThemeContextType = {
@@ -20,18 +19,14 @@ const initialState: ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType>(initialState);
 
-export function ThemeProvider({
-  children,
-  value = "light",
-}: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(value);
+export function ThemeProvider({ children }: ThemeProviderProps) {
+  const [theme, setTheme] = useState<Theme>("system");
   const colorScheme = useColorScheme();
 
   useEffect(() => {
-    if (value === "system") {
-      setTheme(colorScheme === "dark" ? "dark" : "light");
-    }
-  }, [colorScheme, value]);
+    theme;
+    setTheme(colorScheme === "dark" ? "dark" : "light");
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
