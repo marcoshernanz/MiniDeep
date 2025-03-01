@@ -10,8 +10,8 @@ export default [
       'node_modules/**',
       '.expo/**',
       'dist/**',
-      'web-build/**'
-    ]
+      'web-build/**',
+    ],
   },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
@@ -19,7 +19,7 @@ export default [
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
       'react-native': reactNativePlugin,
-      '@typescript-eslint': tsPlugin
+      '@typescript-eslint': tsPlugin,
     },
     languageOptions: {
       parser: tsParser,
@@ -41,6 +41,6 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
-    }
-  }
+    },
+  },
 ];
