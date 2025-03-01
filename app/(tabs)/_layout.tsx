@@ -1,19 +1,19 @@
-import { useColorScheme } from "@/lib/hooks/useColorScheme";
+import useColors from "@/lib/hooks/useColors";
 import { Tabs } from "expo-router";
 import { BarChartIcon, BrainIcon, SettingsIcon } from "lucide-react-native";
 
 export default function TabLayout() {
-  const { colorScheme } = useColorScheme();
+  const colors = useColors();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colorScheme.primary,
-        tabBarInactiveTintColor: colorScheme.mutedForeground,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.mutedForeground,
         tabBarStyle: {
-          backgroundColor: colorScheme.background,
-          borderColor: colorScheme.border,
+          backgroundColor: colors.background,
+          borderColor: colors.border,
           borderTopWidth: 1,
         },
       }}
