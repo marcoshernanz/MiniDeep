@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { View } from "react-native";
+import { colorScheme } from "nativewind";
 
 type Theme = "light" | "dark" | "system";
 
@@ -27,10 +28,12 @@ export default function ThemeProvider({ children }: Props) {
   const [theme, setTheme] = useState<Theme>("system");
   const systemColorScheme = useColorScheme() || "light";
 
-  // Determine the actual theme to use
   const resolvedTheme = theme === "system" ? systemColorScheme : theme;
 
-  // Load saved theme from AsyncStorage on mount
+  useEffect(() => {
+    colorScheme.set(resolvedTheme);
+  }, [resolvedTheme]);
+
   useEffect(() => {
     const loadTheme = async () => {
       try {
@@ -46,7 +49,6 @@ export default function ThemeProvider({ children }: Props) {
     loadTheme();
   }, []);
 
-  // Update and save theme
   const handleSetTheme = async (newTheme: Theme) => {
     setTheme(newTheme);
     try {
@@ -64,7 +66,6 @@ export default function ThemeProvider({ children }: Props) {
         setTheme: handleSetTheme,
       }}
     >
-      {/* Apply dark class when in dark mode as required by NativeWind */}
       <View className={`flex-1 ${resolvedTheme === "dark" ? "dark" : ""}`}>
         {children}
       </View>
@@ -72,7 +73,6 @@ export default function ThemeProvider({ children }: Props) {
   );
 }
 
-// Custom hook to use the theme context
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
