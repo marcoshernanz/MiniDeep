@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { FlatList, View } from "react-native";
 import { Text } from "./text";
 import { LinearGradient } from "expo-linear-gradient";
@@ -9,26 +9,22 @@ interface Props {
   minValue: number;
   maxValue: number;
   interval?: number;
-  initialValue?: number;
-
   containerHeight?: number;
   itemsPerContainer?: number;
+  number: number;
+  setNumber: Dispatch<SetStateAction<number>>;
 }
 
 export default function WheelNumberPicker({
   minValue,
   maxValue,
   interval = 1,
-  initialValue,
-
   containerHeight = 200,
   itemsPerContainer = 3,
+  number,
+  setNumber,
 }: Props) {
   const colors = useColors();
-
-  const [selectedNumber, setSelectedNumber] = useState(
-    initialValue ?? minValue,
-  );
 
   const itemHeight = containerHeight / itemsPerContainer;
 
@@ -53,14 +49,14 @@ export default function WheelNumberPicker({
           const index = Math.round(
             event.nativeEvent.contentOffset.y / itemHeight,
           );
-          setSelectedNumber(values[index + 1]);
+          setNumber(values[index + 1]);
         }}
         getItemLayout={(_, index) => ({
           length: itemHeight,
           offset: itemHeight * index,
           index,
         })}
-        initialScrollIndex={initialValue ? values.indexOf(initialValue) - 1 : 0}
+        initialScrollIndex={number ? values.indexOf(number) - 1 : 0}
         renderItem={({ item }) => (
           <View
             className="items-center justify-center"
