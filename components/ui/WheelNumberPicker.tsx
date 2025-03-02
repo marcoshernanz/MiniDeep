@@ -3,12 +3,16 @@ import { FlatList, View } from "react-native";
 import { Text } from "./text";
 import { LinearGradient } from "expo-linear-gradient";
 import useColors from "@/lib/hooks/useColors";
+import cn from "@/lib/cn";
 
 interface Props {
   minValue: number;
   maxValue: number;
   interval?: number;
   initialValue?: number;
+
+  containerHeight?: number;
+  itemsPerContainer?: number;
 }
 
 export default function WheelNumberPicker({
@@ -16,6 +20,9 @@ export default function WheelNumberPicker({
   maxValue,
   interval = 1,
   initialValue,
+
+  containerHeight = 200,
+  itemsPerContainer = 3,
 }: Props) {
   const colors = useColors();
 
@@ -23,14 +30,13 @@ export default function WheelNumberPicker({
     initialValue ?? minValue,
   );
 
-  const containerHeight = 300;
-  const itemsPerContainer = 3;
   const itemHeight = containerHeight / itemsPerContainer;
 
-  const values = Array.from(
+  const numberValues = Array.from(
     { length: Math.floor((maxValue - minValue) / interval) + 1 },
     (_, i) => minValue + i * interval,
   );
+  const values = [-1, ...numberValues, -1];
 
   return (
     <View
@@ -39,14 +45,15 @@ export default function WheelNumberPicker({
     >
       <FlatList
         data={values}
-        keyExtractor={(value) => value.toString()}
+        keyExtractor={(value, index) => `${value.toString()}-${index}`}
         showsVerticalScrollIndicator={false}
         snapToInterval={itemHeight}
+        decelerationRate="normal"
         onMomentumScrollEnd={(event) => {
           const index = Math.round(
             event.nativeEvent.contentOffset.y / itemHeight,
           );
-          setSelectedNumber(values[index]);
+          setSelectedNumber(values[index + 1]);
         }}
         getItemLayout={(_, index) => ({
           length: itemHeight,
@@ -60,6 +67,7 @@ export default function WheelNumberPicker({
             style={{ height: itemHeight }}
           >
             <Text
+              className={cn(item === -1 && "opacity-0")}
               style={{ fontSize: itemHeight / 2, lineHeight: itemHeight / 2 }}
             >
               {item}
@@ -69,7 +77,7 @@ export default function WheelNumberPicker({
       />
       <LinearGradient
         colors={[colors.background, "transparent", colors.background]}
-        className="absolute inset-0"
+        className="pointer-events-none absolute inset-0"
       />
     </View>
   );
