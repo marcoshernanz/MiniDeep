@@ -67,8 +67,12 @@ export default function WheelNumberPicker({
             style={{ height: itemHeight }}
           >
             <Text
-              className={cn(item === -1 && "opacity-0")}
-              style={{ fontSize: itemHeight / 2, lineHeight: itemHeight / 2 }}
+              className={cn("align-middle", item === -1 && "opacity-0")}
+              style={{
+                fontSize: itemHeight / 2,
+                height: itemHeight,
+                lineHeight: itemHeight,
+              }}
             >
               {item}
             </Text>
