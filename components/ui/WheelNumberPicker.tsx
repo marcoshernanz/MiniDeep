@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FlatList, View } from "react-native";
 import { Text } from "./text";
+import { LinearGradient } from "expo-linear-gradient";
+import useColors from "@/lib/hooks/useColors";
 
 interface Props {
   minValue: number;
@@ -15,6 +17,8 @@ export default function WheelNumberPicker({
   interval = 1,
   initialValue,
 }: Props) {
+  const colors = useColors();
+
   const [selectedNumber, setSelectedNumber] = useState(
     initialValue ?? minValue,
   );
@@ -62,6 +66,10 @@ export default function WheelNumberPicker({
             </Text>
           </View>
         )}
+      />
+      <LinearGradient
+        colors={[colors.background, "transparent", colors.background]}
+        className="absolute inset-0"
       />
     </View>
   );
