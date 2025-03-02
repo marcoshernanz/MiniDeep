@@ -9,26 +9,27 @@ export default function IndexScreen() {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(30);
 
-  // const handleTimeChange = (min: number, sec: number) => {
-  //   setMinutes(min);
-  //   setSeconds(sec);
-  // };
-
-  // Format time with leading zeros
-  // const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  // const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
-
   return (
     <SafeAreaView className="flex-1 items-center justify-center">
-      {/* <View className="aspect-square size-64 items-center justify-center rounded-full border border-primary">
-        <TimeSelector
-          initialMinutes={minutes}
-          initialSeconds={seconds}
-          onTimeChange={handleTimeChange}
-        />
-      </View> */}
-
-      <WheelNumberPicker minValue={0} maxValue={59} initialValue={minutes} />
+      <View className="relative">
+        <View className="flex-row items-center justify-center">
+          <WheelNumberPicker
+            minValue={0}
+            maxValue={23}
+            initialValue={hours}
+            containerHeight={250}
+          />
+          <Text className="h-full align-middle text-6xl font-medium">:</Text>
+          <WheelNumberPicker
+            minValue={0}
+            maxValue={59}
+            interval={5}
+            initialValue={minutes}
+            containerHeight={250}
+          />
+        </View>
+        <View className="absolute left-0 right-0 top-1/2 -mx-2 h-[4.5rem] -translate-y-1/2 rounded-lg border-2 border-primary"></View>
+      </View>
     </SafeAreaView>
   );
 }
