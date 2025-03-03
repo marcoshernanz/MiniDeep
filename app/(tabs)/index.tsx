@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Text } from "@/components/ui/text";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import TimePicker from "@/components/deep-work/TimePicker";
 import padWithZeros from "@/lib/padWithZeros";
 import useTimer from "@/lib/hooks/useTimer";
+import { useWorkStats } from "@/lib/hooks/useWorkStats";
 
 export default function IndexScreen() {
   const [selectedHours, setSelectedHours] = useState(0);
   const [selectedMinutes, setSelectedMinutes] = useState(30);
+  const { refresh } = useWorkStats();
 
   const {
     hours: displayHours,
@@ -26,6 +28,18 @@ export default function IndexScreen() {
   const handleStartTimer = () => {
     startTimer({ hours: selectedHours, minutes: selectedMinutes });
   };
+
+  // Create memoized function to avoid dependency changes
+  const refreshStats = useCallback(() => {
+    if (!isRunning) {
+      refresh();
+    }
+  }, [isRunning, refresh]);
+
+  // Use the memoized function in useEffect
+  useEffect(() => {
+    refreshStats();
+  }, [refreshStats]);
 
   return (
     <SafeAreaView className="flex-1 items-center justify-center">
