@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 
 export default function useTimer() {
+  const [displayTime, setDisplayTime] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
   const [status, setStatus] = useState({
     isRunning: false,
     isPaused: false,
@@ -8,9 +14,6 @@ export default function useTimer() {
   });
 
   const timerRef = useRef({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
     totalSeconds: 0,
   });
 
@@ -26,11 +29,14 @@ export default function useTimer() {
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
     timerRef.current = {
+      totalSeconds,
+    };
+
+    setDisplayTime({
       hours,
       minutes,
       seconds,
-      totalSeconds,
-    };
+    });
 
     setStatus({
       isRunning: true,
@@ -52,16 +58,26 @@ export default function useTimer() {
       isPaused: false,
       isCompleted: false,
     });
+
+    setDisplayTime({
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
   };
 
-  const getTimeRemaining = () => {
+  const updateTimeRemaining = () => {
     const totalSecondsLeft = timerRef.current.totalSeconds;
 
     const hours = Math.floor(totalSecondsLeft / 3600);
     const minutes = Math.floor((totalSecondsLeft % 3600) / 60);
     const seconds = totalSecondsLeft % 60;
 
-    return { hours, minutes, seconds };
+    setDisplayTime({
+      hours,
+      minutes,
+      seconds,
+    });
   };
 
   useEffect(() => {
@@ -69,11 +85,15 @@ export default function useTimer() {
 
     if (status.isRunning && !status.isPaused && !status.isCompleted) {
       intervalId = setInterval(() => {
-        timerRef.current.totalSeconds -= 1;
+        if (timerRef.current.totalSeconds > 0) {
+          timerRef.current.totalSeconds -= 1;
+          updateTimeRemaining();
+        }
 
         if (timerRef.current.totalSeconds <= 0) {
           clearInterval(intervalId!);
           timerRef.current.totalSeconds = 0;
+          updateTimeRemaining();
           setStatus((prev) => ({ ...prev, isCompleted: true }));
         }
       }, 1000);
@@ -85,7 +105,9 @@ export default function useTimer() {
   }, [status.isRunning, status.isPaused, status.isCompleted]);
 
   return {
-    ...getTimeRemaining(),
+    hours: displayTime.hours,
+    minutes: displayTime.minutes,
+    seconds: displayTime.seconds,
     isRunning: status.isRunning,
     isPaused: status.isPaused,
     isCompleted: status.isCompleted,
