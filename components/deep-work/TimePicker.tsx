@@ -18,13 +18,13 @@ export default function TimePicker({
 }: Props) {
   return (
     <View className="relative">
-      <View className="flex-row items-center justify-center">
+      <View className="h-72 flex-row items-center justify-center">
         <WheelNumberPicker
           number={hours}
           setNumber={setHours}
           minValue={0}
           maxValue={23}
-          containerHeight={250}
+          containerHeight={256}
         />
         <Text className="h-full align-middle text-6xl font-medium">:</Text>
         <WheelNumberPicker
@@ -33,7 +33,7 @@ export default function TimePicker({
           minValue={0}
           maxValue={59}
           interval={5}
-          containerHeight={250}
+          containerHeight={256}
         />
       </View>
       <View className="pointer-events-none absolute left-0 right-0 top-1/2 -mx-2 h-[4.5rem] -translate-y-1/2 rounded-lg border-2 border-primary"></View>

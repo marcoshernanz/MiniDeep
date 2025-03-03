@@ -38,7 +38,7 @@ export default function IndexScreen() {
               minutes={selectedMinutes}
               setMinutes={setSelectedMinutes}
             />
-            <View>
+            <View className="h-14">
               <Button size="lg" className="w-full" onPress={handleStartTimer}>
                 <Text className="native:text-2xl">Start</Text>
               </Button>
@@ -48,7 +48,7 @@ export default function IndexScreen() {
 
         {isRunning && (
           <>
-            <View className="size-64 flex-row items-center justify-center rounded-full border-2 border-primary">
+            <View className="m-4 size-64 flex-row items-center justify-center rounded-full border-2 border-primary">
               <Text className="w-16 text-center text-5xl">
                 {padWithZeros(displayHours, 2)}
               </Text>
@@ -61,9 +61,10 @@ export default function IndexScreen() {
                 {padWithZeros(displaySeconds, 2)}
               </Text>
             </View>
-            <View className="flex-row gap-4">
+            <View className="mx-auto h-14 w-full max-w-64 flex-row gap-4">
               <Button
                 size="lg"
+                className="flex-1 px-2"
                 variant={isPaused ? "default" : "outline"}
                 onPress={togglePause}
               >
@@ -71,7 +72,12 @@ export default function IndexScreen() {
                   {isPaused ? "Resume" : "Pause"}
                 </Text>
               </Button>
-              <Button size="lg" variant="destructive" onPress={stopTimer}>
+              <Button
+                size="lg"
+                variant="destructive"
+                className="flex-1 px-2"
+                onPress={stopTimer}
+              >
                 <Text className="native:text-lg">Stop</Text>
               </Button>
             </View>
