@@ -85,7 +85,9 @@ export default function WorkSessionsList({ sessions }: WorkSessionsListProps) {
             </Text>
           </View>
 
-          <View className={`rounded-full px-2 py-1 ${statusColor}`}>
+          <View
+            className={`w-20 items-center justify-center rounded-full px-2 py-1 ${statusColor}`}
+          >
             <Text className="text-xs text-white">{statusBadge}</Text>
           </View>
         </View>

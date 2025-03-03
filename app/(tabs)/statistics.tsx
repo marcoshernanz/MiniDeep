@@ -3,13 +3,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { Card } from "@/components/ui/card";
 import { useWorkStats } from "@/lib/hooks/useWorkStats";
-import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import DailyWorkChart from "@/components/deep-work/DailyWorkChart";
 import WorkSessionsList from "@/components/deep-work/WorkSessionsList";
 import CompletionRateChart from "@/components/deep-work/CompletionRateChart";
 import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { loadDummyData } from "@/lib/utils/dummyData";
+import { AlertCircle } from "lucide-react-native";
 
 function formatTime(seconds: number): string {
   const hrs = Math.floor(seconds / 3600);
@@ -23,14 +25,24 @@ function formatTime(seconds: number): string {
 
 export default function StatsScreen() {
   const { stats, sessions, loading, refresh } = useWorkStats();
+  const [isLoadingDummy, setIsLoadingDummy] = React.useState(false);
 
   // Use useFocusEffect instead of useEffect to only refresh when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
       refresh();
-      // Don't include refresh in the dependency array
     }, []),
   );
+
+  const handleLoadDummyData = async () => {
+    setIsLoadingDummy(true);
+    try {
+      await loadDummyData();
+      await refresh();
+    } finally {
+      setIsLoadingDummy(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -76,6 +88,27 @@ export default function StatsScreen() {
             </Text>
           </Card>
         </View>
+
+        {stats.totalSessions === 0 && (
+          <View className="mt-6 px-4">
+            <Card className="p-4">
+              <View className="flex-row items-center">
+                <AlertCircle size={24} className="mr-3 text-primary" />
+                <Text className="flex-1 text-foreground">
+                  No work sessions recorded yet. Load dummy data or start your
+                  first timer!
+                </Text>
+              </View>
+              <Button
+                className="mt-3"
+                onPress={handleLoadDummyData}
+                disabled={isLoadingDummy}
+              >
+                <Text>{isLoadingDummy ? "Loading..." : "Load Dummy Data"}</Text>
+              </Button>
+            </Card>
+          </View>
+        )}
 
         {/* Daily Work Chart */}
         <View className="mt-6 px-4">
@@ -130,10 +163,27 @@ export default function StatsScreen() {
         {/* Recent Sessions */}
         <View className="mt-6 px-4 pb-8">
           <Card className="p-4">
-            <Text className="mb-4 text-xl font-semibold text-foreground">
-              Recent Sessions
-            </Text>
-            <WorkSessionsList sessions={sessions} />
+            <View className="flex-row items-center justify-between">
+              <Text className="text-xl font-semibold text-foreground">
+                Recent Sessions
+              </Text>
+
+              {stats.totalSessions > 0 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onPress={handleLoadDummyData}
+                  disabled={isLoadingDummy}
+                >
+                  <Text className="text-xs">
+                    {isLoadingDummy ? "Loading..." : "Refresh Data"}
+                  </Text>
+                </Button>
+              )}
+            </View>
+            <View className="mt-4">
+              <WorkSessionsList sessions={sessions} />
+            </View>
           </Card>
         </View>
       </ScrollView>
