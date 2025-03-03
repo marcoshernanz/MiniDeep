@@ -1,7 +1,7 @@
 import React from "react";
 import { View, FlatList } from "react-native";
 import { Text } from "@/components/ui/text";
-import { WorkSession } from "@/lib/utils/timeTracking";
+import { WorkSession } from "@/config/timeTrackingConfig";
 
 type WorkSessionsListProps = {
   sessions: WorkSession[];

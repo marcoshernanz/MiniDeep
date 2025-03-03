@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import createAccurateTimer from "../utils/createAccurateTimer";
-import { createNewSession, addTimeEvent } from "../utils/timeTracking";
+import addTimeEvent from "../time-tracking/addTimeEvent";
+import createNewSession from "../time-tracking/createNewSession";
 
 export default function useTimer() {
   const [displayTime, setDisplayTime] = useState({

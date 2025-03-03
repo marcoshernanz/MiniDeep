@@ -1,5 +1,5 @@
+import { TimeEvent, WorkSession } from "@/config/timeTrackingConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { WorkSession, TimeEvent } from "./timeTracking";
 
 const STORAGE_KEY = "dwt_work_sessions";
 
