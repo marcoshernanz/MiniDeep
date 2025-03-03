@@ -1,9 +1,10 @@
+import { WorkSession } from "@/config/timeTrackingConfig";
 import { useState, useEffect, useCallback } from "react";
-import { getWorkSessions, WorkSession } from "../utils/timeTracking";
+import getWorkSessions from "../time-tracking/getWorkSessions";
 
 export type WorkStats = {
   totalSessions: number;
-  totalWorkTime: number; // in seconds
+  totalWorkTime: number;
   completedSessions: number;
   lastSessionDate: Date | null;
   dailyStats: {
@@ -27,7 +28,6 @@ export const useWorkStats = () => {
   const calculateWorkTime = (session: WorkSession): number => {
     if (session.events.length === 0) return 0;
 
-    // Calculate actual work time based on events
     let workTime = 0;
     let lastStartTime: number | null = null;
 
@@ -67,7 +67,6 @@ export const useWorkStats = () => {
       .sort((a, b) => a.date.localeCompare(b.date));
   };
 
-  // Memoize loadStats to prevent it from changing on every render
   const loadStats = useCallback(async () => {
     setLoading(true);
     try {
