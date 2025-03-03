@@ -3,7 +3,7 @@ import { FlatList, View } from "react-native";
 import { Text } from "./text";
 import { LinearGradient } from "expo-linear-gradient";
 import useColors from "@/lib/hooks/useColors";
-import cn from "@/lib/cn";
+import cn from "@/lib/utils/cn";
 
 interface Props {
   minValue: number;

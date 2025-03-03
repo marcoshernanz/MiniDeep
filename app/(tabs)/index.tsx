@@ -4,7 +4,7 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/button";
 import TimePicker from "@/components/deep-work/TimePicker";
-import padWithZeros from "@/lib/padWithZeros";
+import padWithZeros from "@/lib/utils/padWithZeros";
 import useTimer from "@/lib/hooks/useTimer";
 import { useWorkStats } from "@/lib/hooks/useWorkStats";
 
