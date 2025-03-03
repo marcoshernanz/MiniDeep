@@ -15,6 +15,8 @@ export default function createAccurateTimer(
   let expected: number = 0;
   let timeout: NodeJS.Timeout | null = null;
   let paused: boolean = true;
+  let pauseTime: number = 0;
+  let remainingTimeAtPause: number = 0;
 
   const step = () => {
     const now = Date.now();
@@ -48,6 +50,8 @@ export default function createAccurateTimer(
       timeout = null;
     }
     paused = true;
+    pauseTime = 0;
+    remainingTimeAtPause = 0;
   };
 
   const isPaused = () => paused;
@@ -57,14 +61,27 @@ export default function createAccurateTimer(
       clearTimeout(timeout);
       timeout = null;
       paused = true;
+      pauseTime = Date.now();
+
+      remainingTimeAtPause = Math.max(0, expected - pauseTime);
     }
   };
 
   const resume = () => {
     if (paused) {
       paused = false;
-      expected = Date.now() + interval;
-      timeout = setTimeout(step, 0);
+      const now = Date.now();
+
+      if (pauseTime > 0 && remainingTimeAtPause > 0) {
+        expected = now + remainingTimeAtPause;
+        timeout = setTimeout(step, remainingTimeAtPause);
+      } else {
+        expected = now + interval;
+        timeout = setTimeout(step, interval);
+      }
+
+      pauseTime = 0;
+      remainingTimeAtPause = 0;
     }
   };
 
