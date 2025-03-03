@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import createAccurateTimer from "../utils/createAccurateTimer";
 
 export default function useTimer() {
   const [displayTime, setDisplayTime] = useState({
@@ -15,7 +16,37 @@ export default function useTimer() {
 
   const timerRef = useRef({
     totalSeconds: 0,
+    accurateTimer: null as ReturnType<typeof createAccurateTimer> | null,
   });
+
+  const updateTimeRemaining = () => {
+    const totalSecondsLeft = timerRef.current.totalSeconds;
+
+    if (totalSecondsLeft <= 0) {
+      if (timerRef.current.accurateTimer) {
+        timerRef.current.accurateTimer.stop();
+      }
+      timerRef.current.totalSeconds = 0;
+      setStatus((prev) => ({ ...prev, isCompleted: true }));
+    }
+
+    const hours = Math.floor(totalSecondsLeft / 3600);
+    const minutes = Math.floor((totalSecondsLeft % 3600) / 60);
+    const seconds = totalSecondsLeft % 60;
+
+    setDisplayTime({
+      hours,
+      minutes,
+      seconds,
+    });
+  };
+
+  const timerTick = () => {
+    if (timerRef.current.totalSeconds > 0) {
+      timerRef.current.totalSeconds -= 1;
+      updateTimeRemaining();
+    }
+  };
 
   const startTimer = ({
     hours = 0,
@@ -27,10 +58,12 @@ export default function useTimer() {
     seconds?: number;
   }) => {
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    timerRef.current.totalSeconds = totalSeconds;
 
-    timerRef.current = {
-      totalSeconds,
-    };
+    if (timerRef.current.accurateTimer) {
+      timerRef.current.accurateTimer.stop();
+    }
+    timerRef.current.accurateTimer = createAccurateTimer(timerTick, 1000);
 
     setDisplayTime({
       hours,
@@ -43,9 +76,19 @@ export default function useTimer() {
       isPaused: false,
       isCompleted: false,
     });
+
+    timerRef.current.accurateTimer.start();
   };
 
   const togglePause = () => {
+    if (!timerRef.current.accurateTimer) return;
+
+    if (status.isPaused) {
+      timerRef.current.accurateTimer.resume();
+    } else {
+      timerRef.current.accurateTimer.pause();
+    }
+
     setStatus((prev) => ({
       ...prev,
       isPaused: !prev.isPaused,
@@ -53,6 +96,11 @@ export default function useTimer() {
   };
 
   const stopTimer = () => {
+    if (timerRef.current.accurateTimer) {
+      timerRef.current.accurateTimer.stop();
+      timerRef.current.accurateTimer = null;
+    }
+
     setStatus({
       isRunning: false,
       isPaused: false,
@@ -66,43 +114,13 @@ export default function useTimer() {
     });
   };
 
-  const updateTimeRemaining = () => {
-    const totalSecondsLeft = timerRef.current.totalSeconds;
-
-    const hours = Math.floor(totalSecondsLeft / 3600);
-    const minutes = Math.floor((totalSecondsLeft % 3600) / 60);
-    const seconds = totalSecondsLeft % 60;
-
-    setDisplayTime({
-      hours,
-      minutes,
-      seconds,
-    });
-  };
-
   useEffect(() => {
-    let intervalId: NodeJS.Timeout | null = null;
-
-    if (status.isRunning && !status.isPaused && !status.isCompleted) {
-      intervalId = setInterval(() => {
-        if (timerRef.current.totalSeconds > 0) {
-          timerRef.current.totalSeconds -= 1;
-          updateTimeRemaining();
-        }
-
-        if (timerRef.current.totalSeconds <= 0) {
-          clearInterval(intervalId!);
-          timerRef.current.totalSeconds = 0;
-          updateTimeRemaining();
-          setStatus((prev) => ({ ...prev, isCompleted: true }));
-        }
-      }, 1000);
-    }
-
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      if (timerRef.current.accurateTimer) {
+        timerRef.current.accurateTimer.stop();
+      }
     };
-  }, [status.isRunning, status.isPaused, status.isCompleted]);
+  }, []);
 
   return {
     hours: displayTime.hours,
