@@ -32,7 +32,6 @@ export default function useTimer() {
       timerRef.current.totalSeconds = 0;
       setStatus((prev) => ({ ...prev, isCompleted: true }));
 
-      // Log completion event
       if (timerRef.current.sessionId) {
         addTimeEvent(
           timerRef.current.sessionId,
@@ -90,11 +89,9 @@ export default function useTimer() {
       isCompleted: false,
     });
 
-    // Create new session and store the ID
     const sessionId = await createNewSession(totalSeconds);
     timerRef.current.sessionId = sessionId;
 
-    // Log start event
     await addTimeEvent(sessionId, "start", totalSeconds);
 
     timerRef.current.accurateTimer.start();
@@ -107,11 +104,9 @@ export default function useTimer() {
 
     if (status.isPaused) {
       timerRef.current.accurateTimer.resume();
-      // Log resume event
       await addTimeEvent(timerRef.current.sessionId, "resume", remainingTime);
     } else {
       timerRef.current.accurateTimer.pause();
-      // Log pause event
       await addTimeEvent(timerRef.current.sessionId, "pause", remainingTime);
     }
 
@@ -126,10 +121,8 @@ export default function useTimer() {
       timerRef.current.accurateTimer.stop();
       timerRef.current.accurateTimer = null;
 
-      // Log stop event
       const remainingTime = timerRef.current.totalSeconds;
       const elapsedTime = timerRef.current.initialDuration - remainingTime;
-
       await addTimeEvent(timerRef.current.sessionId, "stop", elapsedTime);
     }
 
