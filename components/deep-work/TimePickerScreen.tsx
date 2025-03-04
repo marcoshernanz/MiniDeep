@@ -40,7 +40,7 @@ export default function TimePickerScreen({
             setNumber={setMinutes}
             minValue={0}
             maxValue={59}
-            interval={5}
+            interval={1}
             containerHeight={256}
           />
         </View>
