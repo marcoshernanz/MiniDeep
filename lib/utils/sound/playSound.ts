@@ -10,6 +10,11 @@ export default async function playSound(
   options: SoundOptions = {},
 ): Promise<Audio.Sound | null> {
   try {
+    await Audio.setAudioModeAsync({
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: true,
+    });
+
     const { sound } = await Audio.Sound.createAsync(soundFile, {
       shouldPlay: true,
       isLooping: options.loop ?? false,

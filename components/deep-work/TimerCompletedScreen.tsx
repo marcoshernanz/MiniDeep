@@ -134,7 +134,7 @@ export default function TimerCompletedScreen({
             variant="default"
             className="w-full"
           >
-            Done
+            <Text className="font-bold text-white"> Done</Text>
           </Button>
         </View>
       </View>
