@@ -1,5 +1,9 @@
 # TODO
 
+- [ ] Stop alarm as soon as the done button is pressed.
+- [ ] Fix multiple alarms sounds.
+- [ ] Make UI nicer with animations.
+- [ ] Fix timer flash.
 - [ ] Timer completed screen.
 - [ ] Timer completed sound via alarm volume.
 - [ ] Timer completed vibration.
