@@ -46,11 +46,16 @@ export default function TimerCompletedScreen({
     };
   }, []);
 
+  const handleFinish = async () => {
+    await stopSound(sound);
+    onDismiss();
+  };
+
   return (
     <View className="flex-1 justify-center">
       <View className="gap-10">
         <Text className="text-5xl font-semibold">Time's up!</Text>
-        <Button onPress={() => {}} className="w-full" size="lg">
+        <Button onPress={handleFinish} className="w-full" size="lg">
           <Text className="font-bold">Done</Text>
         </Button>
       </View>

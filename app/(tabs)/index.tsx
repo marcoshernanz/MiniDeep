@@ -45,12 +45,6 @@ export default function IndexScreen() {
 
   return (
     <SafeAreaView className="flex-1 items-center justify-center">
-      <TimerCompletedScreen onDismiss={handleTimerComplete} />
-    </SafeAreaView>
-  );
-
-  return (
-    <SafeAreaView className="flex-1 items-center justify-center">
       {!isRunning && !isCompleted && (
         <TimePickerScreen
           hours={selectedHours}
