@@ -3,10 +3,11 @@ import { Text } from "../ui/text";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { Audio } from "expo-av";
-import playSound, { stopSound } from "@/lib/utils/playSound";
+import playSound from "@/lib/utils/sound/playSound";
 import { ArrowUpCircle } from "lucide-react-native";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import stopSound from "@/lib/utils/sound/stopSound";
 
 interface TimerCompletedScreenProps {
   onDismiss: () => void;
