@@ -25,6 +25,7 @@ export default function IndexScreen() {
     startTimer,
     togglePause,
     stopTimer,
+    resetTimer,
   } = useTimer();
 
   const refreshStats = useCallback(() => {
@@ -37,9 +38,14 @@ export default function IndexScreen() {
     refreshStats();
   }, [refreshStats]);
 
+  const handleTimerComplete = () => {
+    resetTimer();
+    refreshStats();
+  };
+
   return (
     <SafeAreaView className="flex-1 items-center justify-center">
-      {!isRunning && (
+      {!isRunning && !isCompleted && (
         <TimePickerScreen
           hours={selectedHours}
           setHours={setSelectedHours}
@@ -60,7 +66,7 @@ export default function IndexScreen() {
         />
       )}
 
-      {isCompleted && <TimerCompletedScreen />}
+      {isCompleted && <TimerCompletedScreen onDismiss={handleTimerComplete} />}
     </SafeAreaView>
   );
 }

@@ -140,6 +140,23 @@ export default function useTimer() {
     });
   };
 
+  const resetTimer = () => {
+    setStatus({
+      isRunning: false,
+      isPaused: false,
+      isCompleted: false,
+    });
+
+    setDisplayTime({
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
+
+    timerRef.current.totalSeconds = 0;
+    timerRef.current.sessionId = "";
+  };
+
   useEffect(() => {
     return () => {
       if (timerRef.current.accurateTimer) {
@@ -158,5 +175,6 @@ export default function useTimer() {
     startTimer,
     togglePause,
     stopTimer,
+    resetTimer,
   };
 }
