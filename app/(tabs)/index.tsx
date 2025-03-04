@@ -55,7 +55,7 @@ export default function IndexScreen() {
         />
       )}
 
-      {isRunning && (
+      {isRunning && !isCompleted && (
         <TimerRunningScreen
           hours={displayHours}
           minutes={displayMinutes}
