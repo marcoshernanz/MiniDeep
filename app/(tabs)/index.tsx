@@ -29,14 +29,12 @@ export default function IndexScreen() {
     startTimer({ hours: selectedHours, minutes: selectedMinutes });
   };
 
-  // Create memoized function to avoid dependency changes
   const refreshStats = useCallback(() => {
     if (!isRunning) {
       refresh();
     }
   }, [isRunning, refresh]);
 
-  // Use the memoized function in useEffect
   useEffect(() => {
     refreshStats();
   }, [refreshStats]);
