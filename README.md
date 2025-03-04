@@ -1,5 +1,10 @@
 # TODO
 
+- [ ] Timer completed screen.
+- [ ] Timer completed sound via alarm volume.
+- [ ] Timer completed vibration.
+- [ ] Timer notification.
+- [ ] Timer active in background.
 - [ ] Infinite wheel picker for timer.
 - [ ] Smoother scrolling in wheel picker.
 - [ ] Alarm option.
