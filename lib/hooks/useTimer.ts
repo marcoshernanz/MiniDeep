@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import { AppState } from "react-native";
 import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
+import getTimerState from "../timer/getTimerState";
+import saveTimerState from "../timer/saveTimerState";
 
 export default function useTimer() {
   const [displayTime, setDisplayTime] = useState({
@@ -140,7 +143,7 @@ export default function useTimer() {
     });
   };
 
-  const resetTimer = () => {
+  const resetTimer = async () => {
     setStatus({
       isRunning: false,
       isPaused: false,
@@ -155,13 +158,83 @@ export default function useTimer() {
 
     timerRef.current.totalSeconds = 0;
     timerRef.current.sessionId = "";
+
+    await saveTimerState({
+      state: "inactive",
+      remainingTime: 0,
+      timestamp: Date.now(),
+      sessionId: "",
+    });
+  };
+
+  const restoreTimerState = async () => {
+    try {
+      const savedState = await getTimerState();
+
+      if (!savedState || savedState.state === "inactive") return;
+
+      timerRef.current.sessionId = savedState.sessionId;
+
+      let remainingTime = savedState.remainingTime;
+
+      if (savedState.state === "running") {
+        const elapsedSeconds = Math.floor(
+          (Date.now() - savedState.timestamp) / 1000,
+        );
+        remainingTime = Math.max(0, remainingTime - elapsedSeconds);
+      }
+
+      if (remainingTime <= 0 && savedState.state !== "completed") {
+        setStatus({ isRunning: false, isPaused: false, isCompleted: true });
+        await addTimeEvent(savedState.sessionId, "complete", 0);
+        return;
+      }
+
+      // Restore timer values
+      timerRef.current.totalSeconds = remainingTime;
+      timerRef.current.initialDuration = savedState.remainingTime; // TODO: This might not be accurate
+
+      const hours = Math.floor(remainingTime / 3600);
+      const minutes = Math.floor((remainingTime % 3600) / 60);
+      const seconds = remainingTime % 60;
+
+      setDisplayTime({ hours, minutes, seconds });
+
+      setStatus({
+        isRunning:
+          savedState.state === "running" || savedState.state === "paused",
+        isPaused: savedState.state === "paused",
+        isCompleted: savedState.state === "completed",
+      });
+
+      if (savedState.state === "running") {
+        timerRef.current.accurateTimer = createAccurateTimer(timerTick, 1000);
+        timerRef.current.accurateTimer.start();
+      }
+    } catch (error) {
+      console.error("Error restoring timer state:", error);
+    }
+  };
+
+  const handleAppStateChange = (nextAppState: string) => {
+    if (nextAppState === "active") {
+      restoreTimerState();
+    }
   };
 
   useEffect(() => {
+    restoreTimerState();
+
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+
     return () => {
       if (timerRef.current.accurateTimer) {
         timerRef.current.accurateTimer.stop();
       }
+      subscription.remove();
     };
   }, []);
 
