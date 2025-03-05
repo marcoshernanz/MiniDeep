@@ -1,6 +1,7 @@
 export type TimerState = {
   state: "inactive" | "running" | "paused" | "completed";
   remainingTime: number;
+  initialDuration: number;
   timestamp: number;
   sessionId: string;
 };

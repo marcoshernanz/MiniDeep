@@ -17,6 +17,7 @@ export default async function addTimeEvent(
   if (sessionIndex === -1) return;
 
   const timestamp = Date.now();
+  const session = sessions[sessionIndex];
 
   const newEvent: TimeEvent = {
     id: Date.now().toString(),
@@ -26,7 +27,7 @@ export default async function addTimeEvent(
     sessionId,
   };
 
-  const updatedSession = { ...sessions[sessionIndex] };
+  const updatedSession = { ...session };
   updatedSession.events = [...updatedSession.events, newEvent];
 
   if (action === "complete" || action === "stop") {
@@ -50,6 +51,7 @@ export default async function addTimeEvent(
   const timerState: TimerState = {
     state,
     remainingTime: duration,
+    initialDuration: action === "start" ? duration : session.duration,
     timestamp,
     sessionId,
   };

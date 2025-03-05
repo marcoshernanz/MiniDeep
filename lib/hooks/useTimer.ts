@@ -162,6 +162,7 @@ export default function useTimer() {
     await saveTimerState({
       state: "inactive",
       remainingTime: 0,
+      initialDuration: 0,
       timestamp: Date.now(),
       sessionId: "",
     });
@@ -174,6 +175,8 @@ export default function useTimer() {
       if (!savedState || savedState.state === "inactive") return;
 
       timerRef.current.sessionId = savedState.sessionId;
+
+      timerRef.current.initialDuration = savedState.initialDuration;
 
       let remainingTime = savedState.remainingTime;
 
@@ -190,9 +193,7 @@ export default function useTimer() {
         return;
       }
 
-      // Restore timer values
       timerRef.current.totalSeconds = remainingTime;
-      timerRef.current.initialDuration = savedState.remainingTime; // TODO: This might not be accurate
 
       const hours = Math.floor(remainingTime / 3600);
       const minutes = Math.floor((remainingTime % 3600) / 60);
