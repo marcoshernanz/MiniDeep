@@ -1,9 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Text } from "@/components/ui/text";
-import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "@/components/ui/button";
-import padWithZeros from "@/lib/utils/padWithZeros";
 import useTimer from "@/lib/hooks/useTimer";
 import { useWorkStats } from "@/lib/hooks/useWorkStats";
 import TimePickerScreen from "@/components/deep-work/TimePickerScreen";
@@ -38,8 +34,8 @@ export default function IndexScreen() {
     refreshStats();
   }, [refreshStats]);
 
-  const handleTimerComplete = () => {
-    resetTimer();
+  const handleTimerComplete = async () => {
+    await resetTimer();
     refreshStats();
   };
 
