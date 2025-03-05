@@ -1,10 +1,9 @@
-import { View, Animated } from "react-native";
+import { View } from "react-native";
 import { Text } from "../ui/text";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Audio } from "expo-av";
 import playSound from "@/lib/utils/sound/playSound";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import stopSound from "@/lib/utils/sound/stopSound";
 
 interface TimerCompletedScreenProps {
@@ -15,8 +14,6 @@ export default function TimerCompletedScreen({
   onDismiss,
 }: TimerCompletedScreenProps) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const insets = useSafeAreaInsets();
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
 
   useEffect(() => {
     let isMounted = true;
