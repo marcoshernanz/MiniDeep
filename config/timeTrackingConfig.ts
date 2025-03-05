@@ -17,6 +17,6 @@ export type WorkSession = {
 
 const timeTrackingConfig = {
   storageKey: "dwt_work_sessions",
-};
+} as const;
 
 export default timeTrackingConfig;
