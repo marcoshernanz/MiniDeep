@@ -63,6 +63,14 @@ export default function useTimer() {
     }
   };
 
+  // Cleanup any existing timer
+  const cleanupTimer = () => {
+    if (timerRef.current.accurateTimer) {
+      timerRef.current.accurateTimer.stop();
+      timerRef.current.accurateTimer = null;
+    }
+  };
+
   const startTimer = async ({
     hours = 0,
     minutes = 0,
@@ -76,9 +84,7 @@ export default function useTimer() {
     timerRef.current.totalSeconds = totalSeconds;
     timerRef.current.initialDuration = totalSeconds;
 
-    if (timerRef.current.accurateTimer) {
-      timerRef.current.accurateTimer.stop();
-    }
+    cleanupTimer();
     timerRef.current.accurateTimer = createAccurateTimer(timerTick, 1000);
 
     setDisplayTime({
@@ -168,14 +174,29 @@ export default function useTimer() {
     });
   };
 
+  const saveCurrentTimerState = async () => {
+    if (status.isRunning) {
+      const state = status.isPaused ? "paused" : "running";
+      await saveTimerState({
+        state,
+        remainingTime: timerRef.current.totalSeconds,
+        initialDuration: timerRef.current.initialDuration,
+        timestamp: Date.now(),
+        sessionId: timerRef.current.sessionId,
+      });
+    }
+  };
+
   const restoreTimerState = async () => {
     try {
+      // Always clean up existing timer first
+      cleanupTimer();
+
       const savedState = await getTimerState();
 
       if (!savedState || savedState.state === "inactive") return;
 
       timerRef.current.sessionId = savedState.sessionId;
-
       timerRef.current.initialDuration = savedState.initialDuration;
 
       let remainingTime = savedState.remainingTime;
@@ -217,9 +238,11 @@ export default function useTimer() {
     }
   };
 
-  const handleAppStateChange = (nextAppState: string) => {
+  const handleAppStateChange = async (nextAppState: string) => {
     if (nextAppState === "active") {
-      restoreTimerState();
+      await restoreTimerState();
+    } else if (nextAppState === "background" || nextAppState === "inactive") {
+      await saveCurrentTimerState();
     }
   };
 
@@ -232,9 +255,7 @@ export default function useTimer() {
     );
 
     return () => {
-      if (timerRef.current.accurateTimer) {
-        timerRef.current.accurateTimer.stop();
-      }
+      cleanupTimer();
       subscription.remove();
     };
   }, []);
