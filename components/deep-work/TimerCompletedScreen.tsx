@@ -22,7 +22,7 @@ export default function TimerCompletedScreen({
       try {
         const soundInstance = await playSound(
           require("@/assets/audio/timer-done.mp3"),
-          { loop: true },
+          { loop: true, asAlarm: true },
         );
 
         if (isMounted) {
