@@ -5,6 +5,7 @@
    - [x] Load timer state from async storage.
    - [ ] Handle timer finishing in the background.
 - [ ] Timer completed sound via alarm volume.
+   - [ ] Notification?
 - [ ] Make UI nicer with animations.
 - [ ] Fix timer flash after stopping.
 - [ ] Timer completed screen.

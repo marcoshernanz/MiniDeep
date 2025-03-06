@@ -24,7 +24,8 @@ export default function TimePickerScreen({
   startTimer,
 }: Props) {
   const handleStartTimer = () => {
-    startTimer({ hours, minutes });
+    // startTimer({ hours, minutes });
+    startTimer({ hours: 0, minutes: 0, seconds: 5 });
   };
 
   return (
