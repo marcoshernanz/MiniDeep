@@ -189,7 +189,6 @@ export default function useTimer() {
 
   const restoreTimerState = async () => {
     try {
-      // Always clean up existing timer first
       cleanupTimer();
 
       const savedState = await getTimerState();
