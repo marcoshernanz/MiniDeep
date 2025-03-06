@@ -9,7 +9,11 @@ interface Props {
   setHours: Dispatch<SetStateAction<number>>;
   minutes: number;
   setMinutes: Dispatch<SetStateAction<number>>;
-  startTimer: (time: { hours: number; minutes: number }) => void;
+  startTimer: (time: {
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+  }) => void;
 }
 
 export default function TimePickerScreen({
