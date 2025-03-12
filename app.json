@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "dwt",
-    "slug": "dwt",
+    "name": "MiniDeep",
+    "slug": "MiniDeep",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.marcoshernanz.dwt",
+      "bundleIdentifier": "com.marcoshernanz.minideep",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.marcoshernanz.dwt"
+      "package": "com.marcoshernanz.minideep"
     },
     "web": {
       "bundler": "metro",

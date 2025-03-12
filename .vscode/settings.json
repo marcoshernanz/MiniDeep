@@ -16,5 +16,8 @@
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "eslint.workingDirectories": [
     { "mode": "auto" }
+  ],
+  "cSpell.words": [
+    "minideep"
   ]
 }

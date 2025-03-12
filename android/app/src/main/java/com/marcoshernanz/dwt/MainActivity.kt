@@ -1,4 +1,4 @@
-package com.marcoshernanz.dwt
+package com.marcoshernanz.minideep
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

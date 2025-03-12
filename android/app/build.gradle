@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.marcoshernanz.dwt'
+    namespace 'com.marcoshernanz.minideep'
     defaultConfig {
-        applicationId 'com.marcoshernanz.dwt'
+        applicationId 'com.marcoshernanz.minideep'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

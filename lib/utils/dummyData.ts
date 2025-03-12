@@ -1,7 +1,7 @@
 import { TimeEvent, WorkSession } from "@/config/timeTrackingConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const STORAGE_KEY = "dwt_work_sessions";
+const STORAGE_KEY = "minideep_work_sessions";
 
 // Function to generate a random duration between min and max minutes
 const randomDuration = (minMinutes: number, maxMinutes: number): number => {

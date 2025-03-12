@@ -7,7 +7,7 @@ export type TimerState = {
 };
 
 const timerStateConfig = {
-  storageKey: "dwt_timer_state",
+  storageKey: "minideep_timer_state",
 } as const;
 
 export default timerStateConfig;

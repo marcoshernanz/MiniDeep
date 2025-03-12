@@ -1,4 +1,4 @@
-package com.marcoshernanz.dwt
+package com.marcoshernanz.minideep
 
 import android.app.Application
 import android.content.res.Configuration

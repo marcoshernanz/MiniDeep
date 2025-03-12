@@ -1,5 +1,5 @@
 {
-  "name": "dwt",
+  "name": "minideep",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
