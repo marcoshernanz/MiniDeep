@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { AppState, Platform } from "react-native";
+import { AppState } from "react-native";
 import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
@@ -8,23 +8,6 @@ import saveTimerState from "../timer/saveTimerState";
 import * as Notifications from "expo-notifications";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
-
-const checkNotificationChannel = async () => {
-  if (Platform.OS === "android") {
-    try {
-      const channels = await Notifications.getNotificationChannelsAsync();
-      const timerChannel = channels.find(
-        (channel) => channel.id === TIMER_CHANNEL_ID,
-      );
-      console.log(timerChannel);
-      return timerChannel;
-    } catch (error) {
-      console.error("Failed to check notification channel:", error);
-      return null;
-    }
-  }
-  return null;
-};
 
 const setupNotifications = async () => {
   await Notifications.requestPermissionsAsync();
@@ -37,20 +20,20 @@ const setupNotifications = async () => {
     }),
   });
 
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync(TIMER_CHANNEL_ID, {
+  const channel = await Notifications.setNotificationChannelAsync(
+    TIMER_CHANNEL_ID,
+    {
       name: "Timer Notifications",
       sound: "timer_done.wav",
       importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
+      bypassDnd: true,
       audioAttributes: {
         usage: Notifications.AndroidAudioUsage.ALARM,
         contentType: Notifications.AndroidAudioContentType.SONIFICATION,
       },
-    });
-  }
-
-  await checkNotificationChannel();
+    },
+  );
+  console.log(channel);
 };
 
 const scheduleTimerCompletionNotification = async (seconds: number) => {
