@@ -37,6 +37,12 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "sounds": ["./assets/audio/timer_done.mp3"]
+        }
       ]
     ],
     "experiments": {
