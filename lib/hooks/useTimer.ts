@@ -40,7 +40,7 @@ const setupNotifications = async () => {
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync(TIMER_CHANNEL_ID, {
       name: "Timer Notifications",
-      sound: "timer_done.mp3",
+      sound: "timer_done.wav",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       audioAttributes: {
@@ -60,7 +60,7 @@ const scheduleTimerCompletionNotification = async (seconds: number) => {
     content: {
       title: "Timer Complete",
       body: "Your timer has finished!",
-      sound: "timer_done.mp3",
+      sound: "timer_done.wav",
       vibrate: [],
     },
     trigger: {
@@ -109,7 +109,7 @@ export default function useTimer() {
         content: {
           title: "Timer Complete",
           body: "Your timer has finished!",
-          sound: "timer_done.mp3",
+          sound: "timer_done.wav",
           vibrate: [],
         },
         trigger: {

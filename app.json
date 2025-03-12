@@ -41,7 +41,7 @@
       [
         "expo-notifications",
         {
-          "sounds": ["./assets/audio/timer_done.mp3"]
+          "sounds": ["./assets/audio/timer_done.wav"]
         }
       ]
     ],
