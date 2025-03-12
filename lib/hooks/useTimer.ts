@@ -1,79 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { AppState, Platform } from "react-native";
+import { AppState } from "react-native";
 import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
 import getTimerState from "../timer/getTimerState";
 import saveTimerState from "../timer/saveTimerState";
-import * as Notifications from "expo-notifications";
-
-const TIMER_CHANNEL_ID = "timer_completed_channel";
-
-const checkNotificationChannel = async () => {
-  if (Platform.OS === "android") {
-    try {
-      const channels = await Notifications.getNotificationChannelsAsync();
-      const timerChannel = channels.find(
-        (channel) => channel.id === TIMER_CHANNEL_ID,
-      );
-      console.log(timerChannel);
-      return timerChannel;
-    } catch (error) {
-      console.error("Failed to check notification channel:", error);
-      return null;
-    }
-  }
-  return null;
-};
-
-const setupNotifications = async () => {
-  await Notifications.requestPermissionsAsync();
-
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
-
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync(TIMER_CHANNEL_ID, {
-      name: "Timer Notifications",
-      sound: "timer_done.mp3",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      audioAttributes: {
-        usage: Notifications.AndroidAudioUsage.ALARM,
-        contentType: Notifications.AndroidAudioContentType.SONIFICATION,
-      },
-    });
-  }
-
-  await checkNotificationChannel();
-};
-
-const scheduleTimerCompletionNotification = async (seconds: number) => {
-  await Notifications.cancelAllScheduledNotificationsAsync();
-
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Timer Complete",
-      body: "Your timer has finished!",
-      sound: "timer_done.mp3",
-      vibrate: [],
-    },
-    trigger: {
-      seconds,
-      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      channelId: TIMER_CHANNEL_ID,
-    },
-  });
-};
-
-const cancelTimerNotifications = async () => {
-  await Notifications.cancelAllScheduledNotificationsAsync();
-};
 
 export default function useTimer() {
   const [displayTime, setDisplayTime] = useState({
@@ -104,18 +35,6 @@ export default function useTimer() {
       }
       timerRef.current.totalSeconds = 0;
       setStatus((prev) => ({ ...prev, isCompleted: true }));
-
-      Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Timer Complete",
-          body: "Your timer has finished!",
-          sound: "timer_done.mp3",
-          vibrate: [],
-        },
-        trigger: {
-          channelId: TIMER_CHANNEL_ID,
-        },
-      });
 
       if (timerRef.current.sessionId) {
         addTimeEvent(
@@ -184,7 +103,6 @@ export default function useTimer() {
     timerRef.current.sessionId = sessionId;
 
     await addTimeEvent(sessionId, "start", totalSeconds);
-    await scheduleTimerCompletionNotification(totalSeconds);
 
     timerRef.current.accurateTimer.start();
   };
@@ -197,11 +115,9 @@ export default function useTimer() {
     if (status.isPaused) {
       timerRef.current.accurateTimer.resume();
       await addTimeEvent(timerRef.current.sessionId, "resume", remainingTime);
-      await scheduleTimerCompletionNotification(remainingTime);
     } else {
       timerRef.current.accurateTimer.pause();
       await addTimeEvent(timerRef.current.sessionId, "pause", remainingTime);
-      await cancelTimerNotifications();
     }
 
     setStatus((prev) => ({
@@ -218,8 +134,6 @@ export default function useTimer() {
       const remainingTime = timerRef.current.totalSeconds;
       const elapsedTime = timerRef.current.initialDuration - remainingTime;
       await addTimeEvent(timerRef.current.sessionId, "stop", elapsedTime);
-
-      await cancelTimerNotifications();
     }
 
     setStatus({
@@ -258,8 +172,6 @@ export default function useTimer() {
       timestamp: Date.now(),
       sessionId: "",
     });
-
-    await cancelTimerNotifications();
   };
 
   const saveCurrentTimerState = async () => {
@@ -272,12 +184,6 @@ export default function useTimer() {
         timestamp: Date.now(),
         sessionId: timerRef.current.sessionId,
       });
-
-      if (state === "running") {
-        await scheduleTimerCompletionNotification(
-          timerRef.current.totalSeconds,
-        );
-      }
     }
   };
 
@@ -340,7 +246,6 @@ export default function useTimer() {
   };
 
   useEffect(() => {
-    setupNotifications();
     restoreTimerState();
 
     const subscription = AppState.addEventListener(

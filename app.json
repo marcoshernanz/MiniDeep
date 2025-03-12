@@ -37,17 +37,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/images/splash-icon.png",
-          "color": "#ffffff",
-          "sounds": ["./assets/audio/timer_done.mp3"]
-        }
       ]
     ],
-
     "experiments": {
       "typedRoutes": true
     },
