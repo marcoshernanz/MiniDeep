@@ -41,7 +41,9 @@
       [
         "expo-notifications",
         {
-          "sounds": ["./assets/audio/timer_done.wav"]
+          "sounds": ["./assets/audio/timer_done.wav"],
+          "icon": "./assets/images/icon.png",
+          "color": "#ffffff"
         }
       ]
     ],

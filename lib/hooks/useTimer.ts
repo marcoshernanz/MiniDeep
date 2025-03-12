@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { AppState } from "react-native";
+import { AppState, Platform } from "react-native";
 import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
@@ -41,13 +41,14 @@ const setupNotifications = async () => {
       sound: "timer_done.wav",
       importance: Notifications.AndroidImportance.MAX,
       bypassDnd: true,
+      enableVibrate: true,
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
       audioAttributes: {
         usage: Notifications.AndroidAudioUsage.ALARM,
         contentType: Notifications.AndroidAudioContentType.SONIFICATION,
       },
     },
   );
-  console.log(channel);
 };
 
 const scheduleTimerCompletionNotification = async (seconds: number) => {
@@ -58,7 +59,10 @@ const scheduleTimerCompletionNotification = async (seconds: number) => {
       title: "Timer Complete",
       body: "Your timer has finished!",
       sound: "timer_done.wav",
-      vibrate: [],
+      sticky: true,
+      autoDismiss: false,
+      priority: Notifications.AndroidNotificationPriority.MAX,
+      interruptionLevel: "critical",
       categoryIdentifier: TIMER_CATEGORY,
     },
     trigger: {
@@ -102,19 +106,6 @@ export default function useTimer() {
       }
       timerRef.current.totalSeconds = 0;
       setStatus((prev) => ({ ...prev, isCompleted: true }));
-
-      Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Timer Complete",
-          body: "Your timer has finished!",
-          sound: "timer_done.wav",
-          vibrate: [],
-          categoryIdentifier: TIMER_CATEGORY,
-        },
-        trigger: {
-          channelId: TIMER_CHANNEL_ID,
-        },
-      });
 
       if (timerRef.current.sessionId) {
         addTimeEvent(
@@ -183,6 +174,8 @@ export default function useTimer() {
     timerRef.current.sessionId = sessionId;
 
     await addTimeEvent(sessionId, "start", totalSeconds);
+
+    // Schedule notification when timer starts
     await scheduleTimerCompletionNotification(totalSeconds);
 
     timerRef.current.accurateTimer.start();
@@ -197,6 +190,7 @@ export default function useTimer() {
       timerRef.current.accurateTimer.resume();
       await addTimeEvent(timerRef.current.sessionId, "resume", remainingTime);
       await scheduleTimerCompletionNotification(remainingTime);
+      console.log(remainingTime);
     } else {
       timerRef.current.accurateTimer.pause();
       await addTimeEvent(timerRef.current.sessionId, "pause", remainingTime);
@@ -271,10 +265,13 @@ export default function useTimer() {
         sessionId: timerRef.current.sessionId,
       });
 
+      // Keep notification scheduling consistent with timer state
       if (state === "running") {
         await scheduleTimerCompletionNotification(
           timerRef.current.totalSeconds,
         );
+      } else {
+        await cancelTimerNotifications();
       }
     }
   };
@@ -341,10 +338,8 @@ export default function useTimer() {
     response: Notifications.NotificationResponse,
   ) => {
     const actionIdentifier = response.actionIdentifier;
-    if (
-      actionIdentifier === DISMISS_ACTION_ID ||
-      actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
-    ) {
+
+    if (actionIdentifier === DISMISS_ACTION_ID) {
       await Notifications.dismissNotificationAsync(
         response.notification.request.identifier,
       );
