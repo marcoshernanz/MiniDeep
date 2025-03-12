@@ -21,7 +21,7 @@ export default function TimerCompletedScreen({
     const loadSound = async () => {
       try {
         const soundInstance = await playSound(
-          require("@/assets/audio/timer_done.mp3"),
+          require("@/assets/audio/timer-done.mp3"),
           { loop: true, asAlarm: true },
         );
 
