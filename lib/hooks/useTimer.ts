@@ -8,6 +8,8 @@ import saveTimerState from "../timer/saveTimerState";
 import * as Notifications from "expo-notifications";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
+const TIMER_CATEGORY = "timer_completed";
+const DISMISS_ACTION_ID = "dismiss";
 
 const setupNotifications = async () => {
   await Notifications.requestPermissionsAsync();
@@ -19,6 +21,18 @@ const setupNotifications = async () => {
       shouldSetBadge: false,
     }),
   });
+
+  // Set up the notification category with dismiss action
+  await Notifications.setNotificationCategoryAsync(TIMER_CATEGORY, [
+    {
+      identifier: DISMISS_ACTION_ID,
+      buttonTitle: "Dismiss",
+      options: {
+        isDestructive: false,
+        isAuthenticationRequired: false,
+      },
+    },
+  ]);
 
   const channel = await Notifications.setNotificationChannelAsync(
     TIMER_CHANNEL_ID,
@@ -45,6 +59,7 @@ const scheduleTimerCompletionNotification = async (seconds: number) => {
       body: "Your timer has finished!",
       sound: "timer_done.wav",
       vibrate: [],
+      categoryIdentifier: TIMER_CATEGORY,
     },
     trigger: {
       seconds,
@@ -94,6 +109,7 @@ export default function useTimer() {
           body: "Your timer has finished!",
           sound: "timer_done.wav",
           vibrate: [],
+          categoryIdentifier: TIMER_CATEGORY,
         },
         trigger: {
           channelId: TIMER_CHANNEL_ID,
@@ -321,6 +337,19 @@ export default function useTimer() {
     }
   };
 
+  // Add a new function to handle notification responses
+  const handleNotificationResponse = async (
+    response: Notifications.NotificationResponse,
+  ) => {
+    const actionIdentifier = response.actionIdentifier;
+    if (
+      actionIdentifier === DISMISS_ACTION_ID ||
+      actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+    ) {
+      await resetTimer();
+    }
+  };
+
   useEffect(() => {
     setupNotifications();
     restoreTimerState();
@@ -330,9 +359,16 @@ export default function useTimer() {
       handleAppStateChange,
     );
 
+    // Set up notification response handler with the separate function
+    const notificationResponseSubscription =
+      Notifications.addNotificationResponseReceivedListener(
+        handleNotificationResponse,
+      );
+
     return () => {
       cleanupTimer();
       subscription.remove();
+      notificationResponseSubscription.remove();
     };
   }, []);
 
