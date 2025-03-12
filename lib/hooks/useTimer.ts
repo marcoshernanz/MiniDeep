@@ -337,7 +337,6 @@ export default function useTimer() {
     }
   };
 
-  // Add a new function to handle notification responses
   const handleNotificationResponse = async (
     response: Notifications.NotificationResponse,
   ) => {
@@ -346,6 +345,9 @@ export default function useTimer() {
       actionIdentifier === DISMISS_ACTION_ID ||
       actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
     ) {
+      await Notifications.dismissNotificationAsync(
+        response.notification.request.identifier,
+      );
       await resetTimer();
     }
   };
