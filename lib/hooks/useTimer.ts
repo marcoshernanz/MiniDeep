@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { AppState, Platform } from "react-native";
+import { AppState, Platform, Vibration } from "react-native";
 import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
 import getTimerState from "../timer/getTimerState";
 import saveTimerState from "../timer/saveTimerState";
 import * as Notifications from "expo-notifications";
+import * as Haptics from "expo-haptics";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
 const TIMER_CATEGORY = "timer_completed";
@@ -94,6 +95,47 @@ export default function useTimer() {
     initialDuration: 0,
   });
 
+  // Create a ref to track vibration state
+  const vibrationRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Function to start continuous vibration pattern
+  const startContinuousVibration = () => {
+    // Clear any existing vibration first
+    Vibration.cancel();
+
+    // Pattern for strong, continuous vibration:
+    // vibrate for 1000ms, pause for 500ms, repeat indefinitely
+    const pattern = [0, 1000, 500];
+
+    // Start vibration with repeat (passing -1 means infinite repeat)
+    Vibration.vibrate(pattern, true);
+
+    // Also use Haptics for immediate feedback on supported devices
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+      .then(() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      })
+      .catch((error) =>
+        console.error("Failed to trigger haptic feedback:", error),
+      );
+
+    // Set up a repeating heavy impact every 2 seconds for additional strength
+    vibrationRef.current = setInterval(() => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch((error) =>
+        console.error("Failed to trigger impact feedback:", error),
+      );
+    }, 2000);
+  };
+
+  // Function to stop vibration
+  const stopVibration = () => {
+    Vibration.cancel();
+    if (vibrationRef.current) {
+      clearInterval(vibrationRef.current);
+      vibrationRef.current = null;
+    }
+  };
+
   const updateTimeRemaining = () => {
     const totalSecondsLeft = timerRef.current.totalSeconds;
 
@@ -111,6 +153,9 @@ export default function useTimer() {
           timerRef.current.initialDuration,
         );
       }
+
+      // Start continuous vibration when timer completes
+      startContinuousVibration();
     }
 
     const hours = Math.floor(totalSecondsLeft / 3600);
@@ -209,6 +254,9 @@ export default function useTimer() {
       const elapsedTime = timerRef.current.initialDuration - remainingTime;
       await addTimeEvent(timerRef.current.sessionId, "stop", elapsedTime);
       await cancelTimerNotifications();
+
+      // Stop vibration if any is ongoing
+      stopVibration();
     }
 
     setStatus({
@@ -249,6 +297,9 @@ export default function useTimer() {
     });
 
     await cancelTimerNotifications();
+
+    // Stop vibration when timer is reset
+    stopVibration();
   };
 
   const saveCurrentTimerState = async () => {
@@ -296,6 +347,9 @@ export default function useTimer() {
       if (remainingTime <= 0 && savedState.state !== "completed") {
         setStatus({ isRunning: false, isPaused: false, isCompleted: true });
         await addTimeEvent(savedState.sessionId, "complete", 0);
+
+        // Start continuous vibration if timer completed while app was in background
+        startContinuousVibration();
         return;
       }
 
@@ -340,6 +394,9 @@ export default function useTimer() {
       await Notifications.dismissNotificationAsync(
         response.notification.request.identifier,
       );
+
+      // Stop vibration when notification is dismissed
+      stopVibration();
       await resetTimer();
     }
   };
@@ -361,6 +418,7 @@ export default function useTimer() {
 
     return () => {
       cleanupTimer();
+      stopVibration(); // Ensure vibration stops when component unmounts
       subscription.remove();
       notificationResponseSubscription.remove();
     };
