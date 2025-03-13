@@ -34,21 +34,18 @@ const setupNotifications = async () => {
     },
   ]);
 
-  const channel = await Notifications.setNotificationChannelAsync(
-    TIMER_CHANNEL_ID,
-    {
-      name: "Timer Notifications",
-      sound: "timer_done.wav",
-      importance: Notifications.AndroidImportance.MAX,
-      bypassDnd: true,
-      enableVibrate: true,
-      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
-      audioAttributes: {
-        usage: Notifications.AndroidAudioUsage.ALARM,
-        contentType: Notifications.AndroidAudioContentType.SONIFICATION,
-      },
+  await Notifications.setNotificationChannelAsync(TIMER_CHANNEL_ID, {
+    name: "Timer Notifications",
+    sound: "timer_done.wav",
+    importance: Notifications.AndroidImportance.MAX,
+    bypassDnd: true,
+    enableVibrate: true,
+    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+    audioAttributes: {
+      usage: Notifications.AndroidAudioUsage.ALARM,
+      contentType: Notifications.AndroidAudioContentType.SONIFICATION,
     },
-  );
+  });
 };
 
 const scheduleTimerCompletionNotification = async (seconds: number) => {
