@@ -1,10 +1,10 @@
 import { View } from "react-native";
 import { Text } from "../ui/text";
-import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { Audio } from "expo-av";
-import playSound from "@/lib/utils/sound/playSound";
+import * as Notifications from "expo-notifications";
 import stopSound from "@/lib/utils/sound/stopSound";
+import { Audio } from "expo-av";
+import { useEffect, useRef } from "react";
 
 interface TimerCompletedScreenProps {
   onDismiss: () => void;
@@ -13,46 +13,31 @@ interface TimerCompletedScreenProps {
 export default function TimerCompletedScreen({
   onDismiss,
 }: TimerCompletedScreenProps) {
-  // const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
 
-  // useEffect(() => {
-  //   let isMounted = true;
+  useEffect(() => {
+    return () => {
+      if (soundRef.current) {
+        stopSound(soundRef.current);
+      }
+    };
+  }, []);
 
-  //   const loadSound = async () => {
-  //     try {
-  //       const soundInstance = await playSound(
-  //         require("@/assets/audio/timer_done.wav"),
-  //         { loop: true, asAlarm: true },
-  //       );
+  const handleDone = async () => {
+    await Notifications.dismissAllNotificationsAsync();
 
-  //       if (isMounted) {
-  //         setSound(soundInstance);
-  //       } else if (soundInstance) {
-  //         await stopSound(soundInstance);
-  //       }
-  //     } catch (error) {
-  //       console.error("Failed to load and play sound", error);
-  //     }
-  //   };
+    if (soundRef.current) {
+      await stopSound(soundRef.current);
+    }
 
-  //   loadSound();
-
-  //   return () => {
-  //     isMounted = false;
-  //     stopSound(sound);
-  //   };
-  // }, []);
-
-  // const handleFinish = async () => {
-  //   await stopSound(sound);
-  //   onDismiss();
-  // };
+    onDismiss();
+  };
 
   return (
     <View className="flex-1 justify-center">
       <View className="gap-10">
         <Text className="text-5xl font-semibold">Time's up!</Text>
-        <Button onPress={onDismiss} className="w-full" size="lg">
+        <Button onPress={handleDone} className="w-full" size="lg">
           <Text className="font-bold">Done</Text>
         </Button>
       </View>
