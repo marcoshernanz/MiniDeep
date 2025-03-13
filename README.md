@@ -6,7 +6,8 @@
    - [x] Handle timer finishing in the background.
 - [x] Timer completed sound via alarm volume.
 - [x] Timer notification.
-- [ ] Timer completed vibration.
+- [x] Timer completed vibration.
+- [ ] MMKV instead of async storage.
 - [ ] Improved analytics
    - [ ] Daily view
    - [ ] Weekly view
@@ -14,7 +15,6 @@
    - [ ] Yearly view
    - [ ] All time view
    - [ ] Swipe to change between views
-- [ ] MMKV instead of async storage.
 - [ ] Improved colors.
 - [ ] Stopwatch option.
 - [ ] Alarm option.
