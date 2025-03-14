@@ -1,6 +1,7 @@
 import useColors from "@/lib/hooks/useColors";
 import { Tabs } from "expo-router";
 import { BrainIcon } from "@/lib/icons/BrainIcon";
+import { ActivityIcon } from "@/lib/icons/ActivityIcon";
 import { BarChartIcon } from "@/lib/icons/BarChartIcon";
 import { SettingsIcon } from "@/lib/icons/SettingsIcon";
 
@@ -26,6 +27,15 @@ export default function TabLayout() {
           tabBarLabel: "Deep Work",
           tabBarIcon: ({ color, size }) => (
             <BrainIcon color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="activity"
+        options={{
+          tabBarLabel: "Activity",
+          tabBarIcon: ({ color, size }) => (
+            <ActivityIcon color={color} size={size} />
           ),
         }}
       />
