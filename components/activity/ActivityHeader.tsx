@@ -8,7 +8,7 @@ interface Props {
 
 export default function ActivityHeader({ selectedDate }: Props) {
   return (
-    <View className="px-4 py-6">
+    <View className="px-4">
       <Text className="text-3xl font-bold text-foreground">Activity</Text>
       <Text className="mt-2 text-muted-foreground">
         {format(selectedDate, "EEEE, MMMM d, yyyy")}
