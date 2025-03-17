@@ -127,7 +127,7 @@ const MockActivity: ActivityType[] = [
       },
     ],
   },
-];
+].toReversed();
 
 export default function useActivity() {
   // const [loading, setLoading] = useState(true);

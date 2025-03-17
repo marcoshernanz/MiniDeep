@@ -1,4 +1,4 @@
-import { Dimensions, View } from "react-native";
+import { Dimensions, ScrollView, View } from "react-native";
 import ActivitySummary from "./ActivitySummary";
 import { ActivityType } from "@/lib/hooks/useActivity";
 import { isSameDay } from "date-fns";
@@ -15,28 +15,29 @@ export default function ActivityMain({
   selectedDate,
   setSelectedDate,
 }: Props) {
-  const initialScrollIndex = activity.findIndex((a) =>
+  const initialIndex = activity.findIndex((a) =>
     isSameDay(a.date, selectedDate),
   );
 
   return (
     <Swipable
-      className="mx-auto"
+      className="mx-auto flex-1 bg-red-600"
       data={activity}
       itemWidth={Dimensions.get("window").width}
       keyExtractor={(value, index) =>
         `${value.date.toISOString() || ""}-${index}`
       }
-      initialIndex={initialScrollIndex}
+      initialIndex={initialIndex}
+      onIndexChange={(index) => setSelectedDate(activity[index].date)}
       renderItem={({ item: activity }) => (
-        <>
+        <ScrollView>
           <ActivitySummary
             totalTime={activity.totalWorkTime}
             totalSessions={activity.totalSessions}
           />
 
           <View className="mx-4 mt-4 h-0.5 bg-muted"></View>
-        </>
+        </ScrollView>
       )}
     />
   );

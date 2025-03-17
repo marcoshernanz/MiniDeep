@@ -19,7 +19,7 @@ export default function ActivityDayPicker({
 }: Props) {
   const weeks = groupDaysIntoWeeks(days);
 
-  const initialScrollIndex = weeks.findIndex((week) =>
+  const initialIndex = weeks.findIndex((week) =>
     week.some(
       (day) => day && day.toDateString() === selectedDate.toDateString(),
     ),
@@ -31,7 +31,7 @@ export default function ActivityDayPicker({
       data={weeks}
       itemWidth={Dimensions.get("window").width}
       keyExtractor={(value, index) => `${value[0]?.toString() || ""}-${index}`}
-      initialIndex={initialScrollIndex}
+      initialIndex={initialIndex}
       renderItem={({ item: week }) => (
         <View className="h-14 flex-row items-center justify-between px-4">
           {week.map((day, index) => (

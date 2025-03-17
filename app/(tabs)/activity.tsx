@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -21,27 +21,27 @@ export default function ActivityScreen() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView className="flex-1">
       <SafeAreaView className="flex-1 bg-background py-6">
-        <ScrollView className="flex-1">
-          <ActivityHeader selectedDate={selectedDate} />
+        <ActivityHeader selectedDate={selectedDate} />
 
-          <View className="mx-4 mb-2 mt-4 h-0.5 bg-muted"></View>
+        <View className="mx-4 mb-2 mt-4 h-0.5 bg-muted"></View>
 
-          <ActivityDayPicker
-            days={activity.map((a) => a.date)}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-          />
+        <ActivityDayPicker
+          days={activity.map((a) => a.date)}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+        />
 
-          <View className="mx-4 mb-4 mt-2 h-0.5 bg-muted"></View>
+        <View className="mx-4 mb-4 mt-2 h-0.5 bg-muted"></View>
 
+        <View className="flex-1">
           <ActivityMain
             activity={activity}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
           />
-        </ScrollView>
+        </View>
       </SafeAreaView>
     </GestureHandlerRootView>
   );
