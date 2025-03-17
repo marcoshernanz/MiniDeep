@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import getWorkSessions from "../time-tracking/getWorkSessions";
-import { addDays, isSameDay } from "date-fns";
+import { addDays } from "date-fns";
 
 type ActivityType = {
   date: Date;

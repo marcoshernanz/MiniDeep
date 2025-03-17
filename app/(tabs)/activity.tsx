@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { View, ScrollView, Dimensions } from "react-native";
+import { View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
-import { Card } from "@/components/ui/card";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ActivityHeader from "@/components/activity/ActivityHeader";
 import ActivityDayPicker from "@/components/activity/ActivityDayPicker";
