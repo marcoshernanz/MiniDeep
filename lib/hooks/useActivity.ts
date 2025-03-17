@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import getWorkSessions from "../time-tracking/getWorkSessions";
-import { addDays } from "date-fns";
+import { addDays, subDays } from "date-fns";
 
-type ActivityType = {
+export type ActivityType = {
   date: Date;
   totalSessions: number;
   totalWorkTime: number;
@@ -13,9 +13,127 @@ type ActivityType = {
   }[];
 };
 
+const MockActivity: ActivityType[] = [
+  {
+    date: new Date(),
+    totalSessions: 3,
+    totalWorkTime: 7200,
+    sessions: [
+      {
+        startTime: new Date(new Date().setHours(9, 0, 0, 0)),
+        duration: 3600,
+        completed: true,
+      },
+      {
+        startTime: new Date(new Date().setHours(13, 0, 0, 0)),
+        duration: 1800,
+        completed: true,
+      },
+      {
+        startTime: new Date(new Date().setHours(16, 0, 0, 0)),
+        duration: 1800,
+        completed: true,
+      },
+    ],
+  },
+  {
+    date: subDays(new Date(), 1),
+    totalSessions: 2,
+    totalWorkTime: 5400,
+    sessions: [
+      {
+        startTime: new Date(subDays(new Date(), 1).setHours(10, 0, 0, 0)),
+        duration: 2700,
+        completed: true,
+      },
+      {
+        startTime: new Date(subDays(new Date(), 1).setHours(15, 0, 0, 0)),
+        duration: 2700,
+        completed: false,
+      },
+    ],
+  },
+  {
+    date: subDays(new Date(), 2),
+    totalSessions: 1,
+    totalWorkTime: 1800,
+    sessions: [
+      {
+        startTime: new Date(subDays(new Date(), 2).setHours(14, 0, 0, 0)),
+        duration: 1800,
+        completed: true,
+      },
+    ],
+  },
+  {
+    date: subDays(new Date(), 3),
+    totalSessions: 4,
+    totalWorkTime: 10800,
+    sessions: [
+      {
+        startTime: new Date(subDays(new Date(), 3).setHours(9, 0, 0, 0)),
+        duration: 3600,
+        completed: true,
+      },
+      {
+        startTime: new Date(subDays(new Date(), 3).setHours(11, 0, 0, 0)),
+        duration: 1800,
+        completed: true,
+      },
+      {
+        startTime: new Date(subDays(new Date(), 3).setHours(14, 0, 0, 0)),
+        duration: 3600,
+        completed: true,
+      },
+      {
+        startTime: new Date(subDays(new Date(), 3).setHours(17, 0, 0, 0)),
+        duration: 1800,
+        completed: false,
+      },
+    ],
+  },
+  {
+    date: subDays(new Date(), 4),
+    totalSessions: 0,
+    totalWorkTime: 0,
+    sessions: [],
+  },
+  {
+    date: subDays(new Date(), 5),
+    totalSessions: 2,
+    totalWorkTime: 5400,
+    sessions: [
+      {
+        startTime: new Date(subDays(new Date(), 5).setHours(10, 30, 0, 0)),
+        duration: 2700,
+        completed: true,
+      },
+      {
+        startTime: new Date(subDays(new Date(), 5).setHours(16, 30, 0, 0)),
+        duration: 2700,
+        completed: true,
+      },
+    ],
+  },
+  {
+    date: subDays(new Date(), 6),
+    totalSessions: 1,
+    totalWorkTime: 5400,
+    sessions: [
+      {
+        startTime: new Date(subDays(new Date(), 6).setHours(14, 0, 0, 0)),
+        duration: 5400,
+        completed: true,
+      },
+    ],
+  },
+];
+
 export default function useActivity() {
-  const [loading, setLoading] = useState(true);
-  const [activity, setActivity] = useState<ActivityType[]>([]);
+  // const [loading, setLoading] = useState(true);
+  // const [activity, setActivity] = useState<ActivityType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activity, setActivity] = useState<ActivityType[]>(MockActivity);
 
   const loadActivity = useCallback(async () => {
     setLoading(true);
@@ -83,9 +201,9 @@ export default function useActivity() {
     }
   }, []);
 
-  useEffect(() => {
-    loadActivity();
-  }, [loadActivity]);
+  // useEffect(() => {
+  // loadActivity();
+  // }, [loadActivity]);
 
   return { activity, loading, refresh: loadActivity };
 }
