@@ -5,8 +5,6 @@ import cn from "@/lib/utils/cn";
 import Swipable from "../Swipable";
 
 const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
-const { width } = Dimensions.get("window");
-const containerWidth = width;
 
 interface Props {
   days: Date[];
@@ -31,9 +29,9 @@ export default function ActivityDayPicker({
     <Swipable
       className="mx-auto"
       data={weeks}
+      itemWidth={Dimensions.get("window").width}
       keyExtractor={(value, index) => `${value[0]?.toString() || ""}-${index}`}
       initialIndex={initialScrollIndex}
-      itemWidth={containerWidth}
       renderItem={({ item: week }) => (
         <View className="h-14 flex-row items-center justify-between px-4">
           {week.map((day, index) => (
