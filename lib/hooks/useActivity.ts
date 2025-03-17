@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import getWorkSessions from "../time-tracking/getWorkSessions";
 
-type ActivityType = {
+export type ActivityType = {
   totalSessions: number;
   totalWorkTime: number;
   sessions: {
