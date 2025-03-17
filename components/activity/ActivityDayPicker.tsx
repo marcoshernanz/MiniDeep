@@ -1,7 +1,8 @@
-import { View, Dimensions, FlatList, TouchableOpacity } from "react-native";
+import { View, Dimensions, TouchableOpacity } from "react-native";
 import { Text } from "../ui/text";
 import groupDaysIntoWeeks from "@/lib/utils/groupDaysIntoWeeks";
 import cn from "@/lib/utils/cn";
+import Swipable from "../Swipable";
 
 const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
 const { width } = Dimensions.get("window");
@@ -27,47 +28,30 @@ export default function ActivityDayPicker({
   );
 
   return (
-    <View className="mx-auto" style={{ width: containerWidth }}>
-      <FlatList
-        data={weeks}
-        keyExtractor={(value, index) =>
-          `${value[0]?.toString() || ""}-${index}`
-        }
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={containerWidth}
-        decelerationRate="normal"
-        disableIntervalMomentum
-        getItemLayout={(_, index) => ({
-          length: containerWidth,
-          offset: containerWidth * index,
-          index,
-        })}
-        initialScrollIndex={
-          initialScrollIndex >= 0 ? initialScrollIndex : weeks.length - 1
-        }
-        renderItem={({ item: week }) => (
-          <View
-            className="h-14 flex-row items-center justify-between px-4"
-            style={{ width: containerWidth }}
-          >
-            {week.map((day, index) => (
-              <TouchableOpacity
-                key={`${day?.toDateString()}-${index}`}
-                onPress={() => day && setSelectedDate(day)}
-                className={cn(
-                  "aspect-square size-12 items-center justify-center rounded-full bg-muted disabled:bg-muted/50",
-                  selectedDate.toDateString() === (day?.toDateString() || "") &&
-                    "bg-primary text-primary-foreground",
-                )}
-                disabled={!day}
-              >
-                <Text>{weekdays[index]}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
-      />
-    </View>
+    <Swipable
+      className="mx-auto"
+      data={weeks}
+      keyExtractor={(value, index) => `${value[0]?.toString() || ""}-${index}`}
+      initialIndex={initialScrollIndex}
+      itemWidth={containerWidth}
+      renderItem={({ item: week }) => (
+        <View className="h-14 flex-row items-center justify-between px-4">
+          {week.map((day, index) => (
+            <TouchableOpacity
+              key={`${day?.toDateString()}-${index}`}
+              onPress={() => day && setSelectedDate(day)}
+              className={cn(
+                "aspect-square size-12 items-center justify-center rounded-full bg-muted disabled:bg-muted/50",
+                selectedDate.toDateString() === (day?.toDateString() || "") &&
+                  "bg-primary text-primary-foreground",
+              )}
+              disabled={!day}
+            >
+              <Text>{weekdays[index]}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+    />
   );
 }
