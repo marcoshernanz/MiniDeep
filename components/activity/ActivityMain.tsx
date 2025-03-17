@@ -15,19 +15,20 @@ export default function ActivityMain({
   selectedDate,
   setSelectedDate,
 }: Props) {
-  const initialIndex = activity.findIndex((a) =>
+  const currentIndex = activity.findIndex((a) =>
     isSameDay(a.date, selectedDate),
   );
 
   return (
     <Swipable
-      className="mx-auto flex-1 bg-red-600"
+      className="mx-auto flex-1"
       data={activity}
       itemWidth={Dimensions.get("window").width}
       keyExtractor={(value, index) =>
         `${value.date.toISOString() || ""}-${index}`
       }
-      initialIndex={initialIndex}
+      initialIndex={currentIndex}
+      currentIndex={currentIndex}
       onIndexChange={(index) => setSelectedDate(activity[index].date)}
       renderItem={({ item: activity }) => (
         <ScrollView>

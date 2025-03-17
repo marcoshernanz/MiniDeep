@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useRef, useEffect } from "react";
 import { View, Dimensions, FlatList } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -9,6 +9,7 @@ interface SwipableProps<T> {
   keyExtractor: (item: T, index: number) => string;
   itemWidth: number;
   initialIndex?: number;
+  currentIndex?: number;
   onIndexChange?: (index: number) => void;
   className?: string;
   horizontal?: boolean;
@@ -19,16 +20,28 @@ export default function Swipable<T>({
   renderItem,
   keyExtractor,
   initialIndex = 0,
-  itemWidth = width,
+  currentIndex,
   onIndexChange,
   className,
+  itemWidth = width,
   horizontal = true,
 }: SwipableProps<T>) {
   const finalInitialIndex = initialIndex >= 0 ? initialIndex : data.length - 1;
+  const flatListRef = useRef<FlatList<T>>(null);
+
+  useEffect(() => {
+    if (currentIndex !== undefined && flatListRef.current) {
+      flatListRef.current.scrollToIndex({
+        index: currentIndex,
+        animated: true,
+      });
+    }
+  }, [currentIndex]);
 
   return (
     <View style={[{ width: itemWidth }]} className={className}>
       <FlatList
+        ref={flatListRef}
         data={data}
         keyExtractor={keyExtractor}
         horizontal={horizontal}
