@@ -1,11 +1,19 @@
 import React from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { Text } from "../ui/text";
 import { ActivityType } from "@/lib/hooks/useActivity";
 import { Card } from "../ui/card";
 import { CartesianChart, Area, Line } from "victory-native";
-import { LinearGradient, matchFont } from "@shopify/react-native-skia";
+import {
+  FontStyle,
+  LinearGradient,
+  listFontFamilies,
+  matchFont,
+  Skia,
+  useFont,
+} from "@shopify/react-native-skia";
 import useColors from "@/lib/hooks/useColors";
+import { SkFont } from "@shopify/react-native-skia";
 
 interface Props {
   sessions: ActivityType["sessions"];
@@ -40,10 +48,12 @@ const DATA = [
 
 export default function WorkDistributionChart({ sessions }: Props) {
   const { getColor } = useColors();
-  const font = matchFont();
+  const font = matchFont({ fontFamily: listFontFamilies()[0] });
+
+  console.log(font);
 
   return (
-    <Card className="mx-4 bg-white p-4">
+    <Card className="mx-4 p-4">
       <Text className="mb-2 text-lg font-medium text-foreground">
         Daily Work Distribution
       </Text>
@@ -52,11 +62,17 @@ export default function WorkDistributionChart({ sessions }: Props) {
           data={DATA}
           xKey="hour"
           yKeys={["duration"]}
-          domain={{ y: [-1, 61] }}
-          // xAxis={{ font, lineWidth: 0 }}
-          // yAxis={[{ lineWidth: 0 }]}
-          xAxis={{ font, labelColor: "#000" }}
-          yAxis={[{ labelColor: "#000" }]}
+          domain={{ x: [0, 23], y: [-1, 61] }}
+          padding={{ bottom: 10, top: 10 }}
+          xAxis={{
+            font,
+            lineWidth: 0,
+            tickValues: [4, 9, 14, 19],
+            lineColor: getColor("mutedForeground"),
+            labelColor: getColor("mutedForeground"),
+            formatXLabel: (x) => (x < 10 ? `0${x}:00` : `${x}:00`),
+          }}
+          yAxis={[{ lineWidth: 0 }]}
         >
           {({ points, chartBounds }) => (
             <>
