@@ -42,11 +42,9 @@ export default function ActivityMain({
 
           <View className="mx-4 mt-4 h-0.5 bg-muted"></View>
 
-          <CircularProgressCharts activity={activityData} />
+          {/* <WorkDistributionChart sessions={activityData.sessions} /> */}
 
-          <WorkDistributionChart sessions={activityData.sessions} />
-
-          <WorkSessionsList sessions={activityData.sessions} />
+          {/* <WorkSessionsList sessions={activityData.sessions} /> */}
         </ScrollView>
       )}
     />
