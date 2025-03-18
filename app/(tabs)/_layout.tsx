@@ -3,9 +3,11 @@ import { BrainIcon } from "@/lib/icons/BrainIcon";
 import { ActivityIcon } from "@/lib/icons/ActivityIcon";
 import { BarChartIcon } from "@/lib/icons/BarChartIcon";
 import { SettingsIcon } from "@/lib/icons/SettingsIcon";
-import getColor from "@/lib/getColor";
+import useColors from "@/lib/hooks/useColors";
 
 export default function TabLayout() {
+  const { getColor } = useColors();
+
   return (
     <Tabs
       screenOptions={{

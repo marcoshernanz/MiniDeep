@@ -1,4 +1,4 @@
-import { useColorScheme } from "./hooks/useColorScheme";
+import { useColorScheme } from "./useColorScheme";
 
 const rgbToColor = (r: number, g: number, b: number) => `rgb(${r}, ${g}, ${b})`;
 const rgbaToColor = (r: number, g: number, b: number, a: number) =>
@@ -57,17 +57,19 @@ const colors = {
 
 export type ColorName = keyof typeof colors.light;
 
-export default function getColor(
-  colorName: ColorName,
-  opacity?: number,
-): string {
+export default function useColors() {
   const { isDarkColorScheme } = useColorScheme();
   const colorScheme = isDarkColorScheme ? colors.dark : colors.light;
-  const [r, g, b] = colorScheme[colorName];
 
-  if (opacity !== undefined) {
-    return rgbaToColor(r, g, b, opacity);
-  }
+  const getColor = (colorName: ColorName, opacity?: number): string => {
+    const [r, g, b] = colorScheme[colorName];
 
-  return rgbToColor(r, g, b);
+    if (opacity !== undefined) {
+      return rgbaToColor(r, g, b, opacity);
+    }
+
+    return rgbToColor(r, g, b);
+  };
+
+  return { getColor };
 }

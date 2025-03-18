@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react-native";
 import { CartesianChart, useChartPressState } from "victory-native";
 import { Circle } from "@shopify/react-native-skia";
-import useColors from "@/lib/hooks/useColors";
 import { useFont } from "@shopify/react-native-skia";
+import useColors from "@/lib/hooks/useColors";
 
 type TimeRangeOption = "7d" | "1m" | "3m" | "1y" | "5y" | "all";
 
@@ -34,8 +34,8 @@ function formatTime(seconds: number): string {
 
 export default function DetailedStatisticsScreen() {
   const { stats, sessions, loading, refresh } = useWorkStats();
+  const { getColor } = useColors();
   const router = useRouter();
-  const colors = useColors();
 
   // Use a system font as a fallback until we can load a proper font
   const font = useFont(undefined, 12);
@@ -222,8 +222,8 @@ export default function DetailedStatisticsScreen() {
                   xAxis={{
                     font,
                     tickCount: 5,
-                    lineColor: colors.border,
-                    labelColor: colors.mutedForeground,
+                    lineColor: getColor("border"),
+                    labelColor: getColor("mutedForeground"),
                     formatXLabel: (timestamp) => {
                       const d = new Date(timestamp);
                       return `${d.getMonth() + 1}/${d.getDate()}`;
@@ -233,8 +233,8 @@ export default function DetailedStatisticsScreen() {
                     {
                       font,
                       tickCount: 5,
-                      lineColor: colors.border,
-                      labelColor: colors.mutedForeground,
+                      lineColor: getColor("border"),
+                      labelColor: getColor("mutedForeground"),
                       formatYLabel: (minutes) => `${Math.round(minutes / 60)}h`,
                     },
                   ]}
@@ -250,7 +250,9 @@ export default function DetailedStatisticsScreen() {
                             cy={point.y}
                             r={isCompleted ? 6 : 4}
                             color={
-                              isCompleted ? colors.primary : colors.secondary
+                              isCompleted
+                                ? getColor("primary")
+                                : getColor("secondary")
                             }
                           />
                         );
