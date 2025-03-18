@@ -1,22 +1,20 @@
-import useColors from "@/lib/hooks/useColors";
 import { Tabs } from "expo-router";
 import { BrainIcon } from "@/lib/icons/BrainIcon";
 import { ActivityIcon } from "@/lib/icons/ActivityIcon";
 import { BarChartIcon } from "@/lib/icons/BarChartIcon";
 import { SettingsIcon } from "@/lib/icons/SettingsIcon";
+import getColor from "@/lib/getColor";
 
 export default function TabLayout() {
-  const colors = useColors();
-
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.mutedForeground,
+        tabBarActiveTintColor: getColor("primary"),
+        tabBarInactiveTintColor: getColor("mutedForeground"),
         tabBarStyle: {
-          backgroundColor: colors.background,
-          borderColor: colors.border,
+          backgroundColor: getColor("background"),
+          borderColor: getColor("border"),
           borderTopWidth: 1,
         },
       }}
