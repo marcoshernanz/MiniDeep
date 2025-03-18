@@ -3,7 +3,6 @@ import ActivitySummary from "./ActivitySummary";
 import { ActivityType } from "@/lib/hooks/useActivity";
 import { isSameDay } from "date-fns";
 import Swipable from "../Swipable";
-import CircularProgressCharts from "./CircularProgressCharts";
 import WorkDistributionChart from "./WorkDistributionChart";
 import WorkSessionsList from "./WorkSessionsList";
 
@@ -40,9 +39,9 @@ export default function ActivityMain({
             totalSessions={activityData.totalSessions}
           />
 
-          <View className="mx-4 mt-4 h-0.5 bg-muted"></View>
+          <View className="mx-4 my-4 h-0.5 bg-muted"></View>
 
-          {/* <WorkDistributionChart sessions={activityData.sessions} /> */}
+          <WorkDistributionChart sessions={activityData.sessions} />
 
           {/* <WorkSessionsList sessions={activityData.sessions} /> */}
         </ScrollView>
