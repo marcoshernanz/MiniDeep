@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { Dimensions, View } from "react-native";
 import { Text } from "../ui/text";
 import { ActivityType } from "@/lib/hooks/useActivity";
 import { Card } from "../ui/card";
@@ -51,6 +51,8 @@ export default function WorkDistributionChart({ sessions }: Props) {
   const font = matchFont({ fontFamily: listFontFamilies()[0] });
   const { state, isActive } = useChartPressState({ x: 0, y: { duration: 0 } });
 
+  const { width } = Dimensions.get("window");
+
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
     transform: [{ translateX: state.x.position.value - 0.5 }],
@@ -63,6 +65,25 @@ export default function WorkDistributionChart({ sessions }: Props) {
       { translateY: state.y.duration.position.value - circleSize / 2 },
     ],
   }));
+  const tooltipStyle = useAnimatedStyle(() => ({
+    width: 100,
+    transform: [
+      {
+        translateX: Math.min(
+          width - 158,
+          Math.max(0, state.x.position.value - 50),
+        ),
+      },
+    ],
+  }));
+
+  const formatHour = (hour: number) => {
+    if (hour < 10) {
+      return `0${hour}:00`;
+    } else {
+      return `${hour}:00`;
+    }
+  };
 
   return (
     <Card className="mx-4 p-4">
@@ -83,7 +104,7 @@ export default function WorkDistributionChart({ sessions }: Props) {
             labelOffset: 5,
             lineColor: getColor("mutedForeground"),
             labelColor: getColor("mutedForeground"),
-            formatXLabel: (x) => (x < 10 ? `0${x}:00` : `${x}:00`),
+            formatXLabel: formatHour,
           }}
           yAxis={[{ lineWidth: 0 }]}
           chartPressState={state}
@@ -124,6 +145,17 @@ export default function WorkDistributionChart({ sessions }: Props) {
               className="absolute rounded-full bg-primary"
               style={circleStyle}
             ></Animated.View>
+            <Animated.View
+              className="absolute h-9 flex-row items-center justify-center rounded-md border border-primary bg-primary/20"
+              style={tooltipStyle}
+            >
+              <Text>{formatHour(state.x.value.value)}</Text>
+              <Text className="mx-1 font-bold">&bull;</Text>
+              <Text className="font-semibold">
+                {state.y.duration.value.value}
+              </Text>
+              <Text className="text-sm">min</Text>
+            </Animated.View>
           </>
         )}
       </View>
