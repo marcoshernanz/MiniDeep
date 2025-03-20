@@ -5,13 +5,16 @@ import { ActivityType } from "@/lib/hooks/useActivity";
 import { Card } from "../ui/card";
 import { CartesianChart, Area, Line, useChartPressState } from "victory-native";
 import {
-  Circle,
   LinearGradient,
   listFontFamilies,
   matchFont,
 } from "@shopify/react-native-skia";
 import useColors from "@/lib/hooks/useColors";
-import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+} from "react-native-reanimated";
+import { ReText } from "react-native-redash";
 
 interface Props {
   sessions: ActivityType["sessions"];
@@ -44,6 +47,14 @@ const DATA = [
   { duration: 0, hour: 23 },
 ];
 
+const formatHour = (hour: number) => {
+  if (hour < 10) {
+    return `0${hour}:00`;
+  } else {
+    return `${hour}:00`;
+  }
+};
+
 const circleSize = 12;
 
 export default function WorkDistributionChart({ sessions }: Props) {
@@ -52,6 +63,9 @@ export default function WorkDistributionChart({ sessions }: Props) {
   const { state, isActive } = useChartPressState({ x: 0, y: { duration: 0 } });
 
   const { width } = Dimensions.get("window");
+
+  const time = useDerivedValue(() => `${state.x.value.value}:00`);
+  const duration = useDerivedValue(() => String(state.y.duration.value.value));
 
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
@@ -77,14 +91,6 @@ export default function WorkDistributionChart({ sessions }: Props) {
     ],
   }));
 
-  const formatHour = (hour: number) => {
-    if (hour < 10) {
-      return `0${hour}:00`;
-    } else {
-      return `${hour}:00`;
-    }
-  };
-
   return (
     <Card className="mx-4 p-4">
       <Text className="mb-2 text-xl font-medium text-foreground">
@@ -108,6 +114,16 @@ export default function WorkDistributionChart({ sessions }: Props) {
           }}
           yAxis={[{ lineWidth: 0 }]}
           chartPressState={state}
+          // renderOutside={() => (
+          // <SkiaText
+          //   x={state.x.position}
+          //   y={state.y.duration.position}
+          //   text={duration}
+          //   font={font}
+          //   color="white"
+          // />
+
+          // )}
         >
           {({ points, chartBounds }) => (
             <>
@@ -145,15 +161,17 @@ export default function WorkDistributionChart({ sessions }: Props) {
               className="absolute rounded-full bg-primary"
               style={circleStyle}
             ></Animated.View>
+
             <Animated.View
               className="absolute h-9 flex-row items-center justify-center rounded-md border border-primary bg-primary/20"
               style={tooltipStyle}
             >
-              <Text>{formatHour(state.x.value.value)}</Text>
+              <ReText text={time} style={{ color: getColor("foreground") }} />
               <Text className="mx-1 font-bold">&bull;</Text>
-              <Text className="font-semibold">
-                {state.y.duration.value.value}
-              </Text>
+              <ReText
+                text={duration}
+                style={{ color: getColor("foreground"), fontWeight: 600 }}
+              />
               <Text className="text-sm">min</Text>
             </Animated.View>
           </>
