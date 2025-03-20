@@ -114,16 +114,6 @@ export default function WorkDistributionChart({ sessions }: Props) {
           }}
           yAxis={[{ lineWidth: 0 }]}
           chartPressState={state}
-          // renderOutside={() => (
-          // <SkiaText
-          //   x={state.x.position}
-          //   y={state.y.duration.position}
-          //   text={duration}
-          //   font={font}
-          //   color="white"
-          // />
-
-          // )}
         >
           {({ points, chartBounds }) => (
             <>
