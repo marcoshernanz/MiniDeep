@@ -45,7 +45,7 @@ export default function ActivityMain({
             timeDistribution={activityData.timeDistribution}
           />
 
-          {/* <WorkSessionsList sessions={activityData.sessions} /> */}
+          <WorkSessionsList sessions={activityData.sessions} />
         </ScrollView>
       )}
     />

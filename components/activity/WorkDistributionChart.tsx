@@ -79,7 +79,7 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
           xKey="time"
           yKeys={["duration"]}
           domain={{ x: [0, 23], y: [-1, 61] }}
-          padding={{ bottom: 12, top: 40 }}
+          padding={{ bottom: 12, top: 32 }}
           xAxis={{
             font,
             lineWidth: 0,
@@ -98,12 +98,12 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
                 points={points.duration}
                 color={getColor("primary")}
                 strokeWidth={1}
-                curveType="natural"
+                curveType="step"
               />
               <Area
                 points={points.duration}
                 y0={chartBounds.bottom}
-                curveType="natural"
+                curveType="step"
                 opacity={0.5}
               >
                 <LinearGradient
