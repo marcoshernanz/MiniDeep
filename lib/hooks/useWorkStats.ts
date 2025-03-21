@@ -101,9 +101,9 @@ export const useWorkStats = () => {
     }
   }, []);
 
-  useEffect(() => {
-    loadStats();
-  }, [loadStats]);
+  // useEffect(() => {
+  //   loadStats();
+  // }, [loadStats]);
 
   return {
     stats,

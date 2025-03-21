@@ -17,35 +17,8 @@ import Animated, {
 import { ReText } from "react-native-redash";
 
 interface Props {
-  sessions: ActivityType["sessions"];
+  timeDistribution: ActivityType["timeDistribution"];
 }
-
-const DATA = [
-  { duration: 0, hour: 0 },
-  { duration: 0, hour: 1 },
-  { duration: 0, hour: 2 },
-  { duration: 0, hour: 3 },
-  { duration: 0, hour: 4 },
-  { duration: 30, hour: 5 },
-  { duration: 60, hour: 6 },
-  { duration: 60, hour: 7 },
-  { duration: 30, hour: 8 },
-  { duration: 0, hour: 9 },
-  { duration: 0, hour: 10 },
-  { duration: 0, hour: 11 },
-  { duration: 0, hour: 12 },
-  { duration: 20, hour: 13 },
-  { duration: 60, hour: 14 },
-  { duration: 40, hour: 15 },
-  { duration: 0, hour: 16 },
-  { duration: 0, hour: 17 },
-  { duration: 0, hour: 18 },
-  { duration: 0, hour: 19 },
-  { duration: 0, hour: 20 },
-  { duration: 0, hour: 21 },
-  { duration: 0, hour: 22 },
-  { duration: 0, hour: 23 },
-];
 
 const formatHour = (hour: number) => {
   if (hour < 10) {
@@ -57,7 +30,7 @@ const formatHour = (hour: number) => {
 
 const circleSize = 12;
 
-export default function WorkDistributionChart({ sessions }: Props) {
+export default function WorkDistributionChart({ timeDistribution }: Props) {
   const { getColor } = useColors();
   const font = matchFont({ fontFamily: listFontFamilies()[0] });
   const { state, isActive } = useChartPressState({ x: 0, y: { duration: 0 } });
@@ -102,8 +75,8 @@ export default function WorkDistributionChart({ sessions }: Props) {
       </Text>
       <View className="h-72">
         <CartesianChart
-          data={DATA}
-          xKey="hour"
+          data={timeDistribution}
+          xKey="time"
           yKeys={["duration"]}
           domain={{ x: [0, 23], y: [-1, 61] }}
           padding={{ bottom: 12, top: 40 }}
