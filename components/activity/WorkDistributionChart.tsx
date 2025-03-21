@@ -64,7 +64,11 @@ export default function WorkDistributionChart({ sessions }: Props) {
 
   const { width } = Dimensions.get("window");
 
-  const time = useDerivedValue(() => `${state.x.value.value}:00`);
+  const time = useDerivedValue(() =>
+    state.x.value.value < 10
+      ? `0${state.x.value.value}:00`
+      : `${state.x.value.value}:00`,
+  );
   const duration = useDerivedValue(() => String(state.y.duration.value.value));
 
   const lineStyle = useAnimatedStyle(() => ({
