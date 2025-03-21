@@ -79,7 +79,7 @@ export default function DetailedStatisticsScreen() {
 
     // Filter and format sessions
     return sessions
-      .filter((session) => new Date(session.startTime) >= startDate)
+      .filter((session) => session.startDate >= startDate)
       .map((session) => {
         // Calculate session duration in minutes
         const durationMinutes = session.events.reduce((total, event) => {
@@ -90,12 +90,12 @@ export default function DetailedStatisticsScreen() {
         }, 0);
 
         return {
-          timestamp: session.startTime, // Use timestamp as x-axis value
+          date: session.startDate,
           duration: durationMinutes, // Duration in minutes
           completed: session.completed ? 1 : 0,
         };
       })
-      .sort((a, b) => a.timestamp - b.timestamp);
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [sessions, selectedRange]);
 
   // Calculate total time and average session time
@@ -215,7 +215,7 @@ export default function DetailedStatisticsScreen() {
               <View className="h-72 w-full">
                 <CartesianChart
                   data={chartData}
-                  xKey="timestamp"
+                  xKey="date"
                   yKeys={["duration"]}
                   chartPressState={tooltipState}
                   padding={{ left: 40, bottom: 40, right: 20, top: 20 }}

@@ -29,13 +29,15 @@ export default function WorkSessionsList({ sessions }: WorkSessionsListProps) {
       <Text className="mb-2 font-medium text-foreground">Sessions</Text>
       <FlatList
         data={sessions}
-        keyExtractor={(item, index) => `session-${item.startTime}-${index}`}
+        keyExtractor={(item, index) =>
+          `session-${item.startDate.getTime()}-${index}`
+        }
         scrollEnabled={false}
         renderItem={({ item }) => (
           <View className="border-b border-border py-3">
             <View className="flex-row items-center justify-between">
               <Text className="font-medium text-foreground">
-                {format(item.startTime, "h:mm a")}
+                {format(item.startDate.getTime(), "h:mm a")}
               </Text>
               <View className="flex-row items-center">
                 <Text className="mr-2 text-foreground">

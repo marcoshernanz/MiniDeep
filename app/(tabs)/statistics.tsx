@@ -10,7 +10,6 @@ import CompletionRateChart from "@/components/statistics/CompletionRateChart";
 import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { loadDummyData } from "@/lib/utils/dummyData";
 import { AlertCircle } from "lucide-react-native";
 
 function formatTime(seconds: number): string {
@@ -37,7 +36,6 @@ export default function StatsScreen() {
   const handleLoadDummyData = async () => {
     setIsLoadingDummy(true);
     try {
-      await loadDummyData();
       await refresh();
     } finally {
       setIsLoadingDummy(false);
