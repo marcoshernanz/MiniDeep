@@ -27,3 +27,4 @@
 - [ ] 00 padding in timer picker.
 - [ ] Not allow 00:00.
 - [ ] Improved settings screen.
+- [ ] Sync scroll in activity screen.
