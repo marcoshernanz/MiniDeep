@@ -95,7 +95,7 @@ export const useWorkStats = () => {
         dailyStats,
       });
     } catch (error) {
-      console.error("Error loading work stats:", error);
+      // console.error("Error loading work stats:", error);
     } finally {
       setLoading(false);
     }

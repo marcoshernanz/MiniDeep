@@ -45,6 +45,8 @@ export default function ActivityMain({
             timeDistribution={activityData.timeDistribution}
           />
 
+          <View className="mx-4 my-4 h-0.5 bg-muted"></View>
+
           <WorkSessionsList sessions={activityData.sessions} />
         </ScrollView>
       )}

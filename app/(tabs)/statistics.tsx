@@ -42,8 +42,6 @@ export default function StatsScreen() {
     }
   };
 
-  return null;
-
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-background">
