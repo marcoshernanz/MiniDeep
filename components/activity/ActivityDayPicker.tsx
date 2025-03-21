@@ -34,7 +34,7 @@ export default function ActivityDayPicker({
       initialIndex={currentIndex}
       currentIndex={currentIndex}
       renderItem={({ item: week }) => (
-        <View className="h-14 flex-row items-center justify-between px-4">
+        <View className="h-12 flex-row items-center justify-between px-4">
           {week.map((day, index) => (
             <TouchableOpacity
               key={`${day?.toDateString()}-${index}`}

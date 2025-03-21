@@ -3,6 +3,8 @@ import ActivitySummary from "./ActivitySummary";
 import { ActivityType } from "@/lib/hooks/useActivity";
 import { isSameDay } from "date-fns";
 import Swipable from "../Swipable";
+import WorkDistributionChart from "./WorkDistributionChart";
+import WorkSessionsList from "./WorkSessionsList";
 
 interface Props {
   activity: ActivityType[];
@@ -30,14 +32,22 @@ export default function ActivityMain({
       initialIndex={currentIndex}
       currentIndex={currentIndex}
       onIndexChange={(index) => setSelectedDate(activity[index].date)}
-      renderItem={({ item: activity }) => (
-        <ScrollView>
+      renderItem={({ item: activityData }) => (
+        <ScrollView showsVerticalScrollIndicator={false}>
           <ActivitySummary
-            totalTime={activity.totalWorkTime}
-            totalSessions={activity.totalSessions}
+            totalTime={activityData.totalWorkTime}
+            totalSessions={activityData.totalSessions}
           />
 
-          <View className="mx-4 mt-4 h-0.5 bg-muted"></View>
+          <View className="mx-4 my-4 h-0.5 bg-muted"></View>
+
+          <WorkDistributionChart
+            timeDistribution={activityData.timeDistribution}
+          />
+
+          <View className="mx-4 my-4 h-0.5 bg-muted"></View>
+
+          <WorkSessionsList sessions={activityData.sessions} />
         </ScrollView>
       )}
     />

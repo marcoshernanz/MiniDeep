@@ -25,7 +25,7 @@ export default function ActivityScreen() {
       <SafeAreaView className="flex-1 bg-background py-6">
         <ActivityHeader selectedDate={selectedDate} />
 
-        <View className="mx-4 mb-2 mt-4 h-0.5 bg-muted"></View>
+        <View className="mx-4 my-4 h-0.5 bg-muted"></View>
 
         <ActivityDayPicker
           days={activity.map((a) => a.date)}
@@ -33,7 +33,7 @@ export default function ActivityScreen() {
           setSelectedDate={setSelectedDate}
         />
 
-        <View className="mx-4 mb-4 mt-2 h-0.5 bg-muted"></View>
+        <View className="mx-4 my-4 h-0.5 bg-muted"></View>
 
         <View className="flex-1">
           <ActivityMain

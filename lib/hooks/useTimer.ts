@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { AppState, Platform, Vibration } from "react-native";
+import { AppState, Vibration } from "react-native";
 import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
@@ -292,7 +292,7 @@ export default function useTimer() {
       state: "inactive",
       remainingTime: 0,
       initialDuration: 0,
-      timestamp: Date.now(),
+      date: new Date(),
       sessionId: "",
     });
 
@@ -309,7 +309,7 @@ export default function useTimer() {
         state,
         remainingTime: timerRef.current.totalSeconds,
         initialDuration: timerRef.current.initialDuration,
-        timestamp: Date.now(),
+        date: new Date(),
         sessionId: timerRef.current.sessionId,
       });
 
@@ -339,7 +339,7 @@ export default function useTimer() {
 
       if (savedState.state === "running") {
         const elapsedSeconds = Math.floor(
-          (Date.now() - savedState.timestamp) / 1000,
+          (Date.now() - savedState.date.getTime()) / 1000,
         );
         remainingTime = Math.max(0, remainingTime - elapsedSeconds);
       }

@@ -2,8 +2,8 @@ import { Dispatch, SetStateAction } from "react";
 import { FlatList, View } from "react-native";
 import { Text } from "./text";
 import { LinearGradient } from "expo-linear-gradient";
-import useColors from "@/lib/hooks/useColors";
 import cn from "@/lib/utils/cn";
+import useColors from "@/lib/hooks/useColors";
 
 interface Props {
   minValue: number;
@@ -24,7 +24,7 @@ export default function WheelNumberPicker({
   number,
   setNumber,
 }: Props) {
-  const colors = useColors();
+  const { getColor } = useColors();
 
   const itemHeight = containerHeight / itemsPerContainer;
 
@@ -76,7 +76,7 @@ export default function WheelNumberPicker({
         )}
       />
       <LinearGradient
-        colors={[colors.background, "transparent", colors.background]}
+        colors={[getColor("background"), "transparent", getColor("background")]}
         className="pointer-events-none absolute inset-0"
       />
     </View>

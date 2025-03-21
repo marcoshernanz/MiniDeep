@@ -1,59 +1,75 @@
 import { useColorScheme } from "./useColorScheme";
 
 const rgbToColor = (r: number, g: number, b: number) => `rgb(${r}, ${g}, ${b})`;
+const rgbaToColor = (r: number, g: number, b: number, a: number) =>
+  `rgba(${r}, ${g}, ${b}, ${a})`;
 
 const colors = {
   light: {
-    background: rgbToColor(255, 255, 255),
-    foreground: rgbToColor(2, 8, 23),
-    card: rgbToColor(255, 255, 255),
-    cardForeground: rgbToColor(2, 8, 23),
-    popover: rgbToColor(255, 255, 255),
-    popoverForeground: rgbToColor(2, 8, 23),
-    primary: rgbToColor(234, 88, 12),
-    primaryForeground: rgbToColor(248, 250, 252),
-    secondary: rgbToColor(241, 245, 249),
-    secondaryForeground: rgbToColor(15, 23, 42),
-    muted: rgbToColor(241, 245, 249),
-    mutedForeground: rgbToColor(100, 116, 139),
-    accent: rgbToColor(241, 245, 249),
-    accentForeground: rgbToColor(15, 23, 42),
-    destructive: rgbToColor(239, 68, 68),
-    destructiveForeground: rgbToColor(248, 250, 252),
-    success: rgbToColor(34, 197, 94),
-    successForeground: rgbToColor(248, 250, 252),
-    link: rgbToColor(37, 99, 235),
-    border: rgbToColor(226, 232, 240),
-    input: rgbToColor(226, 232, 240),
-    ring: rgbToColor(234, 88, 12),
+    background: [255, 255, 255],
+    foreground: [2, 8, 23],
+    card: [255, 255, 255],
+    cardForeground: [2, 8, 23],
+    popover: [255, 255, 255],
+    popoverForeground: [2, 8, 23],
+    primary: [234, 88, 12],
+    primaryForeground: [248, 250, 252],
+    secondary: [241, 245, 249],
+    secondaryForeground: [15, 23, 42],
+    muted: [241, 245, 249],
+    mutedForeground: [100, 116, 139],
+    accent: [241, 245, 249],
+    accentForeground: [15, 23, 42],
+    destructive: [239, 68, 68],
+    destructiveForeground: [248, 250, 252],
+    success: [34, 197, 94],
+    successForeground: [248, 250, 252],
+    link: [37, 99, 235],
+    border: [226, 232, 240],
+    input: [226, 232, 240],
+    ring: [234, 88, 12],
   },
   dark: {
-    background: rgbToColor(2, 8, 23),
-    foreground: rgbToColor(248, 250, 252),
-    card: rgbToColor(2, 8, 23),
-    cardForeground: rgbToColor(248, 250, 252),
-    popover: rgbToColor(2, 8, 23),
-    popoverForeground: rgbToColor(248, 250, 252),
-    primary: rgbToColor(249, 115, 22),
-    primaryForeground: rgbToColor(15, 23, 42),
-    secondary: rgbToColor(30, 41, 59),
-    secondaryForeground: rgbToColor(248, 250, 252),
-    muted: rgbToColor(30, 41, 59),
-    mutedForeground: rgbToColor(148, 163, 184),
-    accent: rgbToColor(30, 41, 59),
-    accentForeground: rgbToColor(248, 250, 252),
-    destructive: rgbToColor(127, 29, 29),
-    destructiveForeground: rgbToColor(248, 250, 252),
-    success: rgbToColor(20, 83, 45),
-    successForeground: rgbToColor(248, 250, 252),
-    link: rgbToColor(59, 130, 246),
-    border: rgbToColor(30, 41, 59),
-    input: rgbToColor(30, 41, 59),
-    ring: rgbToColor(194, 65, 12),
+    background: [2, 8, 23],
+    foreground: [248, 250, 252],
+    card: [2, 8, 23],
+    cardForeground: [248, 250, 252],
+    popover: [2, 8, 23],
+    popoverForeground: [248, 250, 252],
+    primary: [249, 115, 22],
+    primaryForeground: [15, 23, 42],
+    secondary: [30, 41, 59],
+    secondaryForeground: [248, 250, 252],
+    muted: [30, 41, 59],
+    mutedForeground: [148, 163, 184],
+    accent: [30, 41, 59],
+    accentForeground: [248, 250, 252],
+    destructive: [127, 29, 29],
+    destructiveForeground: [248, 250, 252],
+    success: [20, 83, 45],
+    successForeground: [248, 250, 252],
+    link: [59, 130, 246],
+    border: [30, 41, 59],
+    input: [30, 41, 59],
+    ring: [194, 65, 12],
   },
-};
+} as const;
+
+export type ColorName = keyof typeof colors.light;
 
 export default function useColors() {
   const { isDarkColorScheme } = useColorScheme();
-  return isDarkColorScheme ? colors.dark : colors.light;
+  const colorScheme = isDarkColorScheme ? colors.dark : colors.light;
+
+  const getColor = (colorName: ColorName, opacity?: number): string => {
+    const [r, g, b] = colorScheme[colorName];
+
+    if (opacity !== undefined) {
+      return rgbaToColor(r, g, b, opacity);
+    }
+
+    return rgbToColor(r, g, b);
+  };
+
+  return { getColor };
 }

@@ -29,19 +29,19 @@ export const useWorkStats = () => {
     if (session.events.length === 0) return 0;
 
     let workTime = 0;
-    let lastStartTime: number | null = null;
+    let lastStartDate: Date | null = null;
 
     for (const event of session.events) {
       if (event.action === "start" || event.action === "resume") {
-        lastStartTime = event.timestamp;
+        lastStartDate = event.date;
       } else if (
         (event.action === "pause" ||
           event.action === "stop" ||
           event.action === "complete") &&
-        lastStartTime
+        lastStartDate
       ) {
-        workTime += (event.timestamp - lastStartTime) / 1000;
-        lastStartTime = null;
+        workTime += (event.date.getTime() - lastStartDate.getTime()) / 1000;
+        lastStartDate = null;
       }
     }
 
@@ -52,7 +52,7 @@ export const useWorkStats = () => {
     const dailyMap = new Map<string, number>();
 
     sessions.forEach((session) => {
-      const date = new Date(session.startTime).toISOString().split("T")[0];
+      const date = session.startDate.toISOString().split("T")[0];
       const sessionTime = calculateWorkTime(session);
 
       const currentTime = dailyMap.get(date) || 0;
@@ -82,7 +82,7 @@ export const useWorkStats = () => {
 
       const lastSessionDate =
         allSessions.length > 0
-          ? new Date(Math.max(...allSessions.map((s) => s.startTime)))
+          ? new Date(Math.max(...allSessions.map((s) => s.startDate.getTime())))
           : null;
 
       const dailyStats = generateDailyStats(allSessions);
@@ -95,7 +95,7 @@ export const useWorkStats = () => {
         dailyStats,
       });
     } catch (error) {
-      console.error("Error loading work stats:", error);
+      // console.error("Error loading work stats:", error);
     } finally {
       setLoading(false);
     }
