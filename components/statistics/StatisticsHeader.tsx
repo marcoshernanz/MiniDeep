@@ -3,8 +3,8 @@ import { Text } from "../ui/text";
 
 export default function StatisticsHeader() {
   return (
-    <View className="px-4">
-      <Text className="text-3xl font-bold text-foreground">Activity</Text>
+    <View className="mb-4 px-4">
+      <Text className="text-3xl font-bold text-foreground">Statistics</Text>
     </View>
   );
 }
