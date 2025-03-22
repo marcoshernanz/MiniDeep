@@ -1,5 +1,6 @@
 import StatisticsHeader from "@/components/statistics/StatisticsHeader";
 import TimeFrameSelector from "@/components/statistics/TimeFrameSelector";
+import TimeWorkedChart from "@/components/statistics/TimeWorkedChart";
 import { useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,6 +21,7 @@ export default function StatsScreen() {
           selectedTimeFrame={selectedTimeFrame}
           setSelectedTimeFrame={setSelectedTimeFrame}
         />
+        <TimeWorkedChart />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
