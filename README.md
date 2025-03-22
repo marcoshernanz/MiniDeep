@@ -28,3 +28,4 @@
 - [ ] Not allow 00:00.
 - [ ] Improved settings screen.
 - [ ] Sync scroll in activity screen.
+- [ ] SafeAreaView only for top part
