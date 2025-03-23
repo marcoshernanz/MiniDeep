@@ -89,7 +89,7 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
             labelColor: getColor("mutedForeground"),
             formatXLabel: formatHour,
           }}
-          yAxis={[{ lineWidth: 0 }]}
+          yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
           chartPressState={state}
         >
           {({ points, chartBounds }) => (
