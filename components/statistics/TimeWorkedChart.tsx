@@ -6,7 +6,13 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { ReText } from "react-native-redash";
-import { Area, CartesianChart, Line, useChartPressState } from "victory-native";
+import {
+  Area,
+  CartesianChart,
+  Line,
+  useChartPressState,
+  useChartTransformState,
+} from "victory-native";
 
 const data = [
   { date: "2023-10-01", time: 3600 },
@@ -29,26 +35,27 @@ const circleSize = 12;
 
 export default function TimeWorkedChart() {
   const { getColor } = useColors();
-  const { state, isActive } = useChartPressState({
+  const { state: pressState, isActive } = useChartPressState({
     x: "2023-10-01",
     y: { time: 0 },
   });
+  const { state: transformState } = useChartTransformState();
 
   const { width } = Dimensions.get("window");
 
-  const date = useDerivedValue(() => state.x.value.value);
-  const time = useDerivedValue(() => String(state.y.time.value.value));
+  const date = useDerivedValue(() => pressState.x.value.value);
+  const time = useDerivedValue(() => String(pressState.y.time.value.value));
 
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
-    transform: [{ translateX: state.x.position.value - 0.5 }],
+    transform: [{ translateX: pressState.x.position.value - 0.5 }],
   }));
   const circleStyle = useAnimatedStyle(() => ({
     height: circleSize,
     width: circleSize,
     transform: [
-      { translateX: state.x.position.value - circleSize / 2 },
-      { translateY: state.y.time.position.value - circleSize / 2 },
+      { translateX: pressState.x.position.value - circleSize / 2 },
+      { translateY: pressState.y.time.position.value - circleSize / 2 },
     ],
   }));
   const tooltipStyle = useAnimatedStyle(() => ({
@@ -57,7 +64,7 @@ export default function TimeWorkedChart() {
       {
         translateX: Math.min(
           width - 158,
-          Math.max(0, state.x.position.value - 50),
+          Math.max(0, pressState.x.position.value - 50),
         ),
       },
     ],
@@ -70,7 +77,18 @@ export default function TimeWorkedChart() {
         xKey="date"
         yKeys={["time"]}
         domain={{ y: [0] }}
-        chartPressState={state}
+        viewport={{ x: [0, 6] }}
+        chartPressState={pressState}
+        chartPressConfig={{
+          pan: {
+            activateAfterLongPress: 150,
+          },
+        }}
+        transformState={transformState}
+        transformConfig={{
+          pan: { dimensions: "x" },
+          pinch: { enabled: false },
+        }}
       >
         {({ points, chartBounds }) => (
           <>
