@@ -2,14 +2,19 @@ import useColors from "@/lib/hooks/useColors";
 import { LinearGradient } from "@shopify/react-native-skia";
 import { Dimensions, View } from "react-native";
 import Animated, {
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 import { ReText } from "react-native-redash";
 import {
   Area,
   CartesianChart,
+  getTransformComponents,
   Line,
+  setTranslate,
   useChartPressState,
   useChartTransformState,
 } from "victory-native";
@@ -29,9 +34,11 @@ const data = [
   { date: "2023-10-12", time: 7200 },
   { date: "2023-10-13", time: 10800 },
   { date: "2023-10-14", time: 14400 },
+  { date: "2023-10-15", time: 14400 },
 ];
 
 const circleSize = 12;
+const numDots = 7;
 
 export default function TimeWorkedChart() {
   const { getColor } = useColors();
@@ -70,14 +77,48 @@ export default function TimeWorkedChart() {
     ],
   }));
 
+  const xPan = useSharedValue(0);
+
+  useAnimatedReaction(
+    () => transformState.panActive.value,
+    (currentValue, previousValue) => {
+      if (currentValue !== previousValue) {
+        const { translateX } = getTransformComponents(
+          transformState.matrix.value,
+        );
+
+        xPan.value = translateX;
+
+        const interval = width / numDots;
+        const minPan = 0;
+        const maxPan = interval * (data.length - numDots - 1);
+        const translate = minPan + Math.round(xPan.value / interval) * interval;
+        const fixedTranslate = Math.max(minPan, Math.min(maxPan, translate));
+
+        xPan.value = withTiming(fixedTranslate);
+      }
+    },
+  );
+
+  useAnimatedReaction(
+    () => xPan.value,
+    (xPan) => {
+      transformState.matrix.value = setTranslate(
+        transformState.matrix.value,
+        xPan,
+        0,
+      );
+    },
+  );
+
   return (
-    <View className="flex-1">
+    <View className="mx-4 flex-1">
       <CartesianChart
         data={data}
         xKey="date"
         yKeys={["time"]}
-        domain={{ y: [0] }}
-        viewport={{ x: [0, 6] }}
+        domain={{ y: [0], x: [0, data.length - 1] }}
+        viewport={{ x: [data.length - numDots - 1, data.length - 1] }}
         chartPressState={pressState}
         chartPressConfig={{
           pan: {
@@ -89,6 +130,8 @@ export default function TimeWorkedChart() {
           pan: { dimensions: "x" },
           pinch: { enabled: false },
         }}
+        xAxis={{ lineWidth: 0, labelPosition: "inset" }}
+        yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
       >
         {({ points, chartBounds }) => (
           <>
@@ -96,7 +139,8 @@ export default function TimeWorkedChart() {
               points={points.time}
               color={getColor("primary")}
               strokeWidth={1}
-              curveType="natural"
+              // curveType="natural"
+              curveType="step"
             />
             <Area
               points={points.time}
