@@ -14,6 +14,7 @@ import {
   CartesianChart,
   getTransformComponents,
   Line,
+  Scatter,
   setTranslate,
   useChartPressState,
   useChartTransformState,
@@ -34,10 +35,24 @@ const data = [
   { date: "2023-10-12", time: 7200 },
   { date: "2023-10-13", time: 10800 },
   { date: "2023-10-14", time: 14400 },
-  { date: "2023-10-15", time: 14400 },
+  { date: "2023-10-15", time: 21600 },
+  { date: "2023-10-16", time: 28800 },
+  { date: "2023-10-17", time: 3600 },
+  { date: "2023-10-18", time: 18000 },
+  { date: "2023-10-19", time: 7200 },
+  { date: "2023-10-20", time: 10800 },
+  { date: "2023-10-21", time: 25200 },
+  { date: "2023-10-22", time: 14400 },
+  { date: "2023-10-23", time: 21600 },
+  { date: "2023-10-24", time: 28800 },
+  { date: "2023-10-25", time: 3600 },
+  { date: "2023-10-26", time: 18000 },
+  { date: "2023-10-27", time: 7200 },
+  { date: "2023-10-28", time: 10800 },
+  { date: "2023-10-29", time: 25200 },
+  { date: "2023-10-30", time: 14400 },
 ];
 
-const circleSize = 12;
 const numDots = 7;
 
 export default function TimeWorkedChart() {
@@ -49,21 +64,16 @@ export default function TimeWorkedChart() {
   const { state: transformState } = useChartTransformState();
 
   const { width } = Dimensions.get("window");
+  const margin = 16;
 
   const date = useDerivedValue(() => pressState.x.value.value);
   const time = useDerivedValue(() => String(pressState.y.time.value.value));
 
+  // console.log(pressState.x.position.value);
+
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
     transform: [{ translateX: pressState.x.position.value - 0.5 }],
-  }));
-  const circleStyle = useAnimatedStyle(() => ({
-    height: circleSize,
-    width: circleSize,
-    transform: [
-      { translateX: pressState.x.position.value - circleSize / 2 },
-      { translateY: pressState.y.time.position.value - circleSize / 2 },
-    ],
   }));
   const tooltipStyle = useAnimatedStyle(() => ({
     width: 100,
@@ -89,7 +99,7 @@ export default function TimeWorkedChart() {
 
         xPan.value = translateX;
 
-        const interval = width / numDots;
+        const interval = (width - margin * 2) / numDots;
         const minPan = 0;
         const maxPan = interval * (data.length - numDots - 1);
         const translate = minPan + Math.round(xPan.value / interval) * interval;
@@ -112,7 +122,12 @@ export default function TimeWorkedChart() {
   );
 
   return (
-    <View className="mx-4 flex-1">
+    <View
+      className="flex-1"
+      style={{
+        marginHorizontal: margin,
+      }}
+    >
       <CartesianChart
         data={data}
         xKey="date"
@@ -139,13 +154,12 @@ export default function TimeWorkedChart() {
               points={points.time}
               color={getColor("primary")}
               strokeWidth={1}
-              // curveType="natural"
-              curveType="step"
+              curveType="bumpX"
             />
             <Area
               points={points.time}
               y0={chartBounds.bottom}
-              curveType="natural"
+              curveType="bumpX"
               opacity={0.5}
             >
               <LinearGradient
@@ -154,6 +168,19 @@ export default function TimeWorkedChart() {
                 colors={[getColor("primary"), getColor("primary", 0.3)]}
               />
             </Area>
+            <Scatter
+              points={points.time}
+              radius={6}
+              style="stroke"
+              color={getColor("primary")}
+              strokeWidth={2}
+            />
+            <Scatter
+              points={points.time}
+              radius={6}
+              style="fill"
+              color={getColor("background")}
+            />
           </>
         )}
       </CartesianChart>
@@ -166,10 +193,6 @@ export default function TimeWorkedChart() {
               style={lineStyle}
             ></Animated.View>
           </View>
-          <Animated.View
-            className="absolute rounded-full bg-primary"
-            style={circleStyle}
-          ></Animated.View>
 
           <Animated.View
             className="absolute h-9 flex-row items-center justify-center rounded-md border border-primary bg-primary/20"
