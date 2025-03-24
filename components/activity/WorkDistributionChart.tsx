@@ -98,12 +98,12 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
                 points={points.duration}
                 color={getColor("primary")}
                 strokeWidth={1}
-                curveType="step"
+                curveType="bumpX"
               />
               <Area
                 points={points.duration}
                 y0={chartBounds.bottom}
-                curveType="step"
+                curveType="bumpX"
                 opacity={0.5}
               >
                 <LinearGradient
