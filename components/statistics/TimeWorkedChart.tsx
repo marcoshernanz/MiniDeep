@@ -1,24 +1,13 @@
 import useColors from "@/lib/hooks/useColors";
+import useChart from "@/lib/hooks/useChart";
 import { LinearGradient } from "@shopify/react-native-skia";
-import { Dimensions, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
-  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
-  useSharedValue,
-  withTiming,
 } from "react-native-reanimated";
 import { ReText } from "react-native-redash";
-import {
-  Area,
-  CartesianChart,
-  getTransformComponents,
-  Line,
-  Scatter,
-  setTranslate,
-  useChartPressState,
-  useChartTransformState,
-} from "victory-native";
+import { Area, CartesianChart, Line, Scatter } from "victory-native";
 
 const data = [
   { date: "2023-10-01", time: 3600 },
@@ -53,73 +42,38 @@ const data = [
   { date: "2023-10-30", time: 14400 },
 ];
 
-const numDots = 7;
+const margin = 16;
 
 export default function TimeWorkedChart() {
   const { getColor } = useColors();
-  const { state: pressState, isActive } = useChartPressState({
-    x: "2023-10-01",
-    y: { time: 0 },
+
+  // Use our custom hook instead of separate hooks and transformations
+  const { isActive, chartConfig } = useChart({
+    data,
+    numDotsVisible: 7,
+    initialPressState: { x: "2023-10-01", y: { time: 0 } },
+    margin,
   });
-  const { state: transformState } = useChartTransformState();
 
-  const { width } = Dimensions.get("window");
-  const margin = 16;
+  // const date = useDerivedValue(() => pressState.x.value.value);
+  // const time = useDerivedValue(() => String(pressState.y.time.value.value));
 
-  const date = useDerivedValue(() => pressState.x.value.value);
-  const time = useDerivedValue(() => String(pressState.y.time.value.value));
+  // const lineStyle = useAnimatedStyle(() => ({
+  //   width: 1,
+  //   transform: [{ translateX: pressState.x.position.value - 0.5 }],
+  // }));
 
-  // console.log(pressState.x.position.value);
-
-  const lineStyle = useAnimatedStyle(() => ({
-    width: 1,
-    transform: [{ translateX: pressState.x.position.value - 0.5 }],
-  }));
-  const tooltipStyle = useAnimatedStyle(() => ({
-    width: 100,
-    transform: [
-      {
-        translateX: Math.min(
-          width - 158,
-          Math.max(0, pressState.x.position.value - 50),
-        ),
-      },
-    ],
-  }));
-
-  const xPan = useSharedValue(0);
-
-  useAnimatedReaction(
-    () => transformState.panActive.value,
-    (currentValue, previousValue) => {
-      if (currentValue !== previousValue) {
-        const { translateX } = getTransformComponents(
-          transformState.matrix.value,
-        );
-
-        xPan.value = translateX;
-
-        const interval = (width - margin * 2) / numDots;
-        const minPan = 0;
-        const maxPan = interval * (data.length - numDots - 1);
-        const translate = minPan + Math.round(xPan.value / interval) * interval;
-        const fixedTranslate = Math.max(minPan, Math.min(maxPan, translate));
-
-        xPan.value = withTiming(fixedTranslate);
-      }
-    },
-  );
-
-  useAnimatedReaction(
-    () => xPan.value,
-    (xPan) => {
-      transformState.matrix.value = setTranslate(
-        transformState.matrix.value,
-        xPan,
-        0,
-      );
-    },
-  );
+  // const tooltipStyle = useAnimatedStyle(() => ({
+  //   width: 100,
+  //   transform: [
+  //     {
+  //       translateX: Math.min(
+  //         viewportConfig.width - 158,
+  //         Math.max(0, pressState.x.position.value - 50),
+  //       ),
+  //     },
+  //   ],
+  // }));
 
   return (
     <View
@@ -133,20 +87,9 @@ export default function TimeWorkedChart() {
         xKey="date"
         yKeys={["time"]}
         domain={{ y: [0], x: [0, data.length - 1] }}
-        viewport={{ x: [data.length - numDots - 1, data.length - 1] }}
-        chartPressState={pressState}
-        chartPressConfig={{
-          pan: {
-            activateAfterLongPress: 150,
-          },
-        }}
-        transformState={transformState}
-        transformConfig={{
-          pan: { dimensions: "x" },
-          pinch: { enabled: false },
-        }}
         xAxis={{ lineWidth: 0, labelPosition: "inset" }}
         yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
+        {...chartConfig}
       >
         {({ points, chartBounds }) => (
           <>
@@ -185,7 +128,7 @@ export default function TimeWorkedChart() {
         )}
       </CartesianChart>
 
-      {isActive && (
+      {/* {isActive && (
         <>
           <View className="absolute h-full">
             <Animated.View
@@ -205,7 +148,7 @@ export default function TimeWorkedChart() {
             />
           </Animated.View>
         </>
-      )}
+      )} */}
     </View>
   );
 }
