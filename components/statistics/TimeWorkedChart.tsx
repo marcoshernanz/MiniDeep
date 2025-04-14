@@ -50,7 +50,7 @@ export default function TimeWorkedChart() {
   const { getColor } = useColors();
   const chartRef = useRef(null);
 
-  const {} = useChart({
+  const { chartConfig } = useChart({
     data,
     chartRef,
   });
@@ -70,6 +70,8 @@ export default function TimeWorkedChart() {
           domain={{ y: [0], x: [0, data.length - 1] }}
           xAxis={{ lineWidth: 0, labelPosition: "inset" }}
           yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
+          transformConfig={{ pan: { enabled: true, dimensions: ["x"] } }}
+          {...chartConfig}
         >
           {({ points, chartBounds }) => (
             <>
@@ -106,7 +108,7 @@ export default function TimeWorkedChart() {
               />
             </>
           )}
-        </CartesianChart>{" "}
+        </CartesianChart>
       </View>
     </View>
   );
