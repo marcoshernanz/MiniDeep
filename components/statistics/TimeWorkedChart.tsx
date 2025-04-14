@@ -8,6 +8,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { ReText } from "react-native-redash";
 import { Area, CartesianChart, Line, Scatter } from "victory-native";
+import formatTime from "@/lib/utils/formatTime";
+import { useRef } from "react";
 
 const data = [
   { date: "2023-10-01", time: 3600 },
@@ -46,34 +48,12 @@ const margin = 16;
 
 export default function TimeWorkedChart() {
   const { getColor } = useColors();
+  const chartRef = useRef(null);
 
-  // Use our custom hook instead of separate hooks and transformations
-  const { isActive, chartConfig } = useChart({
+  const {} = useChart({
     data,
-    numDotsVisible: 7,
-    initialPressState: { x: "2023-10-01", y: { time: 0 } },
-    margin,
+    chartRef,
   });
-
-  // const date = useDerivedValue(() => pressState.x.value.value);
-  // const time = useDerivedValue(() => String(pressState.y.time.value.value));
-
-  // const lineStyle = useAnimatedStyle(() => ({
-  //   width: 1,
-  //   transform: [{ translateX: pressState.x.position.value - 0.5 }],
-  // }));
-
-  // const tooltipStyle = useAnimatedStyle(() => ({
-  //   width: 100,
-  //   transform: [
-  //     {
-  //       translateX: Math.min(
-  //         viewportConfig.width - 158,
-  //         Math.max(0, pressState.x.position.value - 50),
-  //       ),
-  //     },
-  //   ],
-  // }));
 
   return (
     <View
@@ -82,73 +62,52 @@ export default function TimeWorkedChart() {
         marginHorizontal: margin,
       }}
     >
-      <CartesianChart
-        data={data}
-        xKey="date"
-        yKeys={["time"]}
-        domain={{ y: [0], x: [0, data.length - 1] }}
-        xAxis={{ lineWidth: 0, labelPosition: "inset" }}
-        yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
-        {...chartConfig}
-      >
-        {({ points, chartBounds }) => (
-          <>
-            <Line
-              points={points.time}
-              color={getColor("primary")}
-              strokeWidth={1}
-              curveType="bumpX"
-            />
-            <Area
-              points={points.time}
-              y0={chartBounds.bottom}
-              curveType="bumpX"
-              opacity={0.5}
-            >
-              <LinearGradient
-                start={{ x: 0, y: chartBounds.top }}
-                end={{ x: 0, y: chartBounds.bottom }}
-                colors={[getColor("primary"), getColor("primary", 0.3)]}
+      <View ref={chartRef} className="flex-1">
+        <CartesianChart
+          data={data}
+          xKey="date"
+          yKeys={["time"]}
+          domain={{ y: [0], x: [0, data.length - 1] }}
+          xAxis={{ lineWidth: 0, labelPosition: "inset" }}
+          yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
+        >
+          {({ points, chartBounds }) => (
+            <>
+              <Line
+                points={points.time}
+                color={getColor("primary")}
+                strokeWidth={1}
+                curveType="bumpX"
               />
-            </Area>
-            <Scatter
-              points={points.time}
-              radius={6}
-              style="stroke"
-              color={getColor("primary")}
-              strokeWidth={2}
-            />
-            <Scatter
-              points={points.time}
-              radius={6}
-              style="fill"
-              color={getColor("background")}
-            />
-          </>
-        )}
-      </CartesianChart>
-
-      {/* {isActive && (
-        <>
-          <View className="absolute h-full">
-            <Animated.View
-              className="mb-6 mt-9 flex-1 bg-primary"
-              style={lineStyle}
-            ></Animated.View>
-          </View>
-
-          <Animated.View
-            className="absolute h-9 flex-row items-center justify-center rounded-md border border-primary bg-primary/20"
-            style={tooltipStyle}
-          >
-            <ReText text={time} style={{ color: getColor("foreground") }} />
-            <ReText
-              text={date}
-              style={{ color: getColor("foreground"), fontWeight: 600 }}
-            />
-          </Animated.View>
-        </>
-      )} */}
+              <Area
+                points={points.time}
+                y0={chartBounds.bottom}
+                curveType="bumpX"
+                opacity={0.5}
+              >
+                <LinearGradient
+                  start={{ x: 0, y: chartBounds.top }}
+                  end={{ x: 0, y: chartBounds.bottom }}
+                  colors={[getColor("primary"), getColor("primary", 0.3)]}
+                />
+              </Area>
+              <Scatter
+                points={points.time}
+                radius={6}
+                style="stroke"
+                color={getColor("primary")}
+                strokeWidth={2}
+              />
+              <Scatter
+                points={points.time}
+                radius={6}
+                style="fill"
+                color={getColor("background")}
+              />
+            </>
+          )}
+        </CartesianChart>{" "}
+      </View>
     </View>
   );
 }
