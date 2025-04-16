@@ -1,5 +1,6 @@
-import { RefObject, useLayoutEffect, useState } from "react";
-import { Dimensions, View } from "react-native";
+import { RefObject, useLayoutEffect, useRef, useState } from "react";
+import { View } from "react-native";
+import { Gesture } from "react-native-gesture-handler";
 import {
   useAnimatedReaction,
   useSharedValue,
@@ -11,16 +12,22 @@ import {
   useChartTransformState,
 } from "victory-native";
 
+type DataType = Array<{ [key: string]: any }>;
+
 interface Params {
-  data: any[];
+  data: DataType;
   chartRef: RefObject<View>;
-  numDotsVisible?: number;
+  numDotsVisible: number;
+  yKey: string;
 }
+
+const yDomain = [0, 100];
 
 export default function useChart({
   data,
   chartRef,
-  numDotsVisible = 7,
+  numDotsVisible,
+  yKey,
 }: Params) {
   const [chartDimensions, setChartDimensions] = useState({
     x: 0,
@@ -32,6 +39,18 @@ export default function useChart({
   const { state: transformState } = useChartTransformState();
 
   const xPan = useSharedValue(0);
+
+  const pressState = {
+    isActive: useSharedValue(false),
+    x: {
+      value: useSharedValue<number | null>(null),
+      position: useSharedValue(0),
+    },
+    y: {
+      value: useSharedValue<number | null>(null),
+      position: useSharedValue(0),
+    },
+  };
 
   useAnimatedReaction(
     () => transformState.panActive.value,
@@ -49,8 +68,6 @@ export default function useChart({
         const translate = minPan + Math.round(xPan.value / interval) * interval;
         const fixedTranslate = Math.max(minPan, Math.min(maxPan, translate));
 
-        console.log(translateX, fixedTranslate);
-
         xPan.value = withTiming(fixedTranslate);
       }
     },
@@ -67,17 +84,112 @@ export default function useChart({
     },
   );
 
+  const panGesture = Gesture.Pan()
+    .onBegin(() => {
+      "worklet";
+      pressState.isActive.value = true;
+    })
+    .onUpdate((event) => {
+      "worklet";
+      if (
+        chartDimensions.width <= 0 ||
+        chartDimensions.height <= 0 ||
+        numDotsVisible <= 1 ||
+        yDomain[1] === yDomain[0]
+      ) {
+        return;
+      }
+
+      const interval = chartDimensions.width / (numDotsVisible - 1);
+      const effectiveX = event.x - xPan.value;
+
+      let closestIndex = Math.round(effectiveX / interval);
+      closestIndex = Math.max(0, Math.min(data.length - 1, closestIndex));
+
+      const closestPointX = closestIndex * interval + xPan.value;
+      const clampedClosestPointX = Math.max(
+        0,
+        Math.min(chartDimensions.width, closestPointX),
+      );
+      pressState.x.position.value = clampedClosestPointX;
+      pressState.x.value.value = closestIndex;
+
+      if (data && data.length > closestIndex && closestIndex >= 0) {
+        const pointData = data[closestIndex];
+        if (pointData && typeof pointData[yKey] === "number") {
+          const value = pointData[yKey];
+          pressState.y.value.value = value;
+
+          const yDataRange = yDomain[1] - yDomain[0];
+          const normalizedY = (value - yDomain[0]) / yDataRange;
+          const clampedNormalizedY = Math.max(0, Math.min(1, normalizedY));
+          const closestPointY =
+            chartDimensions.height -
+            clampedNormalizedY * chartDimensions.height;
+
+          const clampedClosestPointY = Math.max(
+            0,
+            Math.min(chartDimensions.height, closestPointY),
+          );
+          pressState.y.position.value = clampedClosestPointY;
+        } else {
+          pressState.y.value.value = null;
+          pressState.y.position.value = 0;
+        }
+      } else {
+        pressState.x.value.value = null;
+        pressState.y.value.value = null;
+        pressState.x.position.value = 0;
+        pressState.y.position.value = 0;
+      }
+    })
+    .onEnd(() => {
+      "worklet";
+      pressState.isActive.value = false;
+      pressState.x.value.value = null;
+      pressState.y.value.value = null;
+    })
+    .onFinalize(() => {
+      "worklet";
+      if (pressState.isActive.value) {
+        pressState.isActive.value = false;
+      }
+      if (pressState.x.value.value !== null) {
+        pressState.x.value.value = null;
+        pressState.y.value.value = null;
+      }
+    });
+
+  const composed = Gesture.Race(panGesture);
+
   useLayoutEffect(() => {
     chartRef.current?.measureInWindow((x, y, width, height) => {
-      setChartDimensions({ x, y, width, height });
+      if (
+        width > 0 &&
+        height > 0 &&
+        (chartDimensions.width !== width || chartDimensions.height !== height)
+      ) {
+        setChartDimensions({ x, y, width, height });
+      }
     });
-  }, []);
+  }, [chartRef, chartDimensions.width, chartDimensions.height]);
 
   return {
     chartConfig: {
-      transformState,
+      customeGestures: composed,
       viewport: {
-        x: [data.length - numDotsVisible, data.length - 1] as [number, number],
+        x: [0, numDotsVisible - 1] as [number, number],
+      },
+    },
+    pressState: {
+      isActive: pressState.isActive,
+      x: {
+        value: pressState.x.value,
+        position: pressState.x.position,
+      },
+      y: {
+        value: pressState.y.value,
+        position: pressState.y.position,
       },
     },
   };

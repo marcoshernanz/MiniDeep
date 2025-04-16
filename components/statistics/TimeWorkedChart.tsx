@@ -7,7 +7,13 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { ReText } from "react-native-redash";
-import { Area, CartesianChart, Line, Scatter } from "victory-native";
+import {
+  Area,
+  CartesianChart,
+  Line,
+  Scatter,
+  useChartPressState,
+} from "victory-native";
 import formatTime from "@/lib/utils/formatTime";
 import { useRef } from "react";
 
@@ -50,10 +56,29 @@ export default function TimeWorkedChart() {
   const { getColor } = useColors();
   const chartRef = useRef(null);
 
-  const { chartConfig } = useChart({
+  const { chartConfig, pressState } = useChart({
     data,
     chartRef,
+    numDotsVisible: 7,
+    yKey: "time",
   });
+
+  const lineStyle = useAnimatedStyle(() => ({
+    width: 1,
+    transform: [{ translateX: pressState.x.position.value - 0.5 }],
+  }));
+
+  // const tooltipStyle = useAnimatedStyle(() => ({
+  //   width: 100,
+  //   transform: [
+  //     {
+  //       translateX: Math.min(
+  //         1000 - 158,
+  //         Math.max(0, pressState.x.position.value - 50),
+  //       ),
+  //     },
+  //   ],
+  // }));
 
   return (
     <View
@@ -71,6 +96,7 @@ export default function TimeWorkedChart() {
           xAxis={{ lineWidth: 0, labelPosition: "inset" }}
           yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
           transformConfig={{ pan: { enabled: true, dimensions: ["x"] } }}
+          customGestures={chartConfig.customeGestures}
           {...chartConfig}
         >
           {({ points, chartBounds }) => (
@@ -109,6 +135,28 @@ export default function TimeWorkedChart() {
             </>
           )}
         </CartesianChart>
+
+        {pressState.isActive && (
+          <>
+            <View className="absolute h-full">
+              <Animated.View
+                className="mb-6 mt-9 flex-1 bg-primary"
+                style={lineStyle}
+              ></Animated.View>
+            </View>
+
+            {/* <Animated.View
+              className="absolute h-9 flex-row items-center justify-center rounded-md border border-primary bg-primary/20"
+              style={tooltipStyle}
+            >
+              <ReText text={pressState.x.value.value} style={{ color: getColor("foreground") }} />
+              <ReText
+                text={pressState.y.value.value}
+                style={{ color: getColor("foreground"), fontWeight: 600 }}
+              />
+            </Animated.View> */}
+          </>
+        )}
       </View>
     </View>
   );
