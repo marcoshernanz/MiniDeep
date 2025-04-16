@@ -1,6 +1,11 @@
 import { RefObject, useLayoutEffect, useRef, useState } from "react";
 import { View } from "react-native";
-import { Gesture } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureHandlerGestureEvent,
+  GestureUpdateEvent,
+  PanGestureHandlerEventPayload,
+} from "react-native-gesture-handler";
 import {
   runOnJS,
   useAnimatedReaction,
@@ -85,64 +90,71 @@ export default function useChart({
     },
   );
 
+  const updatePressState = (
+    event: GestureUpdateEvent<PanGestureHandlerEventPayload>,
+  ) => {
+    "worklet";
+    if (
+      chartDimensions.width <= 0 ||
+      chartDimensions.height <= 0 ||
+      numDotsVisible <= 1 ||
+      yDomain[1] === yDomain[0]
+    ) {
+      return;
+    }
+
+    const interval = chartDimensions.width / (numDotsVisible - 1);
+    const effectiveX = event.x - xPan.value;
+
+    let closestIndex = Math.round(effectiveX / interval);
+    closestIndex = Math.max(0, Math.min(data.length - 1, closestIndex));
+
+    const closestPointX = closestIndex * interval + xPan.value;
+    const clampedClosestPointX = Math.max(
+      0,
+      Math.min(chartDimensions.width, closestPointX),
+    );
+    pressState.x.position.value = clampedClosestPointX;
+    pressState.x.value.value = closestIndex;
+
+    if (data && data.length > closestIndex && closestIndex >= 0) {
+      const pointData = data[closestIndex];
+      if (pointData && typeof pointData[yKey] === "number") {
+        const value = pointData[yKey];
+        pressState.y.value.value = value;
+
+        const yDataRange = yDomain[1] - yDomain[0];
+        const normalizedY = (value - yDomain[0]) / yDataRange;
+        const clampedNormalizedY = Math.max(0, Math.min(1, normalizedY));
+        const closestPointY =
+          chartDimensions.height - clampedNormalizedY * chartDimensions.height;
+
+        const clampedClosestPointY = Math.max(
+          0,
+          Math.min(chartDimensions.height, closestPointY),
+        );
+        pressState.y.position.value = clampedClosestPointY;
+      } else {
+        pressState.y.value.value = null;
+        pressState.y.position.value = 0;
+      }
+    } else {
+      pressState.x.value.value = null;
+      pressState.y.value.value = null;
+      pressState.x.position.value = 0;
+      pressState.y.position.value = 0;
+    }
+  };
+
   const panGesture = Gesture.Pan()
-    .onBegin(() => {
+    .onBegin((event) => {
       "worklet";
+      updatePressState(event);
       runOnJS(setIsActive)(true);
     })
     .onUpdate((event) => {
       "worklet";
-      if (
-        chartDimensions.width <= 0 ||
-        chartDimensions.height <= 0 ||
-        numDotsVisible <= 1 ||
-        yDomain[1] === yDomain[0]
-      ) {
-        return;
-      }
-
-      const interval = chartDimensions.width / (numDotsVisible - 1);
-      const effectiveX = event.x - xPan.value;
-
-      let closestIndex = Math.round(effectiveX / interval);
-      closestIndex = Math.max(0, Math.min(data.length - 1, closestIndex));
-
-      const closestPointX = closestIndex * interval + xPan.value;
-      const clampedClosestPointX = Math.max(
-        0,
-        Math.min(chartDimensions.width, closestPointX),
-      );
-      pressState.x.position.value = clampedClosestPointX;
-      pressState.x.value.value = closestIndex;
-
-      if (data && data.length > closestIndex && closestIndex >= 0) {
-        const pointData = data[closestIndex];
-        if (pointData && typeof pointData[yKey] === "number") {
-          const value = pointData[yKey];
-          pressState.y.value.value = value;
-
-          const yDataRange = yDomain[1] - yDomain[0];
-          const normalizedY = (value - yDomain[0]) / yDataRange;
-          const clampedNormalizedY = Math.max(0, Math.min(1, normalizedY));
-          const closestPointY =
-            chartDimensions.height -
-            clampedNormalizedY * chartDimensions.height;
-
-          const clampedClosestPointY = Math.max(
-            0,
-            Math.min(chartDimensions.height, closestPointY),
-          );
-          pressState.y.position.value = clampedClosestPointY;
-        } else {
-          pressState.y.value.value = null;
-          pressState.y.position.value = 0;
-        }
-      } else {
-        pressState.x.value.value = null;
-        pressState.y.value.value = null;
-        pressState.x.position.value = 0;
-        pressState.y.position.value = 0;
-      }
+      updatePressState(event);
     })
     .onFinalize(() => {
       "worklet";
