@@ -2,6 +2,7 @@ import { RefObject, useLayoutEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { Gesture } from "react-native-gesture-handler";
 import {
+  runOnJS,
   useAnimatedReaction,
   useSharedValue,
   withTiming,
@@ -40,8 +41,8 @@ export default function useChart({
 
   const xPan = useSharedValue(0);
 
+  const [isActive, setIsActive] = useState(false);
   const pressState = {
-    isActive: useSharedValue(false),
     x: {
       value: useSharedValue<number | null>(null),
       position: useSharedValue(0),
@@ -87,7 +88,7 @@ export default function useChart({
   const panGesture = Gesture.Pan()
     .onBegin(() => {
       "worklet";
-      pressState.isActive.value = true;
+      runOnJS(setIsActive)(true);
     })
     .onUpdate((event) => {
       "worklet";
@@ -143,21 +144,11 @@ export default function useChart({
         pressState.y.position.value = 0;
       }
     })
-    .onEnd(() => {
-      "worklet";
-      pressState.isActive.value = false;
-      pressState.x.value.value = null;
-      pressState.y.value.value = null;
-    })
     .onFinalize(() => {
       "worklet";
-      if (pressState.isActive.value) {
-        pressState.isActive.value = false;
-      }
-      if (pressState.x.value.value !== null) {
-        pressState.x.value.value = null;
-        pressState.y.value.value = null;
-      }
+      runOnJS(setIsActive)(false);
+      pressState.x.value.value = null;
+      pressState.y.value.value = null;
     });
 
   const composed = Gesture.Race(panGesture);
@@ -182,7 +173,7 @@ export default function useChart({
       },
     },
     pressState: {
-      isActive: pressState.isActive,
+      isActive: isActive,
       x: {
         value: pressState.x.value,
         position: pressState.x.position,
