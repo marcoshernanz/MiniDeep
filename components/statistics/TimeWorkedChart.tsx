@@ -10,9 +10,11 @@ import { ReText } from "react-native-redash";
 import {
   Area,
   CartesianChart,
+  getTransformComponents,
   Line,
   Scatter,
   useChartPressState,
+  useChartTransformState,
 } from "victory-native";
 import formatTime from "@/lib/utils/formatTime";
 import { useRef } from "react";
@@ -56,29 +58,20 @@ export default function TimeWorkedChart() {
   const { getColor } = useColors();
   const chartRef = useRef(null);
 
-  const { chartConfig, pressState } = useChart({
+  const { chartConfig, tooltip } = useChart({
     data,
     chartRef,
     numDotsVisible: 7,
-    yKey: "time",
   });
 
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
-    transform: [{ translateX: pressState.x.position.value - 0.5 }],
+    transform: [
+      {
+        translateX: tooltip.position.x.value - 0.5,
+      },
+    ],
   }));
-
-  // const tooltipStyle = useAnimatedStyle(() => ({
-  //   width: 100,
-  //   transform: [
-  //     {
-  //       translateX: Math.min(
-  //         1000 - 158,
-  //         Math.max(0, pressState.x.position.value - 50),
-  //       ),
-  //     },
-  //   ],
-  // }));
 
   return (
     <View
@@ -95,8 +88,6 @@ export default function TimeWorkedChart() {
           domain={{ y: [0], x: [0, data.length - 1] }}
           xAxis={{ lineWidth: 0, labelPosition: "inset" }}
           yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
-          transformConfig={{ pan: { enabled: true, dimensions: ["x"] } }}
-          customGestures={chartConfig.customeGestures}
           {...chartConfig}
         >
           {({ points, chartBounds }) => (
@@ -136,7 +127,7 @@ export default function TimeWorkedChart() {
           )}
         </CartesianChart>
 
-        {pressState.isActive && (
+        {tooltip.isActive && (
           <>
             <View className="absolute h-full">
               <Animated.View
