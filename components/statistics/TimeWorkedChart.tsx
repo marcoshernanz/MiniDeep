@@ -2,21 +2,8 @@ import useColors from "@/lib/hooks/useColors";
 import useChart from "@/lib/hooks/useChart";
 import { LinearGradient } from "@shopify/react-native-skia";
 import { View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useDerivedValue,
-} from "react-native-reanimated";
-import { ReText } from "react-native-redash";
-import {
-  Area,
-  CartesianChart,
-  getTransformComponents,
-  Line,
-  Scatter,
-  useChartPressState,
-  useChartTransformState,
-} from "victory-native";
-import formatTime from "@/lib/utils/formatTime";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { Area, CartesianChart, Line, Scatter } from "victory-native";
 import { useRef } from "react";
 
 const data = [
@@ -85,7 +72,6 @@ export default function TimeWorkedChart() {
           data={data}
           xKey="date"
           yKeys={["time"]}
-          domain={{ y: [0], x: [0, data.length - 1] }}
           xAxis={{ lineWidth: 0, labelPosition: "inset" }}
           yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
           {...chartConfig}

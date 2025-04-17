@@ -1,6 +1,7 @@
 import { RefObject, useLayoutEffect, useState } from "react";
 import { View } from "react-native";
 import {
+  runOnJS,
   useAnimatedReaction,
   useDerivedValue,
   useSharedValue,
@@ -22,6 +23,9 @@ interface Params {
 }
 
 export default function useChart({ data, chartRef, numDotsVisible }: Params) {
+  const [maxY, setMaxY] = useState(
+    data.reduce((max, item) => Math.max(max, item.time as number), 0),
+  );
   const [chartDimensions, setChartDimensions] = useState({
     x: 0,
     y: 0,
@@ -35,41 +39,61 @@ export default function useChart({ data, chartRef, numDotsVisible }: Params) {
     y: { time: 0 },
   });
 
-  // const xPan = useSharedValue(0);
+  const xPan = useSharedValue(0);
 
-  // useAnimatedReaction(
-  //   () => transformState.panActive.value,
-  //   (currentValue, previousValue) => {
-  //     if (currentValue !== previousValue) {
-  //       const { translateX } = getTransformComponents(
-  //         transformState.matrix.value,
-  //       );
+  useAnimatedReaction(
+    () => transformState.panActive.value,
+    (currentValue, previousValue) => {
+      if (currentValue !== previousValue) {
+        const { translateX } = getTransformComponents(
+          transformState.matrix.value,
+        );
 
-  //       xPan.value = translateX;
+        xPan.value = translateX;
 
-  //       const interval = chartDimensions.width / (numDotsVisible - 1);
-  //       const minPan = 0;
-  //       const maxPan = interval * (data.length - numDotsVisible);
-  //       const translate = minPan + Math.round(xPan.value / interval) * interval;
-  //       const fixedTranslate = Math.max(minPan, Math.min(maxPan, translate));
+        const interval = chartDimensions.width / (numDotsVisible - 1);
+        const maxPan = 0;
+        const minPan = -interval * (data.length - numDotsVisible);
+        const translate = Math.round(xPan.value / interval) * interval;
+        const fixedTranslate = Math.max(minPan, Math.min(maxPan, translate));
 
-  //       xPan.value = withTiming(fixedTranslate);
-  //     }
-  //   },
-  // );
+        xPan.value = withTiming(fixedTranslate);
 
-  // useAnimatedReaction(
-  //   () => xPan.value,
-  //   (xPan) => {
-  //     transformState.matrix.value = setTranslate(
-  //       transformState.matrix.value,
-  //       xPan,
-  //       0,
-  //     );
-  //   },
-  // );
+        const index =
+          data.length - numDotsVisible + Math.round(fixedTranslate / interval);
+
+        let newMaxY = 0;
+        for (let i = index; i < index + numDotsVisible; i++) {
+          newMaxY = Math.max(newMaxY, data[i].time as number);
+        }
+
+        runOnJS(setMaxY)(newMaxY);
+      }
+    },
+  );
+
+  useAnimatedReaction(
+    () => xPan.value,
+    (xPan) => {
+      transformState.matrix.value = setTranslate(
+        transformState.matrix.value,
+        xPan,
+        0,
+      );
+    },
+  );
 
   useLayoutEffect(() => {
+    const initialXPan =
+      -(chartDimensions.width / (numDotsVisible - 1)) *
+      (data.length - numDotsVisible);
+
+    transformState.matrix.value = setTranslate(
+      transformState.matrix.value,
+      initialXPan,
+      0,
+    );
+
     chartRef.current?.measureInWindow((x, y, width, height) => {
       if (
         width > 0 &&
@@ -81,8 +105,6 @@ export default function useChart({ data, chartRef, numDotsVisible }: Params) {
     });
   }, [chartRef, chartDimensions.width, chartDimensions.height]);
 
-  // console.log(pressState.x.position.value);
-
   return {
     chartConfig: {
       chartPressState: pressState,
@@ -92,6 +114,7 @@ export default function useChart({ data, chartRef, numDotsVisible }: Params) {
         pinch: { enabled: false },
       },
       chartPressConfig: { pan: { activateAfterLongPress: 100 } },
+      domain: { y: [0, maxY] as [number, number] },
       viewport: {
         // x: [data.length - numDotsVisible, data.length - 1] as [number, number],
         x: [0, numDotsVisible - 1] as [number, number],
