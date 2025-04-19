@@ -39,16 +39,26 @@ const data = [
   { date: "2023-10-30", time: 14400 },
 ];
 
+type DataType = {
+  x: string;
+  y: Record<"time", number>;
+};
+
 const margin = 16;
 
 export default function TimeWorkedChart() {
   const { getColor } = useColors();
   const chartRef = useRef(null);
 
-  const { chartConfig, tooltip } = useChart({
+  const { chartConfig, tooltip } = useChart<DataType>({
     data,
     chartRef,
     numDotsVisible: 7,
+    yKey: "time",
+    initialState: {
+      x: "2023-10-01",
+      y: { time: 0 },
+    },
   });
 
   const lineStyle = useAnimatedStyle(() => ({
@@ -75,6 +85,7 @@ export default function TimeWorkedChart() {
           xAxis={{ lineWidth: 0, labelPosition: "inset" }}
           yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
           {...chartConfig}
+          chartPressState={chartConfig.chartPressState}
         >
           {({ points, chartBounds }) => (
             <>

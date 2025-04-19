@@ -13,18 +13,27 @@ import {
   useChartPressState,
   useChartTransformState,
 } from "victory-native";
+import { ChartPressStateInit } from "victory-native/dist/cartesian/hooks/useChartPressState";
 
 type DataType = Record<string, unknown>;
 
-interface Params {
+interface Params<T extends ChartPressStateInit> {
   data: DataType[];
   chartRef: RefObject<View>;
   numDotsVisible: number;
+  yKey: string;
+  initialState: T;
 }
 
-export default function useChart({ data, chartRef, numDotsVisible }: Params) {
+export default function useChart<T extends ChartPressStateInit>({
+  data,
+  chartRef,
+  numDotsVisible,
+  yKey,
+  initialState,
+}: Params<T>) {
   const [maxY, setMaxY] = useState(
-    data.reduce((max, item) => Math.max(max, item.time as number), 0),
+    data.reduce((max, item) => Math.max(max, item[yKey] as number), 0),
   );
   const [chartDimensions, setChartDimensions] = useState({
     x: 0,
@@ -34,10 +43,7 @@ export default function useChart({ data, chartRef, numDotsVisible }: Params) {
   });
 
   const { state: transformState } = useChartTransformState();
-  const { isActive, state: pressState } = useChartPressState({
-    x: "2023-10-30",
-    y: { time: 0 },
-  });
+  const { isActive, state: pressState } = useChartPressState(initialState);
 
   const xPan = useSharedValue(0);
 
@@ -59,12 +65,15 @@ export default function useChart({ data, chartRef, numDotsVisible }: Params) {
 
         xPan.value = withTiming(fixedTranslate);
 
-        const index =
-          data.length - numDotsVisible + Math.round(fixedTranslate / interval);
+        const index = Math.abs(Math.round(fixedTranslate / interval));
 
         let newMaxY = 0;
-        for (let i = index; i < index + numDotsVisible; i++) {
-          newMaxY = Math.max(newMaxY, data[i].time as number);
+        for (
+          let i = index;
+          i < index + numDotsVisible && i < data.length;
+          i++
+        ) {
+          newMaxY = Math.max(newMaxY, data[i][yKey] as number);
         }
 
         runOnJS(setMaxY)(newMaxY);
@@ -134,7 +143,7 @@ export default function useChart({ data, chartRef, numDotsVisible }: Params) {
             pressState.x.position.value +
             getTransformComponents(transformState.matrix.value).translateX,
         ),
-        y: useDerivedValue(() => pressState.y.time.position.value),
+        y: useDerivedValue(() => pressState.y[yKey].position.value),
       },
     },
   };
