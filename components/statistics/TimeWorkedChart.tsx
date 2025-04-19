@@ -44,8 +44,6 @@ type DataType = {
   y: Record<"time", number>;
 };
 
-const margin = 16;
-
 export default function TimeWorkedChart() {
   const { getColor } = useColors();
   const chartRef = useRef(null);
@@ -59,6 +57,7 @@ export default function TimeWorkedChart() {
       x: "2023-10-01",
       y: { time: 0 },
     },
+    padding: 16,
   });
 
   const lineStyle = useAnimatedStyle(() => ({
@@ -71,12 +70,8 @@ export default function TimeWorkedChart() {
   }));
 
   return (
-    <View
-      className="flex-1"
-      style={{
-        marginHorizontal: margin,
-      }}
-    >
+    // <View className="flex-1" style={{ marginHorizontal: 16 }}>
+    <View className="flex-1">
       <View ref={chartRef} className="flex-1">
         <CartesianChart
           data={data}
@@ -85,7 +80,6 @@ export default function TimeWorkedChart() {
           xAxis={{ lineWidth: 0, labelPosition: "inset" }}
           yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
           {...chartConfig}
-          chartPressState={chartConfig.chartPressState}
         >
           {({ points, chartBounds }) => (
             <>

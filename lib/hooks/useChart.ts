@@ -23,6 +23,7 @@ interface Params<T extends ChartPressStateInit> {
   numDotsVisible: number;
   yKey: string;
   initialState: T;
+  padding?: number;
 }
 
 export default function useChart<T extends ChartPressStateInit>({
@@ -31,6 +32,7 @@ export default function useChart<T extends ChartPressStateInit>({
   numDotsVisible,
   yKey,
   initialState,
+  padding = 0,
 }: Params<T>) {
   const [maxY, setMaxY] = useState(
     data.reduce((max, item) => Math.max(max, item[yKey] as number), 0),
@@ -41,6 +43,7 @@ export default function useChart<T extends ChartPressStateInit>({
     width: 0,
     height: 0,
   });
+  const interval = (chartDimensions.width - padding * 2) / (numDotsVisible - 1);
 
   const { state: transformState } = useChartTransformState();
   const { isActive, state: pressState } = useChartPressState(initialState);
@@ -57,11 +60,11 @@ export default function useChart<T extends ChartPressStateInit>({
 
         xPan.value = translateX;
 
-        const interval = chartDimensions.width / (numDotsVisible - 1);
         const maxPan = 0;
         const minPan = -interval * (data.length - numDotsVisible);
         const translate = Math.round(xPan.value / interval) * interval;
-        const fixedTranslate = Math.max(minPan, Math.min(maxPan, translate));
+        const fixedTranslate =
+          Math.max(minPan, Math.min(maxPan, translate)) + padding;
 
         xPan.value = withTiming(fixedTranslate);
 
@@ -132,7 +135,10 @@ export default function useChart<T extends ChartPressStateInit>({
       chartPressConfig: { pan: { activateAfterLongPress: 100 } },
       domain: { y: [0, maxY] as [number, number] },
       viewport: {
-        x: [0, numDotsVisible - 1] as [number, number],
+        x: [0, numDotsVisible - 1 + (padding * 2) / interval] as [
+          number,
+          number,
+        ],
       },
     },
     tooltip: {
