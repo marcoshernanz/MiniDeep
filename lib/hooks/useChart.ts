@@ -103,7 +103,14 @@ export default function useChart({ data, chartRef, numDotsVisible }: Params) {
         setChartDimensions({ x, y, width, height });
       }
     });
-  }, [chartRef, chartDimensions.width, chartDimensions.height]);
+  }, [
+    chartRef,
+    chartDimensions.width,
+    chartDimensions.height,
+    numDotsVisible,
+    data.length,
+    transformState.matrix,
+  ]);
 
   return {
     chartConfig: {
@@ -116,7 +123,6 @@ export default function useChart({ data, chartRef, numDotsVisible }: Params) {
       chartPressConfig: { pan: { activateAfterLongPress: 100 } },
       domain: { y: [0, maxY] as [number, number] },
       viewport: {
-        // x: [data.length - numDotsVisible, data.length - 1] as [number, number],
         x: [0, numDotsVisible - 1] as [number, number],
       },
     },
