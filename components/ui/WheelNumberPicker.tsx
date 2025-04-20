@@ -12,7 +12,7 @@ interface Props {
   containerHeight?: number;
   itemsPerContainer?: number;
   number: number;
-  setNumber: Dispatch<SetStateAction<number>>;
+  setNumber: (number: number) => void;
 }
 
 export default function WheelNumberPicker({

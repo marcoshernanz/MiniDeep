@@ -3,29 +3,30 @@ import WheelNumberPicker from "../ui/WheelNumberPicker";
 import { Text } from "../ui/text";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
+import extractTime from "@/lib/utils/extractTime";
 
 interface Props {
-  hours: number;
-  setHours: Dispatch<SetStateAction<number>>;
-  minutes: number;
-  setMinutes: Dispatch<SetStateAction<number>>;
-  startTimer: (time: {
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-  }) => void;
+  time: number;
+  setTime: Dispatch<SetStateAction<number>>;
+  startTimer: (time: number) => void;
 }
 
-export default function TimePickerScreen({
-  hours,
-  setHours,
-  minutes,
-  setMinutes,
-  startTimer,
-}: Props) {
-  const handleStartTimer = () => {
-    // startTimer({ hours, minutes });
-    startTimer({ hours: 0, minutes: 0, seconds: 5 });
+export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
+  const { hours, minutes } = extractTime(time);
+
+  const handleSetTime = ({
+    hours,
+    minutes,
+  }: {
+    hours?: number;
+    minutes?: number;
+  }) => {
+    const { hours: currentHours, minutes: currentMinutes } = extractTime(time);
+
+    const newHours = hours !== undefined ? hours : currentHours;
+    const newMinutes = minutes !== undefined ? minutes : currentMinutes;
+
+    setTime((newHours * 3600 + newMinutes * 60) * 1000);
   };
 
   return (
@@ -34,7 +35,7 @@ export default function TimePickerScreen({
         <View className="h-72 flex-row items-center justify-center">
           <WheelNumberPicker
             number={hours}
-            setNumber={setHours}
+            setNumber={(hours) => handleSetTime({ hours })}
             minValue={0}
             maxValue={23}
             containerHeight={256}
@@ -42,7 +43,7 @@ export default function TimePickerScreen({
           <Text className="h-full align-middle text-6xl font-medium">:</Text>
           <WheelNumberPicker
             number={minutes}
-            setNumber={setMinutes}
+            setNumber={(minutes) => handleSetTime({ minutes })}
             minValue={0}
             maxValue={59}
             interval={1}
@@ -53,7 +54,7 @@ export default function TimePickerScreen({
       </View>
 
       <View className="h-14">
-        <Button size="lg" className="w-full" onPress={handleStartTimer}>
+        <Button size="lg" className="w-full" onPress={() => startTimer(time)}>
           <Text className="native:text-2xl">Start</Text>
         </Button>
       </View>

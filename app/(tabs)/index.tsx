@@ -1,20 +1,15 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useTimer from "@/lib/hooks/useTimer";
-import { useWorkStats } from "@/lib/hooks/useWorkStats";
 import TimePickerScreen from "@/components/deep-work/TimePickerScreen";
 import TimerCompletedScreen from "@/components/deep-work/TimerCompletedScreen";
 import TimerRunningScreen from "@/components/deep-work/TimerRunningScreen";
 
 export default function IndexScreen() {
-  const [selectedHours, setSelectedHours] = useState(0);
-  const [selectedMinutes, setSelectedMinutes] = useState(30);
-  const { refresh } = useWorkStats();
+  const [selectedTime, setSelectedTime] = useState(0);
 
   const {
-    hours: displayHours,
-    minutes: displayMinutes,
-    seconds: displaySeconds,
+    timeLeft,
     isRunning,
     isPaused,
     isCompleted,
@@ -24,38 +19,23 @@ export default function IndexScreen() {
     resetTimer,
   } = useTimer();
 
-  const refreshStats = useCallback(() => {
-    if (!isRunning) {
-      refresh();
-    }
-  }, [isRunning, refresh]);
-
-  useEffect(() => {
-    refreshStats();
-  }, [refreshStats]);
-
   const handleTimerComplete = async () => {
     await resetTimer();
-    refreshStats();
   };
 
   return (
     <SafeAreaView className="flex-1 items-center justify-center">
       {!isRunning && !isCompleted && (
         <TimePickerScreen
-          hours={selectedHours}
-          setHours={setSelectedHours}
-          minutes={selectedMinutes}
-          setMinutes={setSelectedMinutes}
+          time={selectedTime}
+          setTime={setSelectedTime}
           startTimer={startTimer}
         />
       )}
 
       {isRunning && !isCompleted && (
         <TimerRunningScreen
-          hours={displayHours}
-          minutes={displayMinutes}
-          seconds={displaySeconds}
+          timeLeft={timeLeft}
           isPaused={isPaused}
           togglePause={togglePause}
           stopTimer={stopTimer}

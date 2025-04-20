@@ -2,24 +2,23 @@ import { View } from "react-native";
 import { Text } from "../ui/text";
 import padWithZeros from "@/lib/utils/padWithZeros";
 import { Button } from "../ui/button";
+import extractTime from "@/lib/utils/extractTime";
 
 interface Props {
-  hours: number;
-  minutes: number;
-  seconds: number;
+  timeLeft: number;
   isPaused: boolean;
   togglePause: () => void;
   stopTimer: () => void;
 }
 
 export default function TimerRunningScreen({
-  hours,
-  minutes,
-  seconds,
+  timeLeft,
   isPaused,
   togglePause,
   stopTimer,
 }: Props) {
+  const { hours, minutes, seconds } = extractTime(timeLeft);
+
   return (
     <View className="gap-10">
       <View className="m-4 size-64 flex-row items-center justify-center rounded-full border-2 border-primary">
