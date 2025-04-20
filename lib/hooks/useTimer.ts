@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { AppState, Platform } from "react-native";
 import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
@@ -89,7 +89,14 @@ export default function useTimer() {
     null,
   );
 
-  const updateTimeRemaining = () => {
+  const cleanupTimer = useCallback(() => {
+    if (accurateTimer.current) {
+      accurateTimer.current.stop();
+      accurateTimer.current = null;
+    }
+  }, []);
+
+  const updateTimeRemaining = useCallback(() => {
     if (timeLeftRef.current <= 0) {
       if (accurateTimer.current) {
         accurateTimer.current.stop();
@@ -99,26 +106,24 @@ export default function useTimer() {
       addTimeEvent(sessionId.current, "stop");
       markSessionAsCompleted(sessionId.current);
 
-      // TODO: Update app state
+      saveTimerState({
+        state: "completed",
+        remainingTime: 0,
+        date: new Date(),
+        sessionId: sessionId.current,
+      });
 
       setTimeLeft(0);
     }
-  };
+  }, [setStatus, setTimeLeft]);
 
-  const timerTick = () => {
+  const timerTick = useCallback(() => {
     if (timeLeftRef.current > 0) {
       timeLeftRef.current -= 1000;
       setTimeLeft(timeLeftRef.current);
       updateTimeRemaining();
     }
-  };
-
-  const cleanupTimer = () => {
-    if (accurateTimer.current) {
-      accurateTimer.current.stop();
-      accurateTimer.current = null;
-    }
-  };
+  }, [setTimeLeft, updateTimeRemaining]);
 
   const startTimer = async (time: number) => {
     timeLeftRef.current = time;
@@ -127,11 +132,7 @@ export default function useTimer() {
     cleanupTimer();
     accurateTimer.current = createAccurateTimer(timerTick, 1000);
 
-    setStatus({
-      isRunning: true,
-      isPaused: false,
-      isCompleted: false,
-    });
+    setStatus({ isRunning: true, isPaused: false, isCompleted: false });
 
     const createdSessionId = await createNewSession(time);
     sessionId.current = createdSessionId;
@@ -139,6 +140,13 @@ export default function useTimer() {
     await addTimeEvent(createdSessionId, "start");
 
     await scheduleTimerCompletionNotification(time);
+
+    await saveTimerState({
+      state: "running",
+      remainingTime: timeLeftRef.current,
+      date: new Date(),
+      sessionId: sessionId.current,
+    });
 
     accurateTimer.current.start();
   };
@@ -150,16 +158,25 @@ export default function useTimer() {
       accurateTimer.current.resume();
       await addTimeEvent(sessionId.current, "start");
       await scheduleTimerCompletionNotification(timeLeftRef.current);
+      await saveTimerState({
+        state: "running",
+        remainingTime: timeLeftRef.current,
+        date: new Date(),
+        sessionId: sessionId.current,
+      });
     } else {
       accurateTimer.current.pause();
       await addTimeEvent(sessionId.current, "stop");
       await cancelTimerNotifications();
+      await saveTimerState({
+        state: "paused",
+        remainingTime: timeLeftRef.current,
+        date: new Date(),
+        sessionId: sessionId.current,
+      });
     }
 
-    setStatus((prev) => ({
-      ...prev,
-      isPaused: !prev.isPaused,
-    }));
+    setStatus((prev) => ({ ...prev, isPaused: !prev.isPaused }));
   };
 
   const stopTimer = async () => {
@@ -171,141 +188,139 @@ export default function useTimer() {
       await cancelTimerNotifications();
     }
 
-    setStatus({
-      isRunning: false,
-      isPaused: false,
-      isCompleted: false,
-    });
+    setStatus({ isRunning: false, isPaused: false, isCompleted: false });
 
     setTimeLeft(0);
+
+    await saveTimerState({
+      state: "inactive",
+      remainingTime: 0,
+      date: new Date(),
+      sessionId: "",
+    });
 
     markSessionAsCompleted(sessionId.current);
   };
 
-  const resetTimer = async () => {
-    setStatus({
-      isRunning: false,
-      isPaused: false,
-      isCompleted: false,
-    });
+  const resetTimer = useCallback(async () => {
+    setStatus({ isRunning: false, isPaused: false, isCompleted: false });
 
     timeLeftRef.current = 0;
     sessionId.current = "";
     setTimeLeft(0);
 
     await cancelTimerNotifications();
-  };
 
-  // const saveCurrentTimerState = async () => {
-  //   if (status.isRunning) {
-  //     const state = status.isPaused ? "paused" : "running";
-  //     await saveTimerState({
-  //       state,
-  //       remainingTime: timerRef.current.totalSeconds,
-  //       initialDuration: timerRef.current.initialDuration,
-  //       timestamp: Date.now(),
-  //       sessionId: timerRef.current.sessionId,
-  //     });
+    await saveTimerState({
+      state: "inactive",
+      remainingTime: 0,
+      date: new Date(),
+      sessionId: "",
+    });
+  }, [setStatus, setTimeLeft]);
 
-  //     // Keep notification scheduling consistent with timer state
-  //     if (state === "running") {
-  //       await scheduleTimerCompletionNotification(
-  //         timerRef.current.totalSeconds,
-  //       );
-  //     } else {
-  //       await cancelTimerNotifications();
-  //     }
-  //   }
-  // };
+  const saveCurrentTimerState = useCallback(async () => {
+    if (status.isRunning && !status.isPaused) {
+      await saveTimerState({
+        state: "running",
+        remainingTime: timeLeftRef.current,
+        date: new Date(),
+        sessionId: sessionId.current,
+      });
 
-  // const restoreTimerState = async () => {
-  //   cleanupTimer();
-
-  //   const savedState = await getTimerState();
-
-  //   if (!savedState || savedState.state === "inactive") return;
-
-  //   timerRef.current.sessionId = savedState.sessionId;
-  //   timerRef.current.initialDuration = savedState.initialDuration;
-
-  //   let remainingTime = savedState.remainingTime;
-
-  //   if (savedState.state === "running") {
-  //     const elapsedSeconds = Math.floor(
-  //       (Date.now() - savedState.timestamp) / 1000,
-  //     );
-  //     remainingTime = Math.max(0, remainingTime - elapsedSeconds);
-  //   }
-
-  //   if (remainingTime <= 0 && savedState.state !== "completed") {
-  //     setStatus({ isRunning: false, isPaused: false, isCompleted: true });
-  //     await addTimeEvent(savedState.sessionId, "complete", 0);
-  //     return;
-  //   }
-
-  //   timerRef.current.totalSeconds = remainingTime;
-
-  //   const hours = Math.floor(remainingTime / 3600);
-  //   const minutes = Math.floor((remainingTime % 3600) / 60);
-  //   const seconds = remainingTime % 60;
-
-  //   setDisplayTime({ hours, minutes, seconds });
-
-  //   setStatus({
-  //     isRunning:
-  //       savedState.state === "running" || savedState.state === "paused",
-  //     isPaused: savedState.state === "paused",
-  //     isCompleted: savedState.state === "completed",
-  //   });
-
-  //   if (savedState.state === "running") {
-  //     timerRef.current.accurateTimer = createAccurateTimer(timerTick, 1000);
-  //     timerRef.current.accurateTimer.start();
-  //   }
-  // };
-
-  // const handleAppStateChange = async (nextAppState: string) => {
-  //   if (nextAppState === "active") {
-  //     await restoreTimerState();
-  //   } else if (nextAppState === "background" || nextAppState === "inactive") {
-  //     await saveCurrentTimerState();
-  //   }
-  // };
-
-  const handleNotificationResponse = async (
-    response: Notifications.NotificationResponse,
-  ) => {
-    const actionIdentifier = response.actionIdentifier;
-
-    if (actionIdentifier === DISMISS_ACTION_ID) {
-      await Notifications.dismissNotificationAsync(
-        response.notification.request.identifier,
-      );
-      await resetTimer();
+      await scheduleTimerCompletionNotification(timeLeftRef.current);
+    } else {
+      await cancelTimerNotifications();
     }
-  };
+  }, [status.isRunning, status.isPaused]);
 
-  // useEffect(() => {
-  //   setupNotifications();
-  //   restoreTimerState();
+  const restoreTimerState = useCallback(async () => {
+    cleanupTimer();
 
-  //   const subscription = AppState.addEventListener(
-  //     "change",
-  //     handleAppStateChange,
-  //   );
+    const savedState = await getTimerState();
 
-  //   // Set up notification response handler with the separate function
-  //   const notificationResponseSubscription =
-  //     Notifications.addNotificationResponseReceivedListener(
-  //       handleNotificationResponse,
-  //     );
+    if (!savedState || savedState.state === "inactive") return;
 
-  //   return () => {
-  //     cleanupTimer();
-  //     subscription.remove();
-  //     notificationResponseSubscription.remove();
-  //   };
-  // }, []);
+    sessionId.current = savedState.sessionId;
+
+    let remainingTime = savedState.remainingTime;
+    if (savedState.state === "running") {
+      const elapsedTime = Math.floor(Date.now() - savedState.date.getTime());
+      remainingTime = Math.max(0, remainingTime - elapsedTime);
+    }
+
+    if (remainingTime <= 0 && savedState.state !== "completed") {
+      setStatus({ isRunning: false, isPaused: false, isCompleted: true });
+      await addTimeEvent(savedState.sessionId, "stop");
+      return;
+    }
+
+    timeLeftRef.current = remainingTime;
+    setTimeLeft(remainingTime);
+
+    setStatus({
+      isRunning:
+        savedState.state === "running" || savedState.state === "paused",
+      isPaused: savedState.state === "paused",
+      isCompleted: savedState.state === "completed",
+    });
+
+    if (savedState.state === "running") {
+      accurateTimer.current = createAccurateTimer(timerTick, 1000);
+      accurateTimer.current.start();
+    }
+  }, [cleanupTimer, setStatus, setTimeLeft, timerTick]);
+
+  const handleAppStateChange = useCallback(
+    async (nextAppState: string) => {
+      if (nextAppState === "active") {
+        await restoreTimerState();
+      } else if (nextAppState === "background" || nextAppState === "inactive") {
+        await saveCurrentTimerState();
+      }
+    },
+    [restoreTimerState, saveCurrentTimerState],
+  );
+
+  const handleNotificationResponse = useCallback(
+    async (response: Notifications.NotificationResponse) => {
+      const actionIdentifier = response.actionIdentifier;
+
+      if (actionIdentifier === DISMISS_ACTION_ID) {
+        await Notifications.dismissNotificationAsync(
+          response.notification.request.identifier,
+        );
+        await resetTimer();
+      }
+    },
+    [resetTimer],
+  );
+
+  useEffect(() => {
+    setupNotifications();
+    restoreTimerState();
+
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+
+    const notificationResponseSubscription =
+      Notifications.addNotificationResponseReceivedListener(
+        handleNotificationResponse,
+      );
+
+    return () => {
+      cleanupTimer();
+      subscription.remove();
+      notificationResponseSubscription.remove();
+    };
+  }, [
+    cleanupTimer,
+    handleAppStateChange,
+    handleNotificationResponse,
+    restoreTimerState,
+  ]);
 
   return {
     timeLeft: timeLeft,

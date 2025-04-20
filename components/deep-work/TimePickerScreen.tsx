@@ -54,7 +54,12 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
       </View>
 
       <View className="h-14">
-        <Button size="lg" className="w-full" onPress={() => startTimer(time)}>
+        <Button
+          size="lg"
+          className="w-full"
+          // onPress={() => startTimer(time)}
+          onPress={() => startTimer(5000)}
+        >
           <Text className="native:text-2xl">Start</Text>
         </Button>
       </View>
