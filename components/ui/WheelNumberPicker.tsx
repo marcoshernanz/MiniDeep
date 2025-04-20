@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import { FlatList, View } from "react-native";
 import { Text } from "./text";
 import { LinearGradient } from "expo-linear-gradient";

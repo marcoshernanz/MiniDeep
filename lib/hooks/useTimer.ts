@@ -100,14 +100,15 @@ export default function useTimer() {
       markSessionAsCompleted(sessionId.current);
 
       // TODO: Update app state
-    }
 
-    setTimeLeft(0);
+      setTimeLeft(0);
+    }
   };
 
   const timerTick = () => {
     if (timeLeftRef.current > 0) {
       timeLeftRef.current -= 1000;
+      setTimeLeft(timeLeftRef.current);
       updateTimeRemaining();
     }
   };
