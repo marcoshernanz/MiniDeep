@@ -1,19 +1,25 @@
 import useColors from "@/lib/hooks/useColors";
 import useChart from "@/lib/hooks/useChart";
 import { LinearGradient } from "@shopify/react-native-skia";
-import { View } from "react-native";
-import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { Dimensions, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+} from "react-native-reanimated";
 import { Area, CartesianChart, Line, Scatter } from "victory-native";
 import { useRef } from "react";
+import { ReText } from "react-native-redash";
+import formatTime from "@/lib/utils/formatTime";
+import formatDate from "@/lib/utils/formatDate";
 
 const data = [
-  { date: "2023-10-01", time: 3600 },
-  { date: "2023-10-02", time: 18000 },
-  { date: "2023-10-03", time: 10800 },
-  { date: "2023-10-04", time: 25200 },
-  { date: "2023-10-05", time: 7200 },
-  { date: "2023-10-06", time: 28800 },
-  { date: "2023-10-07", time: 14400 },
+  { date: "2023-10-01", time: 0 },
+  { date: "2023-10-02", time: 0 },
+  { date: "2023-10-03", time: 0 },
+  { date: "2023-10-04", time: 0 },
+  { date: "2023-10-05", time: 0 },
+  { date: "2023-10-06", time: 0 },
+  { date: "2023-10-07", time: 0 },
   { date: "2023-10-08", time: 21600 },
   { date: "2023-10-09", time: 3600 },
   { date: "2023-10-10", time: 18000 },
@@ -46,6 +52,7 @@ type DataType = {
 
 export default function TimeWorkedChart() {
   const { getColor } = useColors();
+  const { width } = Dimensions.get("window");
   const chartRef = useRef(null);
 
   const { chartConfig, tooltip } = useChart<DataType>({
@@ -57,20 +64,34 @@ export default function TimeWorkedChart() {
       x: "2023-10-01",
       y: { time: 0 },
     },
-    padding: 16,
+    paddingX: 16,
   });
+
+  const date = useDerivedValue(() => formatDate(tooltip.x.value.value));
+  const time = useDerivedValue(() => formatTime(tooltip.y.value.value));
 
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
     transform: [
       {
-        translateX: tooltip.position.x.value - 0.5,
+        translateX: tooltip.x.position.value - 0.5,
+      },
+    ],
+  }));
+
+  const tooltipStyle = useAnimatedStyle(() => ({
+    width: 100,
+    transform: [
+      {
+        translateX: Math.min(
+          width - 100,
+          Math.max(0, tooltip.x.position.value - 50),
+        ),
       },
     ],
   }));
 
   return (
-    // <View className="flex-1" style={{ marginHorizontal: 16 }}>
     <View className="flex-1">
       <View ref={chartRef} className="flex-1">
         <CartesianChart
@@ -79,6 +100,7 @@ export default function TimeWorkedChart() {
           yKeys={["time"]}
           xAxis={{ lineWidth: 0, labelPosition: "inset" }}
           yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
+          padding={{ top: 64 }}
           {...chartConfig}
         >
           {({ points, chartBounds }) => (
@@ -120,23 +142,28 @@ export default function TimeWorkedChart() {
 
         {tooltip.isActive && (
           <>
-            <View className="absolute h-full">
+            <View className="absolute -z-10 h-full">
               <Animated.View
-                className="mb-6 mt-9 flex-1 bg-primary"
+                className="mt-16 flex-1 bg-primary"
                 style={lineStyle}
               ></Animated.View>
             </View>
 
-            {/* <Animated.View
-              className="absolute h-9 flex-row items-center justify-center rounded-md border border-primary bg-primary/20"
+            <Animated.View
+              className="absolute h-16 justify-center rounded-md border border-primary bg-primary/20 px-3"
               style={tooltipStyle}
             >
-              <ReText text={pressState.x.value.value} style={{ color: getColor("foreground") }} />
               <ReText
-                text={pressState.y.value.value}
-                style={{ color: getColor("foreground"), fontWeight: 600 }}
+                text={time}
+                className="text-lg font-bold"
+                style={{ color: getColor("foreground") }}
               />
-            </Animated.View> */}
+              <ReText
+                text={date}
+                className="text-sm"
+                style={{ color: getColor("foreground") }}
+              />
+            </Animated.View>
           </>
         )}
       </View>

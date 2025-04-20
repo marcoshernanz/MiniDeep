@@ -23,7 +23,8 @@ interface Params<T extends ChartPressStateInit> {
   numDotsVisible: number;
   yKey: string;
   initialState: T;
-  padding?: number;
+  paddingX?: number;
+  dynamicY?: boolean;
 }
 
 export default function useChart<T extends ChartPressStateInit>({
@@ -32,7 +33,8 @@ export default function useChart<T extends ChartPressStateInit>({
   numDotsVisible,
   yKey,
   initialState,
-  padding = 0,
+  paddingX = 0,
+  dynamicY = false,
 }: Params<T>) {
   const [maxY, setMaxY] = useState(
     data.reduce((max, item) => Math.max(max, item[yKey] as number), 0),
@@ -43,7 +45,8 @@ export default function useChart<T extends ChartPressStateInit>({
     width: 0,
     height: 0,
   });
-  const interval = (chartDimensions.width - padding * 2) / (numDotsVisible - 1);
+  const interval =
+    (chartDimensions.width - paddingX * 2) / (numDotsVisible - 1);
 
   const { state: transformState } = useChartTransformState();
   const { isActive, state: pressState } = useChartPressState(initialState);
@@ -64,7 +67,7 @@ export default function useChart<T extends ChartPressStateInit>({
         const minPan = -interval * (data.length - numDotsVisible);
         const translate = Math.round(xPan.value / interval) * interval;
         const fixedTranslate =
-          Math.max(minPan, Math.min(maxPan, translate)) + padding;
+          Math.max(minPan, Math.min(maxPan, translate)) + paddingX;
 
         xPan.value = withTiming(fixedTranslate);
 
@@ -133,9 +136,11 @@ export default function useChart<T extends ChartPressStateInit>({
         pinch: { enabled: false },
       },
       chartPressConfig: { pan: { activateAfterLongPress: 100 } },
-      domain: { y: [0, maxY] as [number, number] },
+      domain: {
+        y: dynamicY ? ([-1, maxY] as [number, number]) : ([-1] as [number]),
+      },
       viewport: {
-        x: [0, numDotsVisible - 1 + (padding * 2) / interval] as [
+        x: [0, numDotsVisible - 1 + (paddingX * 2) / interval] as [
           number,
           number,
         ],
@@ -143,13 +148,17 @@ export default function useChart<T extends ChartPressStateInit>({
     },
     tooltip: {
       isActive: isActive,
-      position: {
-        x: useDerivedValue(
+      x: {
+        position: useDerivedValue(
           () =>
             pressState.x.position.value +
             getTransformComponents(transformState.matrix.value).translateX,
         ),
-        y: useDerivedValue(() => pressState.y[yKey].position.value),
+        value: pressState.x.value,
+      },
+      y: {
+        position: useDerivedValue(() => pressState.y[yKey].position.value),
+        value: pressState.y[yKey].value,
       },
     },
   };
