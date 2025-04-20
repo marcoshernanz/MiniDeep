@@ -26,6 +26,8 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
     const newHours = hours !== undefined ? hours : currentHours;
     const newMinutes = minutes !== undefined ? minutes : currentMinutes;
 
+    console.log(extractTime(3600000));
+
     setTime((newHours * 3600 + newMinutes * 60) * 1000);
   };
 
