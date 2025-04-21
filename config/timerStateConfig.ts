@@ -1,5 +1,7 @@
+export type TimerStatus = "inactive" | "running" | "paused" | "completed";
+
 export type TimerState = {
-  state: "inactive" | "running" | "paused" | "completed";
+  status: TimerStatus;
   remainingTime: number;
   date: Date;
   sessionId: string;

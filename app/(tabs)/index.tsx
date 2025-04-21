@@ -8,16 +8,8 @@ import TimerRunningScreen from "@/components/deep-work/TimerRunningScreen";
 export default function IndexScreen() {
   const [selectedTime, setSelectedTime] = useState(0);
 
-  const {
-    timeLeft,
-    isRunning,
-    isPaused,
-    isCompleted,
-    startTimer,
-    togglePause,
-    stopTimer,
-    resetTimer,
-  } = useTimer();
+  const { timeLeft, status, startTimer, togglePause, stopTimer, resetTimer } =
+    useTimer();
 
   const handleTimerComplete = async () => {
     await resetTimer();
@@ -25,7 +17,7 @@ export default function IndexScreen() {
 
   return (
     <SafeAreaView className="flex-1 items-center justify-center">
-      {!isRunning && !isCompleted && (
+      {status === "inactive" && (
         <TimePickerScreen
           time={selectedTime}
           setTime={setSelectedTime}
@@ -33,16 +25,18 @@ export default function IndexScreen() {
         />
       )}
 
-      {isRunning && !isCompleted && (
+      {(status === "running" || status === "paused") && (
         <TimerRunningScreen
           timeLeft={timeLeft}
-          isPaused={isPaused}
+          isPaused={status === "paused"}
           togglePause={togglePause}
           stopTimer={stopTimer}
         />
       )}
 
-      {isCompleted && <TimerCompletedScreen onDismiss={handleTimerComplete} />}
+      {status === "completed" && (
+        <TimerCompletedScreen onDismiss={handleTimerComplete} />
+      )}
     </SafeAreaView>
   );
 }
