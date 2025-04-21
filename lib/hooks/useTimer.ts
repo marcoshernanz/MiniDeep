@@ -269,6 +269,10 @@ export default function useTimer() {
     if (savedState.state === "running") {
       accurateTimer.current = createAccurateTimer(timerTick, 1000);
       accurateTimer.current.start();
+    } else if (savedState.state === "paused") {
+      accurateTimer.current = createAccurateTimer(timerTick, 1000);
+      accurateTimer.current.start();
+      accurateTimer.current.pause();
     }
   }, [cleanupTimer, timerTick]);
 
