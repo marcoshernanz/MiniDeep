@@ -85,9 +85,9 @@ export default function useTimer() {
   const accurateTimer = useRef<ReturnType<typeof createAccurateTimer> | null>(
     null,
   );
+  const isRestoringState = useRef(false);
 
   const cleanupTimer = useCallback(() => {
-    console.log("Cleaning up timer");
     if (accurateTimer.current) {
       accurateTimer.current.stop();
       accurateTimer.current = null;
@@ -178,6 +178,8 @@ export default function useTimer() {
   }, []);
 
   const saveCurrentTimerState = useCallback(async () => {
+    if (isRestoringState.current) return;
+
     saveTimerState({
       status: statusRef.current,
       remainingTime: timeLeftRef.current,
@@ -187,35 +189,53 @@ export default function useTimer() {
   }, []);
 
   const restoreTimerState = useCallback(async () => {
-    cleanupTimer();
+    if (isRestoringState.current) return;
+    isRestoringState.current = true;
 
-    const savedState = await getTimerState();
+    try {
+      cleanupTimer();
 
-    console.log("AAA", savedState);
+      const savedState = await getTimerState();
 
-    if (!savedState || savedState.status === "inactive") return;
+      if (!savedState || savedState.status === "inactive") {
+        statusRef.current = "inactive";
+        timeLeftRef.current = 0;
+        sessionId.current = "";
 
-    setStatus(savedState.status);
-    timeLeftRef.current = savedState.remainingTime;
-    setTimeLeft(savedState.remainingTime);
-    sessionId.current = savedState.sessionId;
+        setStatus("inactive");
+        setTimeLeft(0);
 
-    if (savedState.status === "running") {
-      const elapsedTime = Math.floor(Date.now() - savedState.date.getTime());
-      timeLeftRef.current = Math.max(0, timeLeftRef.current - elapsedTime);
-
-      if (timeLeftRef.current <= 0) {
-        handleTimerCompletion();
         return;
       }
 
-      accurateTimer.current = createAccurateTimer(timerTick, 1000);
-      accurateTimer.current.start();
-    } else if (savedState.status === "paused") {
-      console.log("Restoring paused timer state");
-      accurateTimer.current = createAccurateTimer(timerTick, 1000);
-      accurateTimer.current.start();
-      accurateTimer.current.pause();
+      statusRef.current = savedState.status;
+      timeLeftRef.current = savedState.remainingTime;
+      sessionId.current = savedState.sessionId;
+
+      setStatus(savedState.status);
+      setTimeLeft(savedState.remainingTime);
+
+      if (savedState.status === "running") {
+        const elapsedTime = Math.floor(
+          Date.now() - new Date(savedState.date).getTime(),
+        );
+        timeLeftRef.current = Math.max(0, timeLeftRef.current - elapsedTime);
+        setTimeLeft(timeLeftRef.current);
+
+        if (timeLeftRef.current <= 0) {
+          handleTimerCompletion();
+          return;
+        }
+
+        accurateTimer.current = createAccurateTimer(timerTick, 1000);
+        accurateTimer.current.start();
+      } else if (savedState.status === "paused") {
+        accurateTimer.current = createAccurateTimer(timerTick, 1000);
+        accurateTimer.current.start();
+        accurateTimer.current.pause();
+      }
+    } finally {
+      isRestoringState.current = false;
     }
   }, [cleanupTimer, handleTimerCompletion, timerTick]);
 
