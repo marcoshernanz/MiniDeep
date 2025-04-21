@@ -50,6 +50,7 @@ const setupNotifications = async () => {
 };
 
 const scheduleTimerCompletionNotification = async (time: number) => {
+  console.log("Scheduling timer completion notification", time / 1000);
   await Notifications.cancelAllScheduledNotificationsAsync();
 
   await Notifications.scheduleNotificationAsync({
@@ -72,6 +73,7 @@ const scheduleTimerCompletionNotification = async (time: number) => {
 };
 
 const cancelTimerNotifications = async () => {
+  console.log("Cancelling timer notifications");
   await Notifications.cancelAllScheduledNotificationsAsync();
 };
 
@@ -94,14 +96,15 @@ export default function useTimer() {
     }
   }, []);
 
-  const handleTimerCompletion = useCallback(() => {
+  const handleTimerCompletion = useCallback(async () => {
     if (accurateTimer.current) {
       accurateTimer.current.stop();
     }
 
     setStatus("completed");
-    addTimeEvent(sessionId.current, "stop");
-    markSessionAsCompleted(sessionId.current);
+    await addTimeEvent(sessionId.current, "stop");
+    await markSessionAsCompleted(sessionId.current);
+    await cancelTimerNotifications();
 
     timeLeftRef.current = 0;
     setTimeLeft(0);
@@ -223,9 +226,12 @@ export default function useTimer() {
         setTimeLeft(timeLeftRef.current);
 
         if (timeLeftRef.current <= 0) {
-          handleTimerCompletion();
+          await handleTimerCompletion();
           return;
         }
+
+        await cancelTimerNotifications();
+        await scheduleTimerCompletionNotification(timeLeftRef.current);
 
         accurateTimer.current = createAccurateTimer(timerTick, 1000);
         accurateTimer.current.start();
