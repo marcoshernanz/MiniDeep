@@ -8,6 +8,7 @@ export default async function createNewSession(
   const sessionId = Date.now().toString();
   const newSession: WorkSession = {
     id: sessionId,
+    startDate: new Date(),
     plannedDuration: totalDuration,
     isActive: true,
     events: [],

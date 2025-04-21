@@ -7,6 +7,7 @@ export type TimeEvent = {
 
 export type WorkSession = {
   id: string;
+  startDate: Date;
   plannedDuration: number;
   isActive: boolean;
   events: TimeEvent[];
