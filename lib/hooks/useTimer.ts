@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { AppState, Platform } from "react-native";
+import { AppState } from "react-native";
 import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
@@ -83,6 +83,7 @@ export default function useTimer() {
     isCompleted: false,
   });
 
+  const statusRef = useRef(status);
   const sessionId = useRef("");
   const timeLeftRef = useRef(0);
   const accurateTimer = useRef<ReturnType<typeof createAccurateTimer> | null>(
@@ -115,7 +116,7 @@ export default function useTimer() {
 
       setTimeLeft(0);
     }
-  }, [setStatus, setTimeLeft]);
+  }, []);
 
   const timerTick = useCallback(() => {
     if (timeLeftRef.current > 0) {
@@ -123,7 +124,7 @@ export default function useTimer() {
       setTimeLeft(timeLeftRef.current);
       updateTimeRemaining();
     }
-  }, [setTimeLeft, updateTimeRemaining]);
+  }, [updateTimeRemaining]);
 
   const startTimer = async (time: number) => {
     timeLeftRef.current = time;
@@ -217,10 +218,10 @@ export default function useTimer() {
       date: new Date(),
       sessionId: "",
     });
-  }, [setStatus, setTimeLeft]);
+  }, []);
 
   const saveCurrentTimerState = useCallback(async () => {
-    if (status.isRunning && !status.isPaused) {
+    if (statusRef.current.isRunning && !statusRef.current.isPaused) {
       await saveTimerState({
         state: "running",
         remainingTime: timeLeftRef.current,
@@ -232,7 +233,7 @@ export default function useTimer() {
     } else {
       await cancelTimerNotifications();
     }
-  }, [status.isRunning, status.isPaused]);
+  }, []);
 
   const restoreTimerState = useCallback(async () => {
     cleanupTimer();
@@ -269,7 +270,7 @@ export default function useTimer() {
       accurateTimer.current = createAccurateTimer(timerTick, 1000);
       accurateTimer.current.start();
     }
-  }, [cleanupTimer, setStatus, setTimeLeft, timerTick]);
+  }, [cleanupTimer, timerTick]);
 
   const handleAppStateChange = useCallback(
     async (nextAppState: string) => {
@@ -321,6 +322,10 @@ export default function useTimer() {
     handleNotificationResponse,
     restoreTimerState,
   ]);
+
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
 
   return {
     timeLeft: timeLeft,
