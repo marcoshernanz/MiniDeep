@@ -7,6 +7,7 @@
 - [x] Timer completed sound via alarm volume.
 - [x] Timer notification.
 - [x] Timer completed vibration.
+- [ ] Time zone bug
 - [ ] MMKV instead of async storage.
 - [ ] Improved analytics
    - [ ] Daily view
