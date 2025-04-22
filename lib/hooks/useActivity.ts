@@ -31,7 +31,7 @@ export default function useActivity() {
       const activityMap = new Map<string, ActivityType>();
 
       timeDistributionData.forEach((dist) => {
-        const dateKey = dist.date.toISOString().split("T")[0];
+        const dateKey = startOfDay(dist.date).getTime().toString();
         if (!activityMap.has(dateKey)) {
           activityMap.set(dateKey, {
             date: startOfDay(dist.date),
@@ -43,7 +43,7 @@ export default function useActivity() {
       });
 
       sessionsData.forEach((session) => {
-        const dateKey = session.startDate.toISOString().split("T")[0];
+        const dateKey = startOfDay(session.startDate).getTime().toString();
         const sessionDuration = calculateSessionDuration(session);
 
         const isCompleted = sessionDuration === session.plannedDuration;

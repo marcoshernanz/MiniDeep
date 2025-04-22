@@ -8,6 +8,7 @@
 - [x] Timer notification.
 - [x] Timer completed vibration.
 - [ ] Time zone bug
+- [ ] Notification sound when not closing and opening
 - [ ] MMKV instead of async storage.
 - [ ] Improved analytics
    - [ ] Daily view

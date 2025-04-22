@@ -17,7 +17,7 @@ export default function ActivitySummary({
       <Card className="flex-1 p-4">
         <Text className="text-sm text-muted-foreground">Total Time</Text>
         <Text className="text-2xl font-semibold text-foreground">
-          {formatTime(totalTime)}
+          {formatTime(totalTime / 1000)}
         </Text>
       </Card>
 

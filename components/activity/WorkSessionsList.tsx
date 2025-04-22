@@ -40,7 +40,7 @@ export default function WorkSessionsList({ sessions }: WorkSessionsListProps) {
             </Text>
             <View className="flex-row items-center">
               <Text className="mr-2 text-foreground">
-                {formatTime(item.duration)}
+                {formatTime(item.duration / 1000)}
               </Text>
               <View
                 className={`size-3 rounded-full ${item.completed ? "bg-green/80" : "bg-red/80"}`}

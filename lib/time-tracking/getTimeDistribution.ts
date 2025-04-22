@@ -10,10 +10,7 @@ type TimeDistribution = {
 }[];
 
 const getDateKey = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return startOfDay(date).getTime().toString();
 };
 
 const createDefaultHourlyDistribution = (): {
@@ -67,7 +64,9 @@ export default async function getTimeDistribution(): Promise<TimeDistribution> {
 
     const hourlyDistribution = distributionMap.get(dateKey);
 
-    if (!hourlyDistribution) continue;
+    if (!hourlyDistribution) {
+      continue;
+    }
 
     const hourEntry = hourlyDistribution.find(
       (entry) => entry.hour === startHour,
@@ -80,15 +79,16 @@ export default async function getTimeDistribution(): Promise<TimeDistribution> {
 
   const distributionResult: TimeDistribution = Array.from(
     distributionMap.entries(),
-  ).map(([dateString, hourlyDist]) => {
-    const [year, month, day] = dateString.split("-").map(Number);
-    const resultDate = new Date(year, month - 1, day);
+  ).map(([dateTimestampString, hourlyDist]) => {
+    const resultDate = new Date(parseInt(dateTimestampString));
 
     return {
       date: resultDate,
       distribution: hourlyDist,
     };
   });
+
+  distributionResult.sort((a, b) => a.date.getTime() - b.date.getTime());
 
   return distributionResult;
 }
