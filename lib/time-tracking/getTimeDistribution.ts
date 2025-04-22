@@ -61,7 +61,7 @@ export default async function getTimeDistribution(): Promise<TimeDistribution> {
 
     if (time <= 0) continue;
 
-    const eventStartDate = new Date(currentEvent.date);
+    const eventStartDate = currentEvent.date;
     const dateKey = getDateKey(eventStartDate);
     const startHour = eventStartDate.getHours();
 

@@ -1,4 +1,4 @@
-import { WorkSession } from "@/config/timeTrackingConfig";
+import { WorkSession } from "@/zod/schemas/WorkSessionSchema";
 
 export default function calculateSessionDuration(session: WorkSession): number {
   if (session.events.length < 2) {
@@ -11,8 +11,7 @@ export default function calculateSessionDuration(session: WorkSession): number {
     const endEvent = session.events[i + 1];
 
     if (startEvent.action === "start" && endEvent.action === "stop") {
-      const duration =
-        new Date(endEvent.date).getTime() - new Date(startEvent.date).getTime();
+      const duration = endEvent.date.getTime() - startEvent.date.getTime();
       totalDuration += duration;
     }
   }

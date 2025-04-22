@@ -7,7 +7,7 @@ import getTimerState from "../timer/getTimerState";
 import saveTimerState from "../timer/saveTimerState";
 import * as Notifications from "expo-notifications";
 import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
-import { TimerStatus } from "@/config/timerStateConfig";
+import { TimerState } from "@/zod/schemas/TimerStateSchema";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
 const TIMER_CATEGORY = "timer_completed";
@@ -77,9 +77,9 @@ const cancelTimerNotifications = async () => {
 
 export default function useTimer() {
   const [timeLeft, setTimeLeft] = useState(0);
-  const [status, setStatus] = useState<TimerStatus>("inactive");
+  const [status, setStatus] = useState<TimerState["status"]>("inactive");
 
-  const statusRef = useRef<TimerStatus>(status);
+  const statusRef = useRef<TimerState["status"]>(status);
   const sessionId = useRef("");
   const timeLeftRef = useRef(0);
   const accurateTimer = useRef<ReturnType<typeof createAccurateTimer> | null>(
@@ -217,9 +217,7 @@ export default function useTimer() {
       setTimeLeft(savedState.remainingTime);
 
       if (savedState.status === "running") {
-        const elapsedTime = Math.floor(
-          Date.now() - new Date(savedState.date).getTime(),
-        );
+        const elapsedTime = Math.floor(Date.now() - savedState.date.getTime());
         timeLeftRef.current = Math.max(0, timeLeftRef.current - elapsedTime);
         setTimeLeft(timeLeftRef.current);
 
