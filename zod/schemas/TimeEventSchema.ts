@@ -4,7 +4,7 @@ export const TimeEventSchema = z.object({
   id: z.string(),
   sessionId: z.string(),
   action: z.enum(["start", "stop"]),
-  date: z.date(),
+  date: z.coerce.date(),
 });
 
 export type TimeEvent = z.infer<typeof TimeEventSchema>;

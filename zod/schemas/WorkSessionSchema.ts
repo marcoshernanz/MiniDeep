@@ -3,7 +3,7 @@ import { TimeEventSchema } from "./TimeEventSchema";
 
 export const WorkSessionSchema = z.object({
   id: z.string(),
-  startDate: z.date(),
+  startDate: z.coerce.date(),
   plannedDuration: z.number(),
   isActive: z.boolean(),
   events: z.array(TimeEventSchema),

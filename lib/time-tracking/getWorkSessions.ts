@@ -21,14 +21,7 @@ export default async function getWorkSessions(): Promise<WorkSession[]> {
     const validationResult = WorkSessionArraySchema.safeParse(parsedData);
 
     if (validationResult.success) {
-      return validationResult.data.map((session) => ({
-        ...session,
-        startDate: new Date(session.startDate),
-        events: session.events.map((event) => ({
-          ...event,
-          date: new Date(event.date),
-        })),
-      }));
+      return validationResult.data;
     } else {
       console.error("Work sessions validation failed:", validationResult.error);
       return [];

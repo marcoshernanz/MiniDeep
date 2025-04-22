@@ -13,10 +13,7 @@ export default async function getTimerState(): Promise<TimerState | null> {
     const validationResult = TimerStateSchema.safeParse(parsedData);
 
     if (validationResult.success) {
-      return {
-        ...validationResult.data,
-        date: new Date(validationResult.data.date),
-      };
+      return validationResult.data;
     } else {
       console.error("Timer state validation failed:", validationResult.error);
       return null;
