@@ -50,7 +50,6 @@ const setupNotifications = async () => {
 };
 
 const scheduleTimerCompletionNotification = async (time: number) => {
-  console.log("Scheduling timer completion notification", time / 1000);
   await Notifications.cancelAllScheduledNotificationsAsync();
 
   await Notifications.scheduleNotificationAsync({
@@ -73,7 +72,6 @@ const scheduleTimerCompletionNotification = async (time: number) => {
 };
 
 const cancelTimerNotifications = async () => {
-  console.log("Cancelling timer notifications");
   await Notifications.cancelAllScheduledNotificationsAsync();
 };
 

@@ -33,7 +33,7 @@ const circleSize = 12;
 export default function WorkDistributionChart({ timeDistribution }: Props) {
   const { getColor } = useColors();
   const font = matchFont({ fontFamily: listFontFamilies()[0] });
-  const { state, isActive } = useChartPressState({ x: 0, y: { duration: 0 } });
+  const { state, isActive } = useChartPressState({ x: 0, y: { time: 0 } });
 
   const { width } = Dimensions.get("window");
 
@@ -42,7 +42,7 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
       ? `0${state.x.value.value}:00`
       : `${state.x.value.value}:00`,
   );
-  const duration = useDerivedValue(() => String(state.y.duration.value.value));
+  const duration = useDerivedValue(() => String(state.y.time.value.value));
 
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
@@ -53,7 +53,7 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
     width: circleSize,
     transform: [
       { translateX: state.x.position.value - circleSize / 2 },
-      { translateY: state.y.duration.position.value - circleSize / 2 },
+      { translateY: state.y.time.position.value - circleSize / 2 },
     ],
   }));
   const tooltipStyle = useAnimatedStyle(() => ({
@@ -76,8 +76,8 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
       <View className="h-72">
         <CartesianChart
           data={timeDistribution}
-          xKey="time"
-          yKeys={["duration"]}
+          xKey="hour"
+          yKeys={["time"]}
           domain={{ x: [0, 23], y: [-1, 61] }}
           padding={{ bottom: 12, top: 32 }}
           xAxis={{
@@ -95,13 +95,13 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
           {({ points, chartBounds }) => (
             <>
               <Line
-                points={points.duration}
+                points={points.time}
                 color={getColor("primary")}
                 strokeWidth={1}
                 curveType="bumpX"
               />
               <Area
-                points={points.duration}
+                points={points.time}
                 y0={chartBounds.bottom}
                 curveType="bumpX"
                 opacity={0.5}

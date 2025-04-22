@@ -65,6 +65,8 @@ export default function useActivity() {
       );
 
       setActivity(processedActivity);
+    } catch (error) {
+      console.error("Error loading activity:", error);
     } finally {
       setLoading(false);
     }

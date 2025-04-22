@@ -36,7 +36,7 @@ export default function ActivityMain({
         <ScrollView showsVerticalScrollIndicator={false}>
           <ActivitySummary
             totalTime={activityData.totalWorkTime}
-            totalSessions={activityData.totalSessions}
+            totalSessions={activityData.sessions.length}
           />
 
           <View className="mx-4 my-4 h-0.5 bg-muted"></View>

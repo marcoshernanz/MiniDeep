@@ -18,7 +18,7 @@ export default function WorkSessionsList({ sessions }: WorkSessionsListProps) {
         Sessions
       </Text>
       {sessions.length === 0 && (
-        <Text className="text-center text-muted-foreground">
+        <Text className="mb-4 text-center text-muted-foreground">
           No work sessions for this day
         </Text>
       )}

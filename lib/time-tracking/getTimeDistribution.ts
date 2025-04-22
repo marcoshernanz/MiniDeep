@@ -11,7 +11,7 @@ type TimeDistribution = {
 
 const getDateKey = (date: Date): string => {
   const year = date.getFullYear();
-  const month = date.getMonth() + 1; // Month is 0-indexed
+  const month = date.getMonth() + 1;
   const day = date.getDate();
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 };
@@ -25,7 +25,7 @@ const createDefaultHourlyDistribution = (): {
 
 export default async function getTimeDistribution(): Promise<TimeDistribution> {
   const sessions = (await getWorkSessions()).sort(
-    (a, b) => a.startDate.getTime() - b.startDate.getTime(), // Sort ASCENDING by start date
+    (a, b) => a.startDate.getTime() - b.startDate.getTime(),
   );
 
   const distributionMap = new Map<string, { hour: number; time: number }[]>();
