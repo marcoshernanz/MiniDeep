@@ -42,7 +42,9 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
       ? `0${state.x.value.value}:00`
       : `${state.x.value.value}:00`,
   );
-  const duration = useDerivedValue(() => String(state.y.time.value.value));
+  const duration = useDerivedValue(() =>
+    String(Math.round(state.y.time.value.value / (60 * 1000))),
+  );
 
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
@@ -78,7 +80,7 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
           data={timeDistribution}
           xKey="hour"
           yKeys={["time"]}
-          domain={{ x: [0, 23], y: [-1, 61] }}
+          domain={{ x: [0, 23], y: [-1, 61 * 60 * 1000] }}
           padding={{ bottom: 12, top: 32 }}
           xAxis={{
             font,
