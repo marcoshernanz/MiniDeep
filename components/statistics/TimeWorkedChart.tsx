@@ -12,39 +12,6 @@ import { ReText } from "react-native-redash";
 import formatTime from "@/lib/utils/formatTime";
 import { format, parseISO } from "date-fns";
 
-// const data = [
-//   { date: "2023-10-01", time: 0 },
-//   { date: "2023-10-02", time: 0 },
-//   { date: "2023-10-03", time: 0 },
-//   { date: "2023-10-04", time: 0 },
-//   { date: "2023-10-05", time: 0 },
-//   { date: "2023-10-06", time: 0 },
-//   { date: "2023-10-07", time: 0 },
-//   { date: "2023-10-08", time: 21600 },
-//   { date: "2023-10-09", time: 3600 },
-//   { date: "2023-10-10", time: 18000 },
-//   { date: "2023-10-11", time: 25200 },
-//   { date: "2023-10-12", time: 7200 },
-//   { date: "2023-10-13", time: 10800 },
-//   { date: "2023-10-14", time: 14400 },
-//   { date: "2023-10-15", time: 21600 },
-//   { date: "2023-10-16", time: 28800 },
-//   { date: "2023-10-17", time: 3600 },
-//   { date: "2023-10-18", time: 18000 },
-//   { date: "2023-10-19", time: 7200 },
-//   { date: "2023-10-20", time: 10800 },
-//   { date: "2023-10-21", time: 25200 },
-//   { date: "2023-10-22", time: 14400 },
-//   { date: "2023-10-23", time: 21600 },
-//   { date: "2023-10-24", time: 28800 },
-//   { date: "2023-10-25", time: 3600 },
-//   { date: "2023-10-26", time: 18000 },
-//   { date: "2023-10-27", time: 7200 },
-//   { date: "2023-10-28", time: 10800 },
-//   { date: "2023-10-29", time: 25200 },
-//   { date: "2023-10-30", time: 14400 },
-// ];
-
 type DataType = {
   x: string;
   y: Record<"time", number>;

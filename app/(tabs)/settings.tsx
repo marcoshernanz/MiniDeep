@@ -1,10 +1,39 @@
-import { View, Text, Switch, Pressable, ScrollView } from "react-native";
+import { View, Text, Switch, Pressable, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronRightIcon, MoonIcon, SunIcon } from "lucide-react-native";
 import { useColorScheme } from "@/lib/hooks/useColorScheme";
+import seedDummyData from "@/lib/time-tracking/seedDummyData";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import timeTrackingConfig from "@/config/timeTrackingConfig";
+import { useState } from "react";
 
 export default function SettingsScreen() {
   const { isDarkColorScheme } = useColorScheme();
+  const [loading, setLoading] = useState(false);
+
+  const handleSeedData = async () => {
+    setLoading(true);
+    try {
+      await seedDummyData();
+      Alert.alert("Success", "Dummy data seeded!");
+    } catch (e) {
+      Alert.alert("Error", "Failed to seed dummy data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearData = async () => {
+    setLoading(true);
+    try {
+      await AsyncStorage.removeItem(timeTrackingConfig.storageKey);
+      Alert.alert("Success", "All data cleared!");
+    } catch (e) {
+      Alert.alert("Error", "Failed to clear data.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -128,6 +157,24 @@ export default function SettingsScreen() {
             <Pressable className="flex-row items-center justify-between px-4 py-3">
               <Text className="text-foreground">App Version</Text>
               <Text className="text-muted-foreground">1.0.0</Text>
+            </Pressable>
+            <View className="mx-4 h-px bg-border" />
+            <Pressable
+              className="flex-row items-center justify-between px-4 py-3"
+              onPress={handleSeedData}
+              disabled={loading}
+              style={{ opacity: loading ? 0.5 : 1 }}
+            >
+              <Text className="text-foreground">Seed Dummy Data</Text>
+            </Pressable>
+            <View className="mx-4 h-px bg-border" />
+            <Pressable
+              className="flex-row items-center justify-between px-4 py-3"
+              onPress={handleClearData}
+              disabled={loading}
+              style={{ opacity: loading ? 0.5 : 1 }}
+            >
+              <Text className="text-foreground">Clear All Data</Text>
             </Pressable>
             <View className="mx-4 h-px bg-border" />
             <Pressable className="flex-row items-center justify-between px-4 py-3">
