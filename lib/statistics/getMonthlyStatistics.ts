@@ -1,26 +1,26 @@
 import getTimeDistribution from "../time-tracking/getTimeDistribution";
-import { startOfWeek } from "date-fns";
+import { startOfMonth } from "date-fns";
 
-type WeeklyStatistics = {
+type MonthlyStatistics = {
   date: Date;
   time: number;
 }[];
 
-export default async function getWeeklyStatistics(): Promise<WeeklyStatistics> {
+export default async function getMonthlyStatistics(): Promise<MonthlyStatistics> {
   const timeDistributions = await getTimeDistribution();
-  const weekMap = new Map<number, number>();
+  const monthMap = new Map<number, number>();
 
   for (const dist of timeDistributions) {
-    const weekStart = startOfWeek(dist.date, { weekStartsOn: 1 });
-    const weekKey = weekStart.getTime();
+    const monthStart = startOfMonth(dist.date);
+    const monthKey = monthStart.getTime();
     const dayTotal = dist.distribution.reduce(
       (sum, hour) => sum + hour.time,
       0,
     );
-    weekMap.set(weekKey, (weekMap.get(weekKey) || 0) + dayTotal);
+    monthMap.set(monthKey, (monthMap.get(monthKey) || 0) + dayTotal);
   }
 
-  return Array.from(weekMap.entries())
+  return Array.from(monthMap.entries())
     .map(([date, time]) => ({ date: new Date(date), time }))
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 }
