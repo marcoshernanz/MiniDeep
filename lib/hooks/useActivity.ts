@@ -60,9 +60,9 @@ export default function useActivity() {
         });
       });
 
-      const processedActivity = Array.from(activityMap.values()).sort(
-        (a, b) => b.date.getTime() - a.date.getTime(),
-      );
+      const processedActivity = Array.from(activityMap.values())
+        .sort((a, b) => b.date.getTime() - a.date.getTime())
+        .toReversed();
 
       setActivity(processedActivity);
     } catch (error) {
