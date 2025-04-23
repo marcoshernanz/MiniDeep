@@ -50,6 +50,10 @@ const setupNotifications = async () => {
 };
 
 const scheduleTimerCompletionNotification = async (time: number) => {
+  console.log(
+    "Scheduling timer completion notification:",
+    Math.floor(time / 1000),
+  );
   await Notifications.cancelAllScheduledNotificationsAsync();
 
   await Notifications.scheduleNotificationAsync({
@@ -64,7 +68,7 @@ const scheduleTimerCompletionNotification = async (time: number) => {
       categoryIdentifier: TIMER_CATEGORY,
     },
     trigger: {
-      seconds: Math.floor(time / 1000),
+      ...(time > 0 ? { seconds: Math.floor(time / 1000) } : {}),
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       channelId: TIMER_CHANNEL_ID,
     },
@@ -94,15 +98,17 @@ export default function useTimer() {
     }
   }, []);
 
-  const handleTimerCompletion = useCallback(async () => {
+  const handleTimerCompletion = useCallback(async (notify: boolean = true) => {
     if (accurateTimer.current) {
       accurateTimer.current.stop();
     }
 
     setStatus("completed");
+    if (notify) {
+      await scheduleTimerCompletionNotification(timeLeftRef.current);
+    }
     await addTimeEvent(sessionId.current, "stop");
     await markSessionAsCompleted(sessionId.current);
-    await cancelTimerNotifications();
 
     timeLeftRef.current = 0;
     setTimeLeft(0);
@@ -132,8 +138,6 @@ export default function useTimer() {
 
     await addTimeEvent(createdSessionId, "start");
 
-    await scheduleTimerCompletionNotification(time);
-
     accurateTimer.current.start();
   };
 
@@ -143,12 +147,10 @@ export default function useTimer() {
     if (status === "paused") {
       accurateTimer.current.resume();
       await addTimeEvent(sessionId.current, "start");
-      await scheduleTimerCompletionNotification(timeLeftRef.current);
       setStatus("running");
     } else if (status === "running") {
       accurateTimer.current.pause();
       await addTimeEvent(sessionId.current, "stop");
-      await cancelTimerNotifications();
       setStatus("paused");
     }
   };
@@ -159,7 +161,6 @@ export default function useTimer() {
       accurateTimer.current = null;
 
       await addTimeEvent(sessionId.current, "stop");
-      await cancelTimerNotifications();
     }
 
     setStatus("inactive");
@@ -174,12 +175,14 @@ export default function useTimer() {
     timeLeftRef.current = 0;
     sessionId.current = "";
     setTimeLeft(0);
-
-    await cancelTimerNotifications();
   }, []);
 
   const saveCurrentTimerState = useCallback(async () => {
     if (isRestoringState.current) return;
+
+    if (statusRef.current === "running") {
+      await scheduleTimerCompletionNotification(timeLeftRef.current);
+    }
 
     saveTimerState({
       status: statusRef.current,
@@ -222,12 +225,11 @@ export default function useTimer() {
         setTimeLeft(timeLeftRef.current);
 
         if (timeLeftRef.current <= 0) {
-          await handleTimerCompletion();
+          await handleTimerCompletion(false);
           return;
         }
 
         await cancelTimerNotifications();
-        await scheduleTimerCompletionNotification(timeLeftRef.current);
 
         accurateTimer.current = createAccurateTimer(timerTick, 1000);
         accurateTimer.current.start();
