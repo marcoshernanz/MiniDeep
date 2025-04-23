@@ -137,12 +137,7 @@ export default function useChart<T extends ChartPressStateInit>({
       },
       chartPressConfig: { pan: { activateAfterLongPress: 100 } },
       domain: {
-        y: dynamicY
-          ? ([-1, maxY] as [number, number])
-          : ([-1, Math.max(...data.map((item) => item[yKey] as number))] as [
-              number,
-              number,
-            ]),
+        y: dynamicY ? ([-1, maxY] as [number, number]) : ([-1] as [number]),
       },
       viewport: {
         x: [0, numDotsVisible - 1 + (paddingX * 2) / interval] as [
