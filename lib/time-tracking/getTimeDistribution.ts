@@ -58,22 +58,30 @@ export default async function getTimeDistribution(): Promise<TimeDistribution> {
 
     if (time <= 0) continue;
 
-    const eventStartDate = currentEvent.date;
-    const dateKey = getDateKey(eventStartDate);
-    const startHour = eventStartDate.getHours();
+    const startDate = currentEvent.date;
+    const endDate = nextEvent.date;
+    let cursor = new Date(startDate);
 
-    const hourlyDistribution = distributionMap.get(dateKey);
+    while (cursor < endDate) {
+      const dateKeySegment = getDateKey(cursor);
+      const hourlyDistributionSegment = distributionMap.get(dateKeySegment);
+      const segmentHour = cursor.getHours();
+      const nextHour = new Date(cursor);
+      nextHour.setMinutes(0, 0, 0);
+      nextHour.setHours(cursor.getHours() + 1);
+      const segmentEnd = endDate < nextHour ? endDate : nextHour;
+      const delta = segmentEnd.getTime() - cursor.getTime();
 
-    if (!hourlyDistribution) {
-      continue;
-    }
+      if (hourlyDistributionSegment) {
+        const hourEntrySegment = hourlyDistributionSegment.find(
+          (entry) => entry.hour === segmentHour,
+        );
+        if (hourEntrySegment) {
+          hourEntrySegment.time += delta;
+        }
+      }
 
-    const hourEntry = hourlyDistribution.find(
-      (entry) => entry.hour === startHour,
-    );
-
-    if (hourEntry) {
-      hourEntry.time += time;
+      cursor = segmentEnd;
     }
   }
 
