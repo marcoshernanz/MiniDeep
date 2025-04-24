@@ -26,7 +26,13 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
     const newHours = hours !== undefined ? hours : currentHours;
     const newMinutes = minutes !== undefined ? minutes : currentMinutes;
 
-    setTime((newHours * 3600 + newMinutes * 60) * 1000);
+    let adjustedHours = newHours;
+    let adjustedMinutes = newMinutes;
+    if (adjustedHours === 0 && adjustedMinutes === 0) {
+      adjustedMinutes = 1;
+    }
+
+    setTime((adjustedHours * 3600 + adjustedMinutes * 60) * 1000);
   };
 
   return (
@@ -44,7 +50,7 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
           <WheelNumberPicker
             number={minutes}
             setNumber={(minutes) => handleSetTime({ minutes })}
-            minValue={0}
+            minValue={hours === 0 ? 1 : 0}
             maxValue={59}
             interval={1}
             containerHeight={256}
@@ -54,12 +60,7 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
       </View>
 
       <View className="h-14">
-        <Button
-          size="lg"
-          className="w-full"
-          // onPress={() => startTimer(time)}
-          onPress={() => startTimer(20000)}
-        >
+        <Button size="lg" className="w-full" onPress={() => startTimer(time)}>
           <Text className="native:text-2xl">Start</Text>
         </Button>
       </View>
