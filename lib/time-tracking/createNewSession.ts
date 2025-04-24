@@ -1,4 +1,4 @@
-import { WorkSession } from "@/config/timeTrackingConfig";
+import { WorkSession } from "@/zod/schemas/WorkSessionSchema";
 import getWorkSessions from "./getWorkSessions";
 import saveWorkSessions from "./saveWorkSessions";
 

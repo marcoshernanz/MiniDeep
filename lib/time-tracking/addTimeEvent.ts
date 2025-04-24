@@ -1,4 +1,4 @@
-import { TimeEvent } from "@/config/timeTrackingConfig";
+import { TimeEvent } from "@/zod/schemas/TimeEventSchema";
 import getWorkSessions from "./getWorkSessions";
 import saveWorkSessions from "./saveWorkSessions";
 

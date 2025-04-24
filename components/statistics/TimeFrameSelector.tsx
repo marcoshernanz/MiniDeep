@@ -1,11 +1,11 @@
 import { Pressable, View } from "react-native";
+import { StatisticsTimeFrame } from "@/lib/hooks/useStatistics";
 import { Text } from "../ui/text";
-import { TimeFrameType } from "@/app/(tabs)/statistics";
 
 interface Props {
-  timeFrames: TimeFrameType[];
-  selectedTimeFrame: TimeFrameType;
-  setSelectedTimeFrame: (timeFrame: TimeFrameType) => void;
+  timeFrames: StatisticsTimeFrame[];
+  selectedTimeFrame: StatisticsTimeFrame;
+  setSelectedTimeFrame: (timeFrame: StatisticsTimeFrame) => void;
 }
 
 export default function TimeFrameSelector({

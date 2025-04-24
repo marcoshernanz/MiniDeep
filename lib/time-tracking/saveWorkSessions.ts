@@ -1,4 +1,5 @@
-import timeTrackingConfig, { WorkSession } from "@/config/timeTrackingConfig";
+import timeTrackingConfig from "@/config/timeTrackingConfig";
+import { WorkSession } from "@/zod/schemas/WorkSessionSchema";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default async function saveWorkSessions(
