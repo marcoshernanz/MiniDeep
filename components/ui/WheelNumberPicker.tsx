@@ -69,7 +69,7 @@ export default function WheelNumberPicker({
                 lineHeight: itemHeight,
               }}
             >
-              {item}
+              {item >= 0 ? item.toString().padStart(2, "0") : ""}
             </Text>
           </View>
         )}

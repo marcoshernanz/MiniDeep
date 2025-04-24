@@ -1,6 +1,5 @@
 # TODO
 
-- [ ] 00 padding in timer picker.
 - [ ] Not allow 00:00.
 - [ ] Fix settings
 - [ ] SafeAreaView only for top part
