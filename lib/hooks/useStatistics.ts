@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import getDailyStatistics from "../statistics/getDailyStatistics";
 import getWeeklyStatistics from "../statistics/getWeeklyStatistics";
 import getMonthlyStatistics from "../statistics/getMonthlyStatistics";
+import { DeviceEventEmitter } from "react-native";
 
 export type StatisticsTimeFrame = "1W" | "1M" | "3M" | "1Y" | "All";
 export const statisticsTimeFrames: StatisticsTimeFrame[] = [
@@ -60,6 +61,13 @@ export default function useStatistics() {
 
   useEffect(() => {
     loadStatistics();
+    const subscription = DeviceEventEmitter.addListener(
+      "sessionsChanged",
+      loadStatistics,
+    );
+    return () => {
+      subscription.remove();
+    };
   }, [loadStatistics]);
 
   return {
@@ -68,5 +76,6 @@ export default function useStatistics() {
     numDotsVisible,
     timeFrame,
     setTimeFrame,
+    refresh: loadStatistics,
   };
 }

@@ -3,6 +3,7 @@ import { startOfDay } from "date-fns";
 import getWorkSessions from "../time-tracking/getWorkSessions";
 import getTimeDistribution from "../time-tracking/getTimeDistribution";
 import calculateSessionDuration from "../time-tracking/calculateSessionDuration";
+import { DeviceEventEmitter } from "react-native";
 
 export type ActivityType = {
   date: Date;
@@ -74,6 +75,13 @@ export default function useActivity() {
 
   useEffect(() => {
     loadActivity();
+    const subscription = DeviceEventEmitter.addListener(
+      "sessionsChanged",
+      loadActivity,
+    );
+    return () => {
+      subscription.remove();
+    };
   }, [loadActivity]);
 
   return { activity, loading, refresh: loadActivity };
