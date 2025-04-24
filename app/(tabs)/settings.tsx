@@ -2,36 +2,28 @@ import { View, Text, Switch, Pressable, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronRightIcon, MoonIcon, SunIcon } from "lucide-react-native";
 import { useColorScheme } from "@/lib/hooks/useColorScheme";
-import seedDummyData from "@/lib/time-tracking/seedDummyData";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import timeTrackingConfig from "@/config/timeTrackingConfig";
-import { useState } from "react";
+import { seedWorkSessions, clearWorkSessions } from "@/lib/seedData";
 
 export default function SettingsScreen() {
   const { isDarkColorScheme } = useColorScheme();
-  const [loading, setLoading] = useState(false);
 
-  const handleSeedData = async () => {
-    setLoading(true);
+  const seedData = async () => {
     try {
-      await seedDummyData();
-      Alert.alert("Success", "Dummy data seeded!");
+      await seedWorkSessions();
+      Alert.alert("Success", "Dummy data seeded");
     } catch (e) {
-      Alert.alert("Error", "Failed to seed dummy data.");
-    } finally {
-      setLoading(false);
+      console.error(e);
+      Alert.alert("Error", "Failed to seed data");
     }
   };
 
-  const handleClearData = async () => {
-    setLoading(true);
+  const clearData = async () => {
     try {
-      await AsyncStorage.removeItem(timeTrackingConfig.storageKey);
-      Alert.alert("Success", "All data cleared!");
+      await clearWorkSessions();
+      Alert.alert("Success", "Data cleared");
     } catch (e) {
-      Alert.alert("Error", "Failed to clear data.");
-    } finally {
-      setLoading(false);
+      console.error(e);
+      Alert.alert("Error", "Failed to clear data");
     }
   };
 
@@ -159,24 +151,6 @@ export default function SettingsScreen() {
               <Text className="text-muted-foreground">1.0.0</Text>
             </Pressable>
             <View className="mx-4 h-px bg-border" />
-            <Pressable
-              className="flex-row items-center justify-between px-4 py-3"
-              onPress={handleSeedData}
-              disabled={loading}
-              style={{ opacity: loading ? 0.5 : 1 }}
-            >
-              <Text className="text-foreground">Seed Dummy Data</Text>
-            </Pressable>
-            <View className="mx-4 h-px bg-border" />
-            <Pressable
-              className="flex-row items-center justify-between px-4 py-3"
-              onPress={handleClearData}
-              disabled={loading}
-              style={{ opacity: loading ? 0.5 : 1 }}
-            >
-              <Text className="text-foreground">Clear All Data</Text>
-            </Pressable>
-            <View className="mx-4 h-px bg-border" />
             <Pressable className="flex-row items-center justify-between px-4 py-3">
               <Text className="text-foreground">Terms & Conditions</Text>
               <ChevronRightIcon
@@ -199,6 +173,27 @@ export default function SettingsScreen() {
                 }
                 size={20}
               />
+            </Pressable>
+          </View>
+        </View>
+
+        <View className="mt-6">
+          <Text className="px-4 pb-2 text-sm font-medium text-muted-foreground">
+            Developer
+          </Text>
+          <View className="border-b border-t border-border bg-card">
+            <Pressable
+              onPress={seedData}
+              className="flex-row items-center justify-between px-4 py-3"
+            >
+              <Text className="text-foreground">Seed Dummy Data</Text>
+            </Pressable>
+            <View className="mx-4 h-px bg-border" />
+            <Pressable
+              onPress={clearData}
+              className="flex-row items-center justify-between px-4 py-3"
+            >
+              <Text className="text-foreground">Clear Dummy Data</Text>
             </Pressable>
           </View>
         </View>
