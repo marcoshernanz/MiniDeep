@@ -15,7 +15,7 @@ export default function StatsScreen() {
 
   return (
     <GestureHandlerRootView className="flex-1">
-      <SafeAreaView className="flex-1 bg-background py-6">
+      <SafeAreaView className="flex-1 bg-background pt-6">
         <StatisticsHeader />
         <TimeFrameSelector
           timeFrames={statisticsTimeFrames}

@@ -34,20 +34,22 @@ export default function ActivityMain({
       onIndexChange={(index) => setSelectedDate(activity[index].date)}
       renderItem={({ item: activityData }) => (
         <ScrollView showsVerticalScrollIndicator={false}>
-          <ActivitySummary
-            totalTime={activityData.totalWorkTime}
-            totalSessions={activityData.sessions.length}
-          />
+          <View className="pb-6">
+            <ActivitySummary
+              totalTime={activityData.totalWorkTime}
+              totalSessions={activityData.sessions.length}
+            />
 
-          <View className="mx-4 my-4 h-0.5 bg-muted"></View>
+            <View className="mx-4 my-4 h-0.5 bg-muted"></View>
 
-          <WorkDistributionChart
-            timeDistribution={activityData.timeDistribution}
-          />
+            <WorkDistributionChart
+              timeDistribution={activityData.timeDistribution}
+            />
 
-          <View className="mx-4 my-4 h-0.5 bg-muted"></View>
+            <View className="mx-4 my-4 h-0.5 bg-muted"></View>
 
-          <WorkSessionsList sessions={activityData.sessions} />
+            <WorkSessionsList sessions={activityData.sessions} />
+          </View>
         </ScrollView>
       )}
     />

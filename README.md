@@ -1,8 +1,6 @@
 # TODO
 
-- [ ] Not allow 00:00.
 - [ ] Fix settings
-- [ ] SafeAreaView only for top part
 
 - [ ] MMKV instead of async storage.
 - [ ] Improved useTimer
