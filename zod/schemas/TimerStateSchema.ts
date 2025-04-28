@@ -3,7 +3,7 @@ import { z } from "zod";
 export const TimerStateSchema = z.object({
   status: z.enum(["inactive", "running", "paused", "completed"]),
   remainingTime: z.number(),
-  date: z.coerce.date(),
+  time: z.number(),
   sessionId: z.string(),
 });
 

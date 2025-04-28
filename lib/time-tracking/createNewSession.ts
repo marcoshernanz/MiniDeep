@@ -2,14 +2,20 @@ import { WorkSession } from "@/zod/schemas/WorkSessionSchema";
 import getWorkSessions from "./getWorkSessions";
 import saveWorkSessions from "./saveWorkSessions";
 
-export default async function createNewSession(
-  totalDuration: number,
-): Promise<string> {
+interface Params {
+  duration: number;
+  startTime: number;
+}
+
+export default async function createNewSession({
+  duration,
+  startTime,
+}: Params): Promise<string> {
   const sessionId = Date.now().toString();
   const newSession: WorkSession = {
     id: sessionId,
-    startDate: new Date(),
-    plannedDuration: totalDuration,
+    startDate: new Date(startTime),
+    plannedDuration: duration,
     isActive: true,
     events: [],
   };

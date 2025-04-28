@@ -8,11 +8,10 @@ import TimerRunningScreen from "@/components/deep-work/TimerRunningScreen";
 export default function IndexScreen() {
   const [selectedTime, setSelectedTime] = useState(0);
 
-  const { timeLeft, status, startTimer, togglePause, stopTimer, resetTimer } =
-    useTimer();
+  const { timeLeft, status, startTimer, togglePause, stopTimer } = useTimer();
 
   const handleTimerComplete = async () => {
-    await resetTimer();
+    await stopTimer();
   };
 
   return (

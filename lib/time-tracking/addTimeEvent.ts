@@ -2,10 +2,17 @@ import { TimeEvent } from "@/zod/schemas/TimeEventSchema";
 import getWorkSessions from "./getWorkSessions";
 import saveWorkSessions from "./saveWorkSessions";
 
-export default async function addTimeEvent(
-  sessionId: string,
-  action: TimeEvent["action"],
-): Promise<void> {
+interface Params {
+  sessionId: string;
+  action: TimeEvent["action"];
+  time: number;
+}
+
+export default async function addTimeEvent({
+  sessionId,
+  action,
+  time,
+}: Params): Promise<void> {
   const sessions = await getWorkSessions();
   const sessionIndex = sessions.findIndex(
     (session) => session.id === sessionId,
@@ -13,7 +20,7 @@ export default async function addTimeEvent(
 
   if (sessionIndex === -1) return;
 
-  const date = new Date();
+  const date = new Date(time);
   const session = sessions[sessionIndex];
 
   const newEvent: TimeEvent = {

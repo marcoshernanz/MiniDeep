@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AppState } from "react-native";
-import createAccurateTimer from "../utils/createAccurateTimer";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
 import getTimerState from "../timer/getTimerState";
@@ -8,6 +7,7 @@ import saveTimerState from "../timer/saveTimerState";
 import * as Notifications from "expo-notifications";
 import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
 import { TimerState } from "@/zod/schemas/TimerStateSchema";
+import { runOnJS, useFrameCallback } from "react-native-reanimated";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
 const TIMER_CATEGORY = "timer_completed";
@@ -50,10 +50,6 @@ const setupNotifications = async () => {
 };
 
 const scheduleTimerCompletionNotification = async (time: number) => {
-  console.log(
-    "Scheduling timer completion notification:",
-    Math.floor(time / 1000),
-  );
   await Notifications.cancelAllScheduledNotificationsAsync();
 
   await Notifications.scheduleNotificationAsync({
@@ -83,113 +79,127 @@ export default function useTimer() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [status, setStatus] = useState<TimerState["status"]>("inactive");
 
-  const statusRef = useRef<TimerState["status"]>(status);
-  const sessionId = useRef("");
-  const timeLeftRef = useRef(0);
-  const accurateTimer = useRef<ReturnType<typeof createAccurateTimer> | null>(
-    null,
-  );
+  const timerRef = useRef({
+    status: "inactive" as TimerState["status"],
+    sessionId: "",
+    startTime: 0,
+    endTime: 0,
+    tickTime: 0,
+  });
   const isRestoringState = useRef(false);
 
-  const cleanupTimer = useCallback(() => {
-    if (accurateTimer.current) {
-      accurateTimer.current.stop();
-      accurateTimer.current = null;
-    }
-  }, []);
-
   const handleTimerCompletion = useCallback(async (notify: boolean = true) => {
-    if (accurateTimer.current) {
-      accurateTimer.current.stop();
-    }
-
+    timerRef.current.status = "completed";
     setStatus("completed");
-    if (notify) {
-      await scheduleTimerCompletionNotification(timeLeftRef.current);
-    }
-    await addTimeEvent(sessionId.current, "stop");
-    await markSessionAsCompleted(sessionId.current);
-
-    timeLeftRef.current = 0;
     setTimeLeft(0);
+
+    if (notify) {
+      await scheduleTimerCompletionNotification(0);
+    }
+
+    await addTimeEvent({
+      sessionId: timerRef.current.sessionId,
+      action: "stop",
+      time: timerRef.current.tickTime,
+    });
+    await markSessionAsCompleted(timerRef.current.sessionId);
   }, []);
 
   const timerTick = useCallback(() => {
-    if (timeLeftRef.current > 0) {
-      timeLeftRef.current -= 1000;
-      setTimeLeft(timeLeftRef.current);
-      if (timeLeftRef.current <= 0) {
-        handleTimerCompletion();
-      }
+    "worklet";
+    timerRef.current.tickTime = Date.now();
+    const remaining = timerRef.current.endTime - timerRef.current.tickTime;
+    runOnJS(setTimeLeft)(remaining);
+
+    if (remaining <= 0) {
+      runOnJS(handleTimerCompletion)();
     }
   }, [handleTimerCompletion]);
 
-  const startTimer = async (time: number) => {
-    timeLeftRef.current = time;
-    setTimeLeft(time);
+  const startTimer = async (duration: number) => {
+    const now = Date.now();
 
-    cleanupTimer();
-    accurateTimer.current = createAccurateTimer(timerTick, 1000);
+    timerRef.current.startTime = now;
+    timerRef.current.tickTime = now;
+    timerRef.current.endTime = now + duration;
 
+    timerRef.current.status = "running";
     setStatus("running");
+    setTimeLeft(duration);
 
-    const createdSessionId = await createNewSession(time);
-    sessionId.current = createdSessionId;
+    const createdSessionId = await createNewSession({
+      duration,
+      startTime: now,
+    });
+    timerRef.current.sessionId = createdSessionId;
 
-    await addTimeEvent(createdSessionId, "start");
-
-    accurateTimer.current.start();
+    await addTimeEvent({
+      sessionId: timerRef.current.sessionId,
+      action: "start",
+      time: timerRef.current.tickTime,
+    });
   };
 
   const togglePause = async () => {
-    if (!accurateTimer.current) return;
-
     if (status === "paused") {
-      accurateTimer.current.resume();
-      await addTimeEvent(sessionId.current, "start");
+      const now = Date.now();
+      const remaining = timerRef.current.endTime - timerRef.current.tickTime;
+
+      timerRef.current.startTime = now;
+      timerRef.current.endTime = now + remaining;
+      timerRef.current.tickTime = now;
+
+      timerRef.current.status = "running";
       setStatus("running");
+
+      await addTimeEvent({
+        sessionId: timerRef.current.sessionId,
+        action: "start",
+        time: timerRef.current.tickTime,
+      });
     } else if (status === "running") {
-      accurateTimer.current.pause();
-      await addTimeEvent(sessionId.current, "stop");
+      timerRef.current.status = "paused";
       setStatus("paused");
+
+      await addTimeEvent({
+        sessionId: timerRef.current.sessionId,
+        action: "stop",
+        time: timerRef.current.tickTime,
+      });
     }
   };
 
   const stopTimer = async () => {
-    if (accurateTimer.current) {
-      accurateTimer.current.stop();
-      accurateTimer.current = null;
+    const wasCompleted = timerRef.current.status === "completed";
 
-      await addTimeEvent(sessionId.current, "stop");
+    timerRef.current.status = "inactive";
+    setStatus("inactive");
+
+    if (!wasCompleted) {
+      await addTimeEvent({
+        sessionId: timerRef.current.sessionId,
+        action: "stop",
+        time: timerRef.current.tickTime,
+      });
+      await markSessionAsCompleted(timerRef.current.sessionId);
     }
-
-    setStatus("inactive");
-
-    setTimeLeft(0);
-
-    markSessionAsCompleted(sessionId.current);
   };
-
-  const resetTimer = useCallback(async () => {
-    setStatus("inactive");
-    timeLeftRef.current = 0;
-    sessionId.current = "";
-    setTimeLeft(0);
-  }, []);
 
   const saveCurrentTimerState = useCallback(async () => {
     if (isRestoringState.current) return;
 
-    if (statusRef.current === "running") {
-      await scheduleTimerCompletionNotification(timeLeftRef.current);
-    }
+    const remaining = timerRef.current.endTime - timerRef.current.tickTime;
 
     saveTimerState({
-      status: statusRef.current,
-      remainingTime: timeLeftRef.current,
-      date: new Date(),
-      sessionId: sessionId.current,
+      status: timerRef.current.status,
+      remainingTime: remaining,
+      time: timerRef.current.tickTime,
+      sessionId: timerRef.current.sessionId,
     });
+
+    if (timerRef.current.status === "running") {
+      await scheduleTimerCompletionNotification(remaining);
+    }
   }, []);
 
   const restoreTimerState = useCallback(async () => {
@@ -197,51 +207,46 @@ export default function useTimer() {
     isRestoringState.current = true;
 
     try {
-      cleanupTimer();
-
       const savedState = await getTimerState();
 
       if (!savedState || savedState.status === "inactive") {
-        statusRef.current = "inactive";
-        timeLeftRef.current = 0;
-        sessionId.current = "";
-
+        timerRef.current.status = "inactive";
         setStatus("inactive");
-        setTimeLeft(0);
 
         return;
       }
 
-      statusRef.current = savedState.status;
-      timeLeftRef.current = savedState.remainingTime;
-      sessionId.current = savedState.sessionId;
+      timerRef.current.status = savedState.status;
+      timerRef.current.startTime = savedState.time;
+      timerRef.current.endTime = savedState.time + savedState.remainingTime;
+      timerRef.current.tickTime = savedState.time;
+      timerRef.current.sessionId = savedState.sessionId;
 
       setStatus(savedState.status);
       setTimeLeft(savedState.remainingTime);
 
       if (savedState.status === "running") {
-        const elapsedTime = Math.floor(Date.now() - savedState.date.getTime());
-        timeLeftRef.current = Math.max(0, timeLeftRef.current - elapsedTime);
-        setTimeLeft(timeLeftRef.current);
+        const now = Date.now();
 
-        if (timeLeftRef.current <= 0) {
+        const elapsed = now - savedState.time;
+        const remaining = savedState.remainingTime - elapsed;
+
+        if (remaining > 0) {
+          timerRef.current.tickTime = now;
+          timerRef.current.endTime = now + remaining;
+          setTimeLeft(remaining);
+        } else {
+          timerRef.current.tickTime = timerRef.current.endTime;
           await handleTimerCompletion(false);
           return;
         }
 
         await cancelTimerNotifications();
-
-        accurateTimer.current = createAccurateTimer(timerTick, 1000);
-        accurateTimer.current.start();
-      } else if (savedState.status === "paused") {
-        accurateTimer.current = createAccurateTimer(timerTick, 1000);
-        accurateTimer.current.start();
-        accurateTimer.current.pause();
       }
     } finally {
       isRestoringState.current = false;
     }
-  }, [cleanupTimer, handleTimerCompletion, timerTick]);
+  }, [handleTimerCompletion]);
 
   const handleAppStateChange = useCallback(
     async (nextAppState: string) => {
@@ -262,10 +267,9 @@ export default function useTimer() {
         await Notifications.dismissNotificationAsync(
           response.notification.request.identifier,
         );
-        await resetTimer();
       }
     },
-    [resetTimer],
+    [],
   );
 
   useEffect(() => {
@@ -283,20 +287,12 @@ export default function useTimer() {
       );
 
     return () => {
-      cleanupTimer();
       subscription.remove();
       notificationResponseSubscription.remove();
     };
-  }, [
-    cleanupTimer,
-    handleAppStateChange,
-    handleNotificationResponse,
-    restoreTimerState,
-  ]);
+  }, [handleAppStateChange, handleNotificationResponse, restoreTimerState]);
 
-  useEffect(() => {
-    statusRef.current = status;
-  }, [status]);
+  useFrameCallback(timerTick);
 
   return {
     timeLeft,
@@ -304,6 +300,5 @@ export default function useTimer() {
     startTimer,
     togglePause,
     stopTimer,
-    resetTimer,
   };
 }
