@@ -106,6 +106,8 @@ export default function useTimer() {
   }, []);
 
   const timerTick = useCallback(() => {
+    if (timerRef.current.status !== "running") return;
+
     const now = Date.now();
     const remaining = timerRef.current.endTime - now;
     timerRef.current.tickTime = now;
