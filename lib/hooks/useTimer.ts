@@ -106,13 +106,12 @@ export default function useTimer() {
   }, []);
 
   const timerTick = useCallback(() => {
-    "worklet";
-    timerRef.current.tickTime = Date.now();
-    const remaining = timerRef.current.endTime - timerRef.current.tickTime;
-    runOnJS(setTimeLeft)(remaining);
-
+    const now = Date.now();
+    const remaining = timerRef.current.endTime - now;
+    timerRef.current.tickTime = now;
+    setTimeLeft(remaining);
     if (remaining <= 0) {
-      runOnJS(handleTimerCompletion)();
+      handleTimerCompletion();
     }
   }, [handleTimerCompletion]);
 
@@ -292,7 +291,7 @@ export default function useTimer() {
     };
   }, [handleAppStateChange, handleNotificationResponse, restoreTimerState]);
 
-  useFrameCallback(timerTick);
+  useFrameCallback(() => runOnJS(timerTick)());
 
   return {
     timeLeft,
