@@ -176,6 +176,7 @@ export default function useTimer() {
     timerRef.current.status = "inactive";
     setStatus("inactive");
 
+    await cancelTimerNotifications();
     if (!wasCompleted) {
       await addTimeEvent({
         sessionId: timerRef.current.sessionId,
