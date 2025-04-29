@@ -5,8 +5,10 @@ import TimePickerScreen from "@/components/deep-work/TimePickerScreen";
 import TimerCompletedScreen from "@/components/deep-work/TimerCompletedScreen";
 import TimerRunningScreen from "@/components/deep-work/TimerRunningScreen";
 
+const defaultTime = 30 * 60 * 1000;
+
 export default function IndexScreen() {
-  const [selectedTime, setSelectedTime] = useState(0);
+  const [selectedTime, setSelectedTime] = useState(defaultTime);
 
   const { timeLeft, status, startTimer, togglePause, stopTimer } = useTimer();
 
