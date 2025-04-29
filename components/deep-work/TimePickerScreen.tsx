@@ -1,5 +1,8 @@
 import { View } from "react-native";
-import WheelNumberPicker from "../ui/WheelNumberPicker";
+import React, { useRef } from "react";
+import WheelNumberPicker, {
+  WheelNumberPickerHandle,
+} from "../ui/WheelNumberPicker";
 import { Text } from "../ui/text";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
@@ -12,6 +15,7 @@ interface Props {
 }
 
 export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
+  const minutesPickerRef = useRef<WheelNumberPickerHandle>(null);
   const { hours, minutes } = extractTime(time);
 
   const handleSetTime = ({
@@ -30,6 +34,7 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
     let adjustedMinutes = newMinutes;
     if (adjustedHours === 0 && adjustedMinutes === 0) {
       adjustedMinutes = 1;
+      minutesPickerRef.current?.scrollToNumber(adjustedMinutes);
     }
 
     setTime((adjustedHours * 3600 + adjustedMinutes * 60) * 1000);
@@ -48,9 +53,10 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
           />
           <Text className="h-full align-middle text-6xl font-medium">:</Text>
           <WheelNumberPicker
+            ref={minutesPickerRef}
             number={minutes}
             setNumber={(minutes) => handleSetTime({ minutes })}
-            minValue={hours === 0 ? 1 : 0}
+            minValue={0}
             maxValue={59}
             interval={1}
             containerHeight={256}
