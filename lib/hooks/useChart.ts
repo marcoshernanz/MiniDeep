@@ -1,7 +1,6 @@
-import { RefObject, useLayoutEffect, useState } from "react";
+import { RefObject, useLayoutEffect, useState, useMemo } from "react";
 import { View } from "react-native";
 import {
-  runOnJS,
   useAnimatedReaction,
   useDerivedValue,
   useSharedValue,
@@ -36,7 +35,7 @@ export default function useChart<T extends ChartPressStateInit>({
   paddingX = 0,
   dynamicY = false,
 }: Params<T>) {
-  const [maxY, setMaxY] = useState(
+  const maxY = useSharedValue(
     data.reduce((max, item) => Math.max(max, item[yKey] as number), 0),
   );
   const [chartDimensions, setChartDimensions] = useState({
@@ -81,8 +80,7 @@ export default function useChart<T extends ChartPressStateInit>({
         ) {
           newMaxY = Math.max(newMaxY, data[i][yKey] as number);
         }
-
-        runOnJS(setMaxY)(newMaxY);
+        maxY.value = newMaxY;
       }
     },
   );
@@ -127,27 +125,30 @@ export default function useChart<T extends ChartPressStateInit>({
     transformState.matrix,
   ]);
 
-  return {
-    chartConfig: {
+  const chartConfigMemo = useMemo(
+    () => ({
       chartPressState: pressState,
-      transformState: transformState,
+      transformState,
       transformConfig: {
         pan: { enabled: true, dimensions: ["x" as const] },
         pinch: { enabled: false },
       },
       chartPressConfig: { pan: { activateAfterLongPress: 100 } },
-      domain: {
-        y: dynamicY ? ([-1, maxY] as [number, number]) : ([-1] as [number]),
-      },
+      domain: { y: [-1] as [number] },
       viewport: {
         x: [0, numDotsVisible - 1 + (paddingX * 2) / interval] as [
           number,
           number,
         ],
       },
-    },
+    }),
+    [pressState, transformState, numDotsVisible, paddingX, interval],
+  );
+
+  return {
+    chartConfig: chartConfigMemo,
     tooltip: {
-      isActive: isActive,
+      isActive,
       x: {
         position: useDerivedValue(
           () =>
