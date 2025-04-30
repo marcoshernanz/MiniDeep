@@ -23,8 +23,5 @@
   },
   "submit": {
     "production": {}
-  },
-  "android": {
-    "package": "com.marcoshernanz.minideep"
   }
 }
