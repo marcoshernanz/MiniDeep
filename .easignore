@@ -1,0 +1,38 @@
+# Node modules (if you rely on EAS cache for deps)
+node_modules
+
+# Android build outputs
+android/build
+android/app/build
+
+# iOS build outputs
+ios/build
+Pods
+
+# Expo metadata / bundles
+.expo
+.expo-shared
+web-build
+dist
+
+# Git / IDE
+.git
+.vscode
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Keystores & certs
+*.jks
+*.p12
+*.pem
+*.mobileprovision
+
+# TypeScript & coverage
+*.tsbuildinfo
+coverage
+
+# Bundle artifacts
+*.jsbundle
