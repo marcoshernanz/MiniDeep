@@ -59,28 +59,29 @@ export default function useChart<T extends ChartPressStateInit>({
         const { translateX } = getTransformComponents(
           transformState.matrix.value,
         );
-
         xPan.value = translateX;
 
-        const maxPan = 0;
-        const minPan = -interval * (data.length - numDotsVisible);
-        const translate = Math.round(xPan.value / interval) * interval;
-        const fixedTranslate =
-          Math.max(minPan, Math.min(maxPan, translate)) + paddingX;
+        if (!currentValue) {
+          const maxPan = 0;
+          const minPan = -interval * (data.length - numDotsVisible);
+          const translate = Math.round(xPan.value / interval) * interval;
+          const fixedTranslate =
+            Math.max(minPan, Math.min(maxPan, translate)) + paddingX;
 
-        xPan.value = withTiming(fixedTranslate);
+          xPan.value = withTiming(fixedTranslate);
 
-        const index = Math.abs(Math.round(fixedTranslate / interval));
+          const index = Math.abs(Math.round(fixedTranslate / interval));
+          let newMaxY = 0;
+          for (
+            let i = index;
+            i < index + numDotsVisible && i < data.length;
+            i++
+          ) {
+            newMaxY = Math.max(newMaxY, data[i][yKey] as number);
+          }
 
-        let newMaxY = 0;
-        for (
-          let i = index;
-          i < index + numDotsVisible && i < data.length;
-          i++
-        ) {
-          newMaxY = Math.max(newMaxY, data[i][yKey] as number);
+          maxY.value = newMaxY;
         }
-        maxY.value = newMaxY;
       }
     },
   );
@@ -107,6 +108,8 @@ export default function useChart<T extends ChartPressStateInit>({
       0,
     );
 
+    xPan.value = initialXPan;
+
     chartRef.current?.measureInWindow((x, y, width, height) => {
       if (
         width > 0 &&
@@ -123,6 +126,7 @@ export default function useChart<T extends ChartPressStateInit>({
     numDotsVisible,
     data.length,
     transformState.matrix,
+    xPan,
   ]);
 
   const chartConfigMemo = useMemo(
