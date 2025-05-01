@@ -58,8 +58,5 @@
         "projectId": "77d15d3e-cfb1-4405-ada9-0c35b192d430"
       }
     }
-  },
-  "android": {
-    "package": "com.marcoshernanz.minideep"
   }
 }
