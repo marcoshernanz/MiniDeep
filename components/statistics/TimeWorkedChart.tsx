@@ -7,7 +7,7 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { Area, CartesianChart, Line, Scatter } from "victory-native";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { ReText } from "react-native-redash";
 import formatTime from "@/lib/utils/formatTime";
 import { format, parseISO } from "date-fns";
@@ -30,12 +30,16 @@ export default function TimeWorkedChart({ data, numDotsVisible }: Props) {
   const { width } = Dimensions.get("window");
   const chartRef = useRef(null);
 
-  const formattedDates = data.reduce(
-    (acc, item) => {
-      acc[item.date] = format(parseISO(item.date), "MMM dd, yyyy");
-      return acc;
-    },
-    {} as Record<string, string>,
+  const formattedDates = useMemo(
+    () =>
+      data.reduce(
+        (acc, item) => {
+          acc[item.date] = format(parseISO(item.date), "MMM dd, yyyy");
+          return acc;
+        },
+        {} as Record<string, string>,
+      ),
+    [data],
   );
 
   const { chartConfig, tooltip } = useChart<DataType>({
@@ -76,7 +80,12 @@ export default function TimeWorkedChart({ data, numDotsVisible }: Props) {
 
   return (
     <View className="flex-1">
-      <View ref={chartRef} className="flex-1">
+      <View
+        ref={chartRef}
+        shouldRasterizeIOS
+        renderToHardwareTextureAndroid
+        className="flex-1"
+      >
         <CartesianChart
           data={data}
           xKey="date"
