@@ -6,6 +6,8 @@ import { seedWorkSessions, clearWorkSessions } from "@/lib/seedData";
 import SettingsGroup from "@/components/settings/SettingsGroup";
 import SettingsItem from "@/components/settings/SettingsItem";
 
+const isProduction = process.env.APP_VARIANT === "production";
+
 export default function SettingsScreen() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
 
@@ -39,32 +41,34 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
-        <View className="gap-4">
-          <SettingsGroup>
-            <SettingsItem
-              Icon={MoonIcon}
-              text="Dark Mode"
-              onPress={() =>
-                setColorScheme(isDarkColorScheme ? "light" : "dark")
-              }
-              isSwitch={true}
-              initialIsChecked={isDarkColorScheme}
-            />
-          </SettingsGroup>
+        {!isProduction && (
+          <View className="gap-4">
+            <SettingsGroup>
+              <SettingsItem
+                Icon={MoonIcon}
+                text="Dark Mode"
+                onPress={() =>
+                  setColorScheme(isDarkColorScheme ? "light" : "dark")
+                }
+                isSwitch={true}
+                initialIsChecked={isDarkColorScheme}
+              />
+            </SettingsGroup>
 
-          <SettingsGroup>
-            <SettingsItem
-              Icon={UploadIcon}
-              text="Seed Dummy Data"
-              onPress={seedData}
-            />
-            <SettingsItem
-              Icon={EraserIcon}
-              text="Clear Dummy Data"
-              onPress={clearData}
-            />
-          </SettingsGroup>
-        </View>
+            <SettingsGroup>
+              <SettingsItem
+                Icon={UploadIcon}
+                text="Seed Dummy Data"
+                onPress={seedData}
+              />
+              <SettingsItem
+                Icon={EraserIcon}
+                text="Clear Dummy Data"
+                onPress={clearData}
+              />
+            </SettingsGroup>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
