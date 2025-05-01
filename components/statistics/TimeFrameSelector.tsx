@@ -23,8 +23,7 @@ export default function TimeFrameSelector({
           }`}
           onPress={() => setSelectedTimeFrame(timeFrame)}
         >
-          {/* TODO */}
-          <Text className="text-foreground">{timeFrame}</Text>
+          <Text>{timeFrame}</Text>
         </Pressable>
       ))}
     </View>
