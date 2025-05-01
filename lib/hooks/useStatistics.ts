@@ -55,7 +55,13 @@ export default function useStatistics() {
       time: stat.time,
     }));
 
-    setStatistics(formattedStatistics);
+    const MAX_DOTS = 100;
+    const recentStats =
+      formattedStatistics.length > MAX_DOTS
+        ? formattedStatistics.slice(formattedStatistics.length - MAX_DOTS)
+        : formattedStatistics;
+
+    setStatistics(recentStats);
     setLoading(false);
   }, [timeFrame]);
 
