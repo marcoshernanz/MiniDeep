@@ -6,7 +6,9 @@ import { seedWorkSessions, clearWorkSessions } from "@/lib/seedData";
 import SettingsGroup from "@/components/settings/SettingsGroup";
 import SettingsItem from "@/components/settings/SettingsItem";
 
-const isProduction = process.env.APP_VARIANT === "production";
+const isProduction =
+  process.env.APP_VARIANT !== "development" &&
+  process.env.APP_VARIANT !== "preview";
 
 export default function SettingsScreen() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
