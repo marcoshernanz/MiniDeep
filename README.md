@@ -2,10 +2,9 @@
 
 - [ ] Fix settings
 
+- [ ] Fix activity swiping
 - [ ] Statistics always snaps backwards
 - [ ] MMKV instead of async storage.
-- [ ] Improved useTimer
-- [ ] Improved colors.
 - [ ] Stopwatch option.
 - [ ] Alarm option.
 - [ ] Make UI nicer with animations.
