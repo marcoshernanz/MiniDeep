@@ -11,6 +11,7 @@ import { useMemo, useRef } from "react";
 import { ReText } from "react-native-redash";
 import formatTime from "@/lib/utils/formatTime";
 import { format, parseISO } from "date-fns";
+import { Text } from "../ui/text";
 
 type DataType = {
   x: string;
@@ -77,6 +78,14 @@ export default function TimeWorkedChart({ data, numDotsVisible }: Props) {
       },
     ],
   }));
+
+  if (data.length < 2) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-lg text-muted-foreground">Not enough data</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1">
