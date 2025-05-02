@@ -17,7 +17,7 @@ const getAppName = () => {
   } else if (isPreview) {
     return "MiniDeep (Preview)";
   } else {
-    return "MiniDeep: A Minimalistic Deep Work Tracker";
+    return "MiniDeep";
   }
 };
 
