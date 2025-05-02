@@ -4,6 +4,7 @@ node_modules
 # Android build outputs
 android/build
 android/app/build
+android
 
 # iOS build outputs
 ios/build

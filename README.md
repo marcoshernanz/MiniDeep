@@ -2,6 +2,7 @@
 
 - [ ] Fix settings
 
+- [ ] Statistics always snaps backwards
 - [ ] MMKV instead of async storage.
 - [ ] Improved useTimer
 - [ ] Improved colors.
