@@ -1,28 +1,22 @@
 import { Dimensions, ScrollView, View } from "react-native";
 import ActivitySummary from "./ActivitySummary";
-import { ActivityType } from "@/lib/hooks/useActivity";
 import { isSameDay } from "date-fns";
 import Swipable from "../Swipable";
 import WorkDistributionChart from "./WorkDistributionChart";
 import WorkSessionsList from "./WorkSessionsList";
+import { useActivityContext } from "@/context/ActivityContext";
 
-interface Props {
-  activity: ActivityType[];
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
-}
+export default function ActivityMain() {
+  const { activity, selectedDate, setSelectedDate, swipableRef } =
+    useActivityContext();
 
-export default function ActivityMain({
-  activity,
-  selectedDate,
-  setSelectedDate,
-}: Props) {
   const currentIndex = activity.findIndex((a) =>
     isSameDay(a.date, selectedDate),
   );
 
   return (
     <Swipable
+      ref={swipableRef}
       className="mx-auto flex-1"
       data={activity}
       itemWidth={Dimensions.get("window").width}
@@ -30,7 +24,6 @@ export default function ActivityMain({
         `${value.date.toISOString() || ""}-${index}`
       }
       initialIndex={currentIndex}
-      currentIndex={currentIndex}
       onIndexChange={(index) => setSelectedDate(activity[index].date)}
       renderItem={({ item: activityData }) => (
         <ScrollView showsVerticalScrollIndicator={false}>

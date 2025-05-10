@@ -1,4 +1,10 @@
-import React, { ReactNode, useRef, useEffect } from "react";
+import React, {
+  ReactNode,
+  useRef,
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import { View, Dimensions, FlatList } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -7,7 +13,7 @@ interface SwipableProps<T> {
   data: T[];
   renderItem: ({ item, index }: { item: T; index: number }) => ReactNode;
   keyExtractor: (item: T, index: number) => string;
-  itemWidth: number;
+  itemWidth?: number;
   initialIndex?: number;
   currentIndex?: number;
   onIndexChange?: (index: number) => void;
@@ -15,19 +21,33 @@ interface SwipableProps<T> {
   horizontal?: boolean;
 }
 
-export default function Swipable<T>({
-  data,
-  renderItem,
-  keyExtractor,
-  initialIndex = 0,
-  currentIndex,
-  onIndexChange,
-  className,
-  itemWidth = width,
-  horizontal = true,
-}: SwipableProps<T>) {
+export interface SwipableRef {
+  scrollToIndex: (params: { index: number; animated?: boolean }) => void;
+}
+
+function SwipableImpl<T>(props: SwipableProps<T>, ref: React.Ref<SwipableRef>) {
+  const {
+    data,
+    renderItem,
+    keyExtractor,
+    initialIndex = 0,
+    currentIndex,
+    onIndexChange,
+    className,
+    itemWidth = width,
+    horizontal = true,
+  } = props;
+
   const finalInitialIndex = initialIndex >= 0 ? initialIndex : data.length - 1;
   const flatListRef = useRef<FlatList<T>>(null);
+
+  useImperativeHandle(ref, () => ({
+    scrollToIndex: (params) => {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToIndex(params);
+      }
+    },
+  }));
 
   useEffect(() => {
     if (currentIndex !== undefined && flatListRef.current) {
@@ -40,7 +60,7 @@ export default function Swipable<T>({
 
   return (
     <View style={[{ width: itemWidth }]} className={className}>
-      <FlatList
+      <FlatList<T>
         ref={flatListRef}
         data={data}
         keyExtractor={keyExtractor}
@@ -59,8 +79,8 @@ export default function Swipable<T>({
         onMomentumScrollEnd={(event) => {
           if (onIndexChange) {
             const offsetX = event.nativeEvent.contentOffset.x;
-            const index = Math.round(offsetX / itemWidth);
-            onIndexChange(index);
+            const newIndex = Math.round(offsetX / itemWidth);
+            onIndexChange(newIndex);
           }
         }}
         renderItem={({ item, index }) => (
@@ -72,3 +92,9 @@ export default function Swipable<T>({
     </View>
   );
 }
+
+const Swipable = forwardRef(SwipableImpl) as <T>(
+  props: SwipableProps<T> & { ref?: React.Ref<SwipableRef> },
+) => React.ReactElement;
+
+export default Swipable;

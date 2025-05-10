@@ -3,20 +3,15 @@ import { Text } from "../ui/text";
 import groupDaysIntoWeeks from "@/lib/utils/groupDaysIntoWeeks";
 import cn from "@/lib/utils/cn";
 import Swipable from "../Swipable";
+import { useActivityContext } from "@/context/ActivityContext";
 
 const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
 
-interface Props {
-  days: Date[];
-  selectedDate: Date;
-  setSelectedDate: (date: Date) => void;
-}
+export default function ActivityDayPicker() {
+  const { activity, selectedDate, setSelectedDate, scrollToDate } =
+    useActivityContext();
 
-export default function ActivityDayPicker({
-  days,
-  selectedDate,
-  setSelectedDate,
-}: Props) {
+  const days = activity.map((a) => a.date);
   const weeks = groupDaysIntoWeeks(days);
 
   const currentIndex = weeks.findIndex((week) =>
@@ -25,6 +20,11 @@ export default function ActivityDayPicker({
     ),
   );
 
+  const onPress = (day: Date) => {
+    setSelectedDate(day);
+    scrollToDate(day);
+  };
+
   return (
     <Swipable
       className="mx-auto"
@@ -32,13 +32,12 @@ export default function ActivityDayPicker({
       itemWidth={Dimensions.get("window").width}
       keyExtractor={(value, index) => `${value[0]?.toString() || ""}-${index}`}
       initialIndex={currentIndex}
-      currentIndex={currentIndex}
       renderItem={({ item: week }) => (
         <View className="h-12 flex-row items-center justify-between px-4">
           {week.map((day, index) => (
             <TouchableOpacity
               key={`${day?.toDateString()}-${index}`}
-              onPress={() => day && setSelectedDate(day)}
+              onPress={() => day && onPress(day)}
               className={cn(
                 "aspect-square size-12 items-center justify-center rounded-full bg-muted disabled:bg-muted/50",
                 selectedDate.toDateString() === (day?.toDateString() || "") &&
