@@ -64,7 +64,7 @@ export default function useChart<T extends ChartPressStateInit>({
         if (!currentValue) {
           const maxPan = 0;
           const minPan = -interval * (data.length - numDotsVisible);
-          const translate = Math.round(xPan.value / interval) * interval;
+          const translate = Math.round(xPan.value / interval - 0.5) * interval;
           const fixedTranslate =
             Math.max(minPan, Math.min(maxPan, translate)) + paddingX;
 
