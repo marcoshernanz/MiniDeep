@@ -1,5 +1,6 @@
-const isDevelopment = process.env.APP_VARIANT === "development";
-const isPreview = process.env.APP_VARIANT === "preview";
+const appVariant = process.env.APP_VARIANT;
+const isDevelopment = appVariant === "development";
+const isPreview = appVariant === "preview";
 
 const getUniqueIdentifier = () => {
   if (isDevelopment) {
@@ -31,5 +32,9 @@ export default ({ config }) => ({
   android: {
     ...config.android,
     package: getUniqueIdentifier(),
+  },
+  extra: {
+    ...config.extra,
+    APP_VARIANT: appVariant,
   },
 });

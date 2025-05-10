@@ -5,13 +5,15 @@ import { useColorScheme } from "@/lib/hooks/useColorScheme";
 import { seedWorkSessions, clearWorkSessions } from "@/lib/seedData";
 import SettingsGroup from "@/components/settings/SettingsGroup";
 import SettingsItem from "@/components/settings/SettingsItem";
+import Constants from "expo-constants";
 
-const isProduction =
-  process.env.APP_VARIANT !== "development" &&
-  process.env.APP_VARIANT !== "preview";
+const appVariant = Constants.expoConfig?.extra?.APP_VARIANT;
+const isProduction = appVariant !== "development" && appVariant !== "preview";
 
 export default function SettingsScreen() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
+
+  console.log(appVariant);
 
   const seedData = async () => {
     try {
@@ -43,20 +45,20 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
-        {!isProduction && (
-          <View className="gap-4">
-            <SettingsGroup>
-              <SettingsItem
-                Icon={MoonIcon}
-                text="Dark Mode"
-                onPress={() =>
-                  setColorScheme(isDarkColorScheme ? "light" : "dark")
-                }
-                isSwitch={true}
-                initialIsChecked={isDarkColorScheme}
-              />
-            </SettingsGroup>
+        <View className="gap-4">
+          <SettingsGroup>
+            <SettingsItem
+              Icon={MoonIcon}
+              text="Dark Mode"
+              onPress={() =>
+                setColorScheme(isDarkColorScheme ? "light" : "dark")
+              }
+              isSwitch={true}
+              initialIsChecked={isDarkColorScheme}
+            />
+          </SettingsGroup>
 
+          {!isProduction && (
             <SettingsGroup>
               <SettingsItem
                 Icon={UploadIcon}
@@ -69,8 +71,8 @@ export default function SettingsScreen() {
                 onPress={clearData}
               />
             </SettingsGroup>
-          </View>
-        )}
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
