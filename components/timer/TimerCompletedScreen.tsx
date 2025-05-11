@@ -5,20 +5,21 @@ import * as Notifications from "expo-notifications";
 import stopSound from "@/lib/utils/sound/stopSound";
 import { Audio } from "expo-av";
 import { useEffect, useRef } from "react";
+import { useTimerContext } from "@/context/TimerContext";
 
-interface TimerCompletedScreenProps {
-  onDismiss: () => void;
-}
+export default function TimerCompletedScreen() {
+  const {
+    timer: { stopTimer },
+  } = useTimerContext();
 
-export default function TimerCompletedScreen({
-  onDismiss,
-}: TimerCompletedScreenProps) {
   const soundRef = useRef<Audio.Sound | null>(null);
 
   useEffect(() => {
+    const sound = soundRef.current;
+
     return () => {
-      if (soundRef.current) {
-        stopSound(soundRef.current);
+      if (sound) {
+        stopSound(sound);
       }
     };
   }, []);
@@ -30,7 +31,7 @@ export default function TimerCompletedScreen({
       await stopSound(soundRef.current);
     }
 
-    onDismiss();
+    stopTimer();
   };
 
   return (

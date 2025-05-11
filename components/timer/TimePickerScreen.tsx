@@ -4,19 +4,19 @@ import WheelNumberPicker, {
   WheelNumberPickerHandle,
 } from "../ui/WheelNumberPicker";
 import { Text } from "../ui/text";
-import { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
 import extractTime from "@/lib/utils/extractTime";
+import { useTimerContext } from "@/context/TimerContext";
 
-interface Props {
-  time: number;
-  setTime: Dispatch<SetStateAction<number>>;
-  startTimer: (time: number) => void;
-}
+export default function TimePickerScreen() {
+  const {
+    selectedTime,
+    setSelectedTime,
+    timer: { startTimer },
+  } = useTimerContext();
 
-export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
   const minutesPickerRef = useRef<WheelNumberPickerHandle>(null);
-  const { hours, minutes } = extractTime(time);
+  const { hours, minutes } = extractTime(selectedTime);
 
   const handleSetTime = ({
     hours,
@@ -25,7 +25,8 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
     hours?: number;
     minutes?: number;
   }) => {
-    const { hours: currentHours, minutes: currentMinutes } = extractTime(time);
+    const { hours: currentHours, minutes: currentMinutes } =
+      extractTime(selectedTime);
 
     const newHours = hours !== undefined ? hours : currentHours;
     const newMinutes = minutes !== undefined ? minutes : currentMinutes;
@@ -37,7 +38,7 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
       minutesPickerRef.current?.scrollToNumber(adjustedMinutes);
     }
 
-    setTime((adjustedHours * 3600 + adjustedMinutes * 60) * 1000);
+    setSelectedTime((adjustedHours * 3600 + adjustedMinutes * 60) * 1000);
   };
 
   return (
@@ -66,7 +67,11 @@ export default function TimePickerScreen({ time, setTime, startTimer }: Props) {
       </View>
 
       <View className="h-14">
-        <Button size="lg" className="w-full" onPress={() => startTimer(time)}>
+        <Button
+          size="lg"
+          className="w-full"
+          onPress={() => startTimer(selectedTime)}
+        >
           <Text className="native:text-2xl">Start</Text>
         </Button>
       </View>

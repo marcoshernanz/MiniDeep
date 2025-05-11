@@ -1,0 +1,57 @@
+import useTimer from "@/lib/hooks/useTimer";
+import { TimerState } from "@/zod/schemas/TimerStateSchema";
+import { createContext, useContext, useState } from "react";
+
+interface TimerContextValue {
+  selectedTime: number;
+  setSelectedTime: (time: number) => void;
+
+  timer: {
+    timeLeft: number;
+    status: TimerState["status"];
+    startTimer: (duration: number) => void;
+    togglePause: () => void;
+    stopTimer: () => void;
+  };
+}
+
+export const TimerContext = createContext<TimerContextValue>({
+  selectedTime: 0,
+  setSelectedTime: () => {},
+
+  timer: {
+    timeLeft: 0,
+    status: "inactive",
+    startTimer: () => {},
+    togglePause: () => {},
+    stopTimer: () => {},
+  },
+});
+
+interface Props {
+  children: React.ReactNode;
+}
+
+const defaultTime = 30 * 60 * 1000;
+
+export default function TimerContextProvider({ children }: Props) {
+  const timer = useTimer();
+
+  const [selectedTime, setSelectedTime] = useState(defaultTime);
+
+  return (
+    <TimerContext.Provider
+      value={{
+        selectedTime,
+        setSelectedTime,
+        timer,
+      }}
+    >
+      {children}
+    </TimerContext.Provider>
+  );
+}
+
+export function useTimerContext() {
+  return useContext(TimerContext);
+}

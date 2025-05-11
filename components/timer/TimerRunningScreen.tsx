@@ -3,20 +3,15 @@ import { Text } from "../ui/text";
 import padWithZeros from "@/lib/utils/padWithZeros";
 import { Button } from "../ui/button";
 import extractTime from "@/lib/utils/extractTime";
+import { useTimerContext } from "@/context/TimerContext";
 
-interface Props {
-  timeLeft: number;
-  isPaused: boolean;
-  togglePause: () => void;
-  stopTimer: () => void;
-}
+export default function TimerRunningScreen() {
+  const {
+    timer: { timeLeft, status, togglePause, stopTimer },
+  } = useTimerContext();
 
-export default function TimerRunningScreen({
-  timeLeft,
-  isPaused,
-  togglePause,
-  stopTimer,
-}: Props) {
+  const isPaused = status === "paused";
+
   const { hours, minutes, seconds } = extractTime(timeLeft);
 
   return (

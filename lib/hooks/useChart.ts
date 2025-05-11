@@ -4,6 +4,7 @@ import {
   useState,
   useMemo,
   useEffect,
+  useCallback,
 } from "react";
 import { View } from "react-native";
 import {
@@ -104,7 +105,7 @@ export default function useChart<T extends ChartPressStateInit>({
     },
   );
 
-  useLayoutEffect(() => {
+  const resetTranslate = useCallback(() => {
     const initialXPan =
       -((chartDimensions.width - paddingX * 2) / (numDotsVisible - 1)) *
         (data.length - numDotsVisible) +
@@ -175,5 +176,6 @@ export default function useChart<T extends ChartPressStateInit>({
         value: pressState.y[yKey].value,
       },
     },
+    resetTranslate,
   };
 }

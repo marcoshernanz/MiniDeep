@@ -7,7 +7,7 @@ import saveTimerState from "../timer/saveTimerState";
 import * as Notifications from "expo-notifications";
 import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
 import { TimerState } from "@/zod/schemas/TimerStateSchema";
-import createAccurateTimer from "../utils/createAccurateTimer"; // Import createAccurateTimer
+import createAccurateTimer from "../utils/createAccurateTimer";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
 const TIMER_CATEGORY = "timer_completed";
