@@ -6,8 +6,8 @@ type DailyStatistics = {
   time: number;
 }[];
 
-export default async function getDailyStatistics(): Promise<DailyStatistics> {
-  const timeDistributions = await getTimeDistribution();
+export default function getDailyStatistics(): DailyStatistics {
+  const timeDistributions = getTimeDistribution();
 
   return timeDistributions.map((dist) => ({
     date: startOfDay(dist.date),

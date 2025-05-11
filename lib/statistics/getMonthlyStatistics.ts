@@ -6,8 +6,8 @@ type MonthlyStatistics = {
   time: number;
 }[];
 
-export default async function getMonthlyStatistics(): Promise<MonthlyStatistics> {
-  const timeDistributions = await getTimeDistribution();
+export default function getMonthlyStatistics(): MonthlyStatistics {
+  const timeDistributions = getTimeDistribution();
   const monthMap = new Map<number, number>();
 
   for (const dist of timeDistributions) {

@@ -1,7 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
-import getDailyStatistics from "../statistics/getDailyStatistics";
-import getWeeklyStatistics from "../statistics/getWeeklyStatistics";
-import getMonthlyStatistics from "../statistics/getMonthlyStatistics";
+import getDailyStatistics from "@/lib/statistics/getDailyStatistics";
+import getMonthlyStatistics from "@/lib/statistics/getMonthlyStatistics";
+import getWeeklyStatistics from "@/lib/statistics/getWeeklyStatistics";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { DeviceEventEmitter } from "react-native";
 
 export type StatisticsTimeFrame = "1W" | "1M" | "3M" | "1Y" | "All";
@@ -13,8 +19,25 @@ export const statisticsTimeFrames: StatisticsTimeFrame[] = [
   "All",
 ];
 
-export default function useStatistics() {
-  const [loading, setLoading] = useState(true);
+interface StatisticsContextValue {
+  timeFrame: StatisticsTimeFrame;
+  setTimeFrame: (timeFrame: StatisticsTimeFrame) => void;
+  statistics: { date: string; time: number }[];
+  numDotsVisible: number;
+}
+
+export const StatisticsContext = createContext<StatisticsContextValue>({
+  timeFrame: "1W",
+  setTimeFrame: () => {},
+  statistics: [],
+  numDotsVisible: 0,
+});
+
+interface Props {
+  children: React.ReactNode;
+}
+
+export default function StatisticsContextProvider({ children }: Props) {
   const [statistics, setStatistics] = useState<
     { date: string; time: number }[]
   >([]);
@@ -33,21 +56,19 @@ export default function useStatistics() {
     numDotsVisible = Math.max(2, statistics.length);
   }
 
-  const loadStatistics = useCallback(async () => {
-    setLoading(true);
-
+  const loadStatistics = useCallback(() => {
     let statisticsData: { date: Date; time: number }[] = [];
 
     if (timeFrame === "1W") {
-      statisticsData = await getDailyStatistics();
+      statisticsData = getDailyStatistics();
     } else if (timeFrame === "1M") {
-      statisticsData = await getDailyStatistics();
+      statisticsData = getDailyStatistics();
     } else if (timeFrame === "3M") {
-      statisticsData = await getWeeklyStatistics();
+      statisticsData = getWeeklyStatistics();
     } else if (timeFrame === "1Y") {
-      statisticsData = await getMonthlyStatistics();
+      statisticsData = getMonthlyStatistics();
     } else if (timeFrame === "All") {
-      statisticsData = await getMonthlyStatistics();
+      statisticsData = getMonthlyStatistics();
     }
 
     const formattedStatistics = statisticsData.map((stat) => ({
@@ -62,7 +83,6 @@ export default function useStatistics() {
         : formattedStatistics;
 
     setStatistics(recentStats);
-    setLoading(false);
   }, [timeFrame]);
 
   useEffect(() => {
@@ -71,17 +91,25 @@ export default function useStatistics() {
       "sessionsChanged",
       loadStatistics,
     );
+
     return () => {
       subscription.remove();
     };
   }, [loadStatistics]);
+  return (
+    <StatisticsContext.Provider
+      value={{
+        timeFrame,
+        setTimeFrame,
+        statistics,
+        numDotsVisible,
+      }}
+    >
+      {children}
+    </StatisticsContext.Provider>
+  );
+}
 
-  return {
-    loading,
-    statistics,
-    numDotsVisible,
-    timeFrame,
-    setTimeFrame,
-    refresh: loadStatistics,
-  };
+export function useStatisticsContext() {
+  return useContext(StatisticsContext);
 }

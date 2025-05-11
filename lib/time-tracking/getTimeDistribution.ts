@@ -20,8 +20,8 @@ const createDefaultHourlyDistribution = (): {
   return Array.from({ length: 24 }, (_, hour) => ({ hour, time: 0 }));
 };
 
-export default async function getTimeDistribution(): Promise<TimeDistribution> {
-  const sessions = (await getWorkSessions()).sort(
+export default function getTimeDistribution(): TimeDistribution {
+  const sessions = getWorkSessions().sort(
     (a, b) => a.startDate.getTime() - b.startDate.getTime(),
   );
 

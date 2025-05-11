@@ -1,29 +1,10 @@
-import StatisticsHeader from "@/components/statistics/StatisticsHeader";
-import TimeFrameSelector from "@/components/statistics/TimeFrameSelector";
-import TimeWorkedChart from "@/components/statistics/TimeWorkedChart";
-import useStatistics, { statisticsTimeFrames } from "@/lib/hooks/useStatistics";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
+import Statistics from "@/components/statistics/Statistics";
+import StatisticsContextProvider from "@/context/StatisticsContext";
 
-export default function StatsScreen() {
-  const { loading, statistics, numDotsVisible, timeFrame, setTimeFrame } =
-    useStatistics();
-
-  if (loading) {
-    return null;
-  }
-
+export default function StatisticsScreen() {
   return (
-    <GestureHandlerRootView className="flex-1">
-      <SafeAreaView className="flex-1 bg-background pt-6">
-        <StatisticsHeader />
-        <TimeFrameSelector
-          timeFrames={statisticsTimeFrames}
-          selectedTimeFrame={timeFrame}
-          setSelectedTimeFrame={setTimeFrame}
-        />
-        <TimeWorkedChart data={statistics} numDotsVisible={numDotsVisible} />
-      </SafeAreaView>
-    </GestureHandlerRootView>
+    <StatisticsContextProvider>
+      <Statistics />
+    </StatisticsContextProvider>
   );
 }

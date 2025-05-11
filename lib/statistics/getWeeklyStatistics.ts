@@ -6,8 +6,8 @@ type WeeklyStatistics = {
   time: number;
 }[];
 
-export default async function getWeeklyStatistics(): Promise<WeeklyStatistics> {
-  const timeDistributions = await getTimeDistribution();
+export default function getWeeklyStatistics(): WeeklyStatistics {
+  const timeDistributions = getTimeDistribution();
   const weekMap = new Map<number, number>();
 
   for (const dist of timeDistributions) {

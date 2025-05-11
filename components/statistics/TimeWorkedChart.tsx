@@ -12,24 +12,30 @@ import { ReText } from "react-native-redash";
 import formatTime from "@/lib/utils/formatTime";
 import { format, parseISO } from "date-fns";
 import { Text } from "../ui/text";
+import { useStatisticsContext } from "@/context/StatisticsContext";
 
 type DataType = {
   x: string;
   y: Record<"time", number>;
 };
 
-interface Props {
-  data: {
-    date: string;
-    time: number;
-  }[];
-  numDotsVisible: number;
-}
-
-export default function TimeWorkedChart({ data, numDotsVisible }: Props) {
+export default function TimeWorkedChart() {
+  const { statistics: data, numDotsVisible } = useStatisticsContext();
   const { getColor } = useColors();
   const { width } = Dimensions.get("window");
   const chartRef = useRef(null);
+
+  const { chartConfig, tooltip, resetTranslate } = useChart<DataType>({
+    data,
+    chartRef,
+    numDotsVisible,
+    yKey: "time",
+    initialState: {
+      x: "2023-10-01",
+      y: { time: 0 },
+    },
+    paddingX: 16,
+  });
 
   const formattedDates = useMemo(
     () =>
@@ -42,18 +48,6 @@ export default function TimeWorkedChart({ data, numDotsVisible }: Props) {
       ),
     [data],
   );
-
-  const { chartConfig, tooltip } = useChart<DataType>({
-    data,
-    chartRef,
-    numDotsVisible,
-    yKey: "time",
-    initialState: {
-      x: "2023-10-01",
-      y: { time: 0 },
-    },
-    paddingX: 16,
-  });
 
   const date = useDerivedValue(() => formattedDates[tooltip.x.value.value]);
   const time = useDerivedValue(() => formatTime(tooltip.y.value.value / 1000));

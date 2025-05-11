@@ -127,6 +127,10 @@ export default function useChart<T extends ChartPressStateInit>({
     xPan,
   ]);
 
+  useEffect(() => {
+    resetTranslate();
+  }, [resetTranslate, data]);
+
   useLayoutEffect(() => {
     chartRef.current?.measureInWindow((x, y, width, height) => {
       if (
