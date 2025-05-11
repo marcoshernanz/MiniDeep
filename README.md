@@ -1,9 +1,6 @@
 # TODO
 
-- [ ] Fix settings
-
-- [ ] Fix activity swiping
-- [ ] Statistics always snaps backwards
+- [ ] Improve timer performance
 - [ ] MMKV instead of async storage.
 - [ ] Stopwatch option.
 - [ ] Alarm option.
@@ -14,4 +11,3 @@
 - [ ] Smoother scrolling in wheel picker.
 - [ ] Nicer finish screen.
 - [ ] Improved settings screen.
-- [ ] Sync scroll in activity screen.
