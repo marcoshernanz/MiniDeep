@@ -13,8 +13,6 @@ const isProduction = appVariant !== "development" && appVariant !== "preview";
 export default function SettingsScreen() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
 
-  console.log(appVariant);
-
   const seedData = async () => {
     try {
       await seedWorkSessions();

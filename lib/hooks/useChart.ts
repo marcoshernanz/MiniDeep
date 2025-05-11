@@ -1,4 +1,10 @@
-import { RefObject, useLayoutEffect, useState, useMemo } from "react";
+import {
+  RefObject,
+  useLayoutEffect,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
 import { View } from "react-native";
 import {
   useAnimatedReaction,
@@ -99,8 +105,9 @@ export default function useChart<T extends ChartPressStateInit>({
 
   useLayoutEffect(() => {
     const initialXPan =
-      -(chartDimensions.width / (numDotsVisible - 1)) *
-      (data.length - numDotsVisible);
+      -((chartDimensions.width - paddingX * 2) / (numDotsVisible - 1)) *
+        (data.length - numDotsVisible) +
+      paddingX;
 
     transformState.matrix.value = setTranslate(
       transformState.matrix.value,
@@ -109,7 +116,16 @@ export default function useChart<T extends ChartPressStateInit>({
     );
 
     xPan.value = initialXPan;
+  }, [
+    chartDimensions.width,
+    data.length,
+    numDotsVisible,
+    paddingX,
+    transformState.matrix,
+    xPan,
+  ]);
 
+  useLayoutEffect(() => {
     chartRef.current?.measureInWindow((x, y, width, height) => {
       if (
         width > 0 &&
@@ -119,15 +135,7 @@ export default function useChart<T extends ChartPressStateInit>({
         setChartDimensions({ x, y, width, height });
       }
     });
-  }, [
-    chartRef,
-    chartDimensions.width,
-    chartDimensions.height,
-    numDotsVisible,
-    data.length,
-    transformState.matrix,
-    xPan,
-  ]);
+  }, [chartDimensions.height, chartDimensions.width, chartRef]);
 
   const chartConfigMemo = useMemo(
     () => ({

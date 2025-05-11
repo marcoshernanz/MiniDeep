@@ -1,7 +1,7 @@
 # TODO
 
-- [ ] Fix changing statistics time frames
 - [ ] Fix statistics chart snapping
+- [ ] Fix lag when changing statistics time frames
 - [ ] Stopwatch option.
 - [ ] Alarm option.
 - [ ] Make UI nicer with animations.
