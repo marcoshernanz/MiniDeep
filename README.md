@@ -1,5 +1,7 @@
 # TODO
 
+- [ ] Fix changing statistics time frames
+- [ ] Fix statistics chart snapping
 - [ ] MMKV instead of async storage.
 - [ ] Stopwatch option.
 - [ ] Alarm option.
