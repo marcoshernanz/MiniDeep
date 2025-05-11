@@ -7,7 +7,7 @@ import saveTimerState from "../timer/saveTimerState";
 import * as Notifications from "expo-notifications";
 import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
 import { TimerState } from "@/zod/schemas/TimerStateSchema";
-import { runOnJS, useFrameCallback } from "react-native-reanimated";
+import createAccurateTimer from "../utils/createAccurateTimer"; // Import createAccurateTimer
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
 const TIMER_CATEGORY = "timer_completed";
@@ -80,6 +80,7 @@ export default function useTimer() {
   const [status, setStatus] = useState<TimerState["status"]>("inactive");
 
   const timerRef = useRef({
+    accurateTimer: null as ReturnType<typeof createAccurateTimer> | null,
     status: "inactive" as TimerState["status"],
     sessionId: "",
     startTime: 0,
@@ -89,6 +90,7 @@ export default function useTimer() {
   const isRestoringState = useRef(false);
 
   const handleTimerCompletion = useCallback(async (notify: boolean = true) => {
+    timerRef.current.accurateTimer?.stop();
     timerRef.current.status = "completed";
     setStatus("completed");
     setTimeLeft(0);
@@ -112,10 +114,15 @@ export default function useTimer() {
     const remaining = timerRef.current.endTime - now;
     timerRef.current.tickTime = now;
     setTimeLeft(remaining);
+
     if (remaining <= 0) {
       handleTimerCompletion();
     }
   }, [handleTimerCompletion]);
+
+  if (!timerRef.current.accurateTimer) {
+    timerRef.current.accurateTimer = createAccurateTimer(timerTick, 250);
+  }
 
   const startTimer = async (duration: number) => {
     const now = Date.now();
@@ -127,6 +134,7 @@ export default function useTimer() {
     timerRef.current.status = "running";
     setStatus("running");
     setTimeLeft(duration);
+    timerRef.current.accurateTimer?.start();
 
     const createdSessionId = await createNewSession({
       duration,
@@ -152,6 +160,7 @@ export default function useTimer() {
 
       timerRef.current.status = "running";
       setStatus("running");
+      timerRef.current.accurateTimer?.resume();
 
       await addTimeEvent({
         sessionId: timerRef.current.sessionId,
@@ -159,9 +168,11 @@ export default function useTimer() {
         time: timerRef.current.tickTime,
       });
     } else if (status === "running") {
+      timerTick();
+
       timerRef.current.status = "paused";
       setStatus("paused");
-
+      timerRef.current.accurateTimer?.pause();
       await addTimeEvent({
         sessionId: timerRef.current.sessionId,
         action: "stop",
@@ -175,6 +186,7 @@ export default function useTimer() {
 
     timerRef.current.status = "inactive";
     setStatus("inactive");
+    timerRef.current.accurateTimer?.stop();
 
     await cancelTimerNotifications();
     if (!wasCompleted) {
@@ -214,7 +226,9 @@ export default function useTimer() {
       if (!savedState || savedState.status === "inactive") {
         timerRef.current.status = "inactive";
         setStatus("inactive");
-
+        setTimeLeft(0);
+        timerRef.current.accurateTimer?.stop();
+        isRestoringState.current = false;
         return;
       }
 
@@ -229,7 +243,6 @@ export default function useTimer() {
 
       if (savedState.status === "running") {
         const now = Date.now();
-
         const elapsed = now - savedState.time;
         const remaining = savedState.remainingTime - elapsed;
 
@@ -237,13 +250,19 @@ export default function useTimer() {
           timerRef.current.tickTime = now;
           timerRef.current.endTime = now + remaining;
           setTimeLeft(remaining);
+          timerRef.current.accurateTimer?.resume();
         } else {
           timerRef.current.tickTime = timerRef.current.endTime;
           await handleTimerCompletion(false);
+          isRestoringState.current = false;
           return;
         }
-
         await cancelTimerNotifications();
+      } else if (savedState.status === "paused") {
+        timerRef.current.accurateTimer?.pause();
+      } else if (savedState.status === "completed") {
+        setTimeLeft(0);
+        timerRef.current.accurateTimer?.stop();
       }
     } finally {
       isRestoringState.current = false;
@@ -255,6 +274,9 @@ export default function useTimer() {
       if (nextAppState === "active") {
         await restoreTimerState();
       } else if (nextAppState === "background" || nextAppState === "inactive") {
+        if (timerRef.current.status === "running") {
+          timerRef.current.accurateTimer?.pause();
+        }
         await saveCurrentTimerState();
       }
     },
@@ -278,7 +300,7 @@ export default function useTimer() {
     setupNotifications();
     restoreTimerState();
 
-    const subscription = AppState.addEventListener(
+    const appStateSubscription = AppState.addEventListener(
       "change",
       handleAppStateChange,
     );
@@ -288,13 +310,14 @@ export default function useTimer() {
         handleNotificationResponse,
       );
 
+    const accurateTimer = timerRef.current.accurateTimer;
+
     return () => {
-      subscription.remove();
+      appStateSubscription.remove();
       notificationResponseSubscription.remove();
+      accurateTimer?.stop();
     };
   }, [handleAppStateChange, handleNotificationResponse, restoreTimerState]);
-
-  useFrameCallback(() => runOnJS(timerTick)());
 
   return {
     timeLeft,

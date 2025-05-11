@@ -1,6 +1,5 @@
 # TODO
 
-- [ ] Improve timer performance
 - [ ] MMKV instead of async storage.
 - [ ] Stopwatch option.
 - [ ] Alarm option.
