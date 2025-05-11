@@ -133,7 +133,7 @@ export default function useTimer() {
 
     timerRef.current.status = "running";
     setStatus("running");
-    setTimeLeft(duration);
+    setTimeLeft(duration - 1);
     timerRef.current.accurateTimer?.start();
 
     const createdSessionId = await createNewSession({
