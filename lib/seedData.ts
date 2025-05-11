@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   eachDayOfInterval,
   startOfDay,
@@ -9,12 +8,13 @@ import {
 import timeTrackingConfig from "@/config/timeTrackingConfig";
 import { WorkSession } from "@/zod/schemas/WorkSessionSchema";
 import { TimeEvent } from "@/zod/schemas/TimeEventSchema";
+import { storage } from "@/lib/storage/mmkv";
 
 function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export async function seedWorkSessions(): Promise<void> {
+export function seedWorkSessions(): void {
   const { storageKey } = timeTrackingConfig;
   const today = startOfDay(new Date());
   const startDate = addYears(today, -2);
@@ -27,10 +27,10 @@ export async function seedWorkSessions(): Promise<void> {
       seconds: 0,
       milliseconds: 0,
     });
-    const startOffset = getRandomInt(-30, 30); // random offset in minutes
+    const startOffset = getRandomInt(-30, 30);
     const sessionStart = addMinutes(base, startOffset);
-    const actualDuration = getRandomInt(30, 120); // actual work duration in minutes
-    const plannedOffset = getRandomInt(-15, 15); // finish early or late in minutes
+    const actualDuration = getRandomInt(30, 120);
+    const plannedOffset = getRandomInt(-15, 15);
     const plannedDurationMinutes = Math.max(15, actualDuration + plannedOffset);
     const plannedDuration = plannedDurationMinutes * 60 * 1000;
     const sessionEnd = addMinutes(sessionStart, actualDuration);
@@ -56,10 +56,10 @@ export async function seedWorkSessions(): Promise<void> {
     };
   });
 
-  await AsyncStorage.setItem(storageKey, JSON.stringify(sessions));
+  storage.set(storageKey, JSON.stringify(sessions));
 }
 
-export async function clearWorkSessions(): Promise<void> {
+export function clearWorkSessions(): void {
   const { storageKey } = timeTrackingConfig;
-  await AsyncStorage.removeItem(storageKey);
+  storage.delete(storageKey);
 }
