@@ -1,11 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { storage } from "@/lib/storage/mmkv";
 import timerStateConfig from "@/config/timerStateConfig";
 import { TimerState } from "@/zod/schemas/TimerStateSchema";
 
-export default async function saveTimerState(state: TimerState): Promise<void> {
+export default function saveTimerState(state: TimerState): void {
   try {
     const { storageKey } = timerStateConfig;
-    await AsyncStorage.setItem(storageKey, JSON.stringify(state));
+    storage.set(storageKey, JSON.stringify(state));
   } catch (error) {
     console.error("Error saving timer state:", error);
   }

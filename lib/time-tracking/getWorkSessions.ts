@@ -1,18 +1,18 @@
+import { storage } from "@/lib/storage/mmkv";
 import timeTrackingConfig from "@/config/timeTrackingConfig";
 import {
   WorkSession,
   WorkSessionSchema,
 } from "@/zod/schemas/WorkSessionSchema";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { z } from "zod";
 
 const WorkSessionArraySchema = z.array(WorkSessionSchema);
 
-export default async function getWorkSessions(): Promise<WorkSession[]> {
+export default function getWorkSessions(): WorkSession[] {
   const { storageKey } = timeTrackingConfig;
 
   try {
-    const data = await AsyncStorage.getItem(storageKey);
+    const data = storage.getString(storageKey);
     if (!data) {
       return [];
     }

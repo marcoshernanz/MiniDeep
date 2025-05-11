@@ -1,11 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { storage } from "@/lib/storage/mmkv";
 import timerStateConfig from "@/config/timerStateConfig";
 import { TimerState, TimerStateSchema } from "@/zod/schemas/TimerStateSchema";
 
-export default async function getTimerState(): Promise<TimerState | null> {
+export default function getTimerState(): TimerState | null {
   try {
     const { storageKey } = timerStateConfig;
-    const data = await AsyncStorage.getItem(storageKey);
+    const data = storage.getString(storageKey);
     if (!data) {
       return null;
     }
