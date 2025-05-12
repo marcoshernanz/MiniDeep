@@ -20,13 +20,13 @@ type DataType = {
 };
 
 export default function TimeWorkedChart() {
-  const { statistics: data, numDotsVisible } = useStatisticsContext();
+  const { statisticsData, numDotsVisible } = useStatisticsContext();
   const { getColor } = useColors();
   const { width } = Dimensions.get("window");
   const chartRef = useRef(null);
 
   const { chartConfig, tooltip, resetTranslate } = useChart<DataType>({
-    data,
+    data: statisticsData,
     chartRef,
     numDotsVisible,
     yKey: "time",
@@ -39,14 +39,14 @@ export default function TimeWorkedChart() {
 
   const formattedDates = useMemo(
     () =>
-      data.reduce(
+      statisticsData.reduce(
         (acc, item) => {
           acc[item.date] = format(parseISO(item.date), "MMM dd, yyyy");
           return acc;
         },
         {} as Record<string, string>,
       ),
-    [data],
+    [statisticsData],
   );
 
   const date = useDerivedValue(() => formattedDates[tooltip.x.value.value]);
@@ -73,7 +73,7 @@ export default function TimeWorkedChart() {
     ],
   }));
 
-  if (data.length < 2) {
+  if (statisticsData.length < 2) {
     return (
       <View className="flex-1 items-center justify-center">
         <Text className="text-lg text-muted-foreground">Not enough data</Text>
@@ -90,7 +90,7 @@ export default function TimeWorkedChart() {
         className="flex-1"
       >
         <CartesianChart
-          data={data}
+          data={statisticsData}
           xKey="date"
           yKeys={["time"]}
           xAxis={{ lineWidth: 0, labelPosition: "inset" }}

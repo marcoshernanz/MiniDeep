@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { DeviceEventEmitter } from "react-native";
@@ -22,14 +23,14 @@ export const statisticsTimeFrames: StatisticsTimeFrame[] = [
 interface StatisticsContextValue {
   timeFrame: StatisticsTimeFrame;
   setTimeFrame: (timeFrame: StatisticsTimeFrame) => void;
-  statistics: { date: string; time: number }[];
+  statisticsData: { date: string; time: number }[];
   numDotsVisible: number;
 }
 
 export const StatisticsContext = createContext<StatisticsContextValue>({
   timeFrame: "1W",
   setTimeFrame: () => {},
-  statistics: [],
+  statisticsData: [],
   numDotsVisible: 0,
 });
 
@@ -38,70 +39,68 @@ interface Props {
 }
 
 export default function StatisticsContextProvider({ children }: Props) {
-  const [statistics, setStatistics] = useState<
-    { date: string; time: number }[]
-  >([]);
+  const [statistics, setStatistics] = useState({
+    daily: getDailyStatistics(),
+    weekly: getWeeklyStatistics(),
+    monthly: getMonthlyStatistics(),
+  });
   const [timeFrame, setTimeFrame] = useState<StatisticsTimeFrame>("1W");
 
   let numDotsVisible = 0;
+  let statisticsData: { date: Date; time: number }[] = [];
+
   if (timeFrame === "1W") {
+    statisticsData = statistics.daily;
     numDotsVisible = 7;
   } else if (timeFrame === "1M") {
+    statisticsData = statistics.daily;
     numDotsVisible = 30;
   } else if (timeFrame === "3M") {
+    statisticsData = statistics.weekly;
     numDotsVisible = 12;
   } else if (timeFrame === "1Y") {
+    statisticsData = statistics.monthly;
     numDotsVisible = 12;
   } else if (timeFrame === "All") {
-    numDotsVisible = Math.max(2, statistics.length);
+    statisticsData = statistics.monthly;
+    numDotsVisible = statisticsData.length;
   }
 
+  const formattedStatistics = statisticsData.map((stat) => ({
+    date: stat.date.toISOString(),
+    time: stat.time,
+  }));
+
+  const MAX_DOTS = 100;
+  const recentStatistics =
+    formattedStatistics.length > MAX_DOTS
+      ? formattedStatistics.slice(formattedStatistics.length - MAX_DOTS)
+      : formattedStatistics;
+
   const loadStatistics = useCallback(() => {
-    let statisticsData: { date: Date; time: number }[] = [];
-
-    if (timeFrame === "1W") {
-      statisticsData = getDailyStatistics();
-    } else if (timeFrame === "1M") {
-      statisticsData = getDailyStatistics();
-    } else if (timeFrame === "3M") {
-      statisticsData = getWeeklyStatistics();
-    } else if (timeFrame === "1Y") {
-      statisticsData = getMonthlyStatistics();
-    } else if (timeFrame === "All") {
-      statisticsData = getMonthlyStatistics();
-    }
-
-    const formattedStatistics = statisticsData.map((stat) => ({
-      date: stat.date.toISOString(),
-      time: stat.time,
-    }));
-
-    const MAX_DOTS = 100;
-    const recentStats =
-      formattedStatistics.length > MAX_DOTS
-        ? formattedStatistics.slice(formattedStatistics.length - MAX_DOTS)
-        : formattedStatistics;
-
-    setStatistics(recentStats);
-  }, [timeFrame]);
+    setStatistics({
+      daily: getDailyStatistics(),
+      weekly: getWeeklyStatistics(),
+      monthly: getMonthlyStatistics(),
+    });
+  }, []);
 
   useEffect(() => {
-    loadStatistics();
-    const subscription = DeviceEventEmitter.addListener(
-      "sessionsChanged",
-      loadStatistics,
+    const subscription = DeviceEventEmitter.addListener("sessionsChanged", () =>
+      loadStatistics(),
     );
 
     return () => {
       subscription.remove();
     };
   }, [loadStatistics]);
+
   return (
     <StatisticsContext.Provider
       value={{
         timeFrame,
         setTimeFrame,
-        statistics,
+        statisticsData: recentStatistics,
         numDotsVisible,
       }}
     >

@@ -3,7 +3,6 @@ import {
   useLayoutEffect,
   useState,
   useMemo,
-  useEffect,
   useCallback,
 } from "react";
 import { View } from "react-native";
@@ -126,10 +125,6 @@ export default function useChart<T extends ChartPressStateInit>({
     transformState.matrix,
     xPan,
   ]);
-
-  useEffect(() => {
-    resetTranslate();
-  }, [resetTranslate, data]);
 
   useLayoutEffect(() => {
     chartRef.current?.measureInWindow((x, y, width, height) => {
