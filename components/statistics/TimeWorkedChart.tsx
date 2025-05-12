@@ -1,5 +1,4 @@
 import useColors from "@/lib/hooks/useColors";
-import useChart from "@/lib/hooks/useChart";
 import { LinearGradient } from "@shopify/react-native-skia";
 import { Dimensions, View } from "react-native";
 import Animated, {
@@ -7,7 +6,7 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { Area, CartesianChart, Line, Scatter } from "victory-native";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { ReText } from "react-native-redash";
 import formatTime from "@/lib/utils/formatTime";
 import { format, parseISO } from "date-fns";
@@ -20,22 +19,12 @@ type DataType = {
 };
 
 export default function TimeWorkedChart() {
-  const { statisticsData, numDotsVisible } = useStatisticsContext();
+  const {
+    statisticsData,
+    chart: { chartRef, chartConfig, tooltip },
+  } = useStatisticsContext();
   const { getColor } = useColors();
   const { width } = Dimensions.get("window");
-  const chartRef = useRef(null);
-
-  const { chartConfig, tooltip, resetTranslate } = useChart<DataType>({
-    data: statisticsData,
-    chartRef,
-    numDotsVisible,
-    yKey: "time",
-    initialState: {
-      x: "2023-10-01",
-      y: { time: 0 },
-    },
-    paddingX: 16,
-  });
 
   const formattedDates = useMemo(
     () =>

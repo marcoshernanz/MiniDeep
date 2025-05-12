@@ -1,6 +1,5 @@
 # TODO
 
-- [ ] Fix lag when changing statistics time frames
 - [ ] Swipe weekly day picker in activity
 - [ ] Stopwatch option.
 - [ ] Alarm option.

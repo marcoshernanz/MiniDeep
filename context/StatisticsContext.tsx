@@ -1,15 +1,19 @@
+import useChart from "@/lib/hooks/useChart";
 import getDailyStatistics from "@/lib/statistics/getDailyStatistics";
 import getMonthlyStatistics from "@/lib/statistics/getMonthlyStatistics";
 import getWeeklyStatistics from "@/lib/statistics/getWeeklyStatistics";
+import { format } from "date-fns";
 import {
   createContext,
+  RefObject,
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
-import { DeviceEventEmitter } from "react-native";
+import { DeviceEventEmitter, View } from "react-native";
 
 export type StatisticsTimeFrame = "1W" | "1M" | "3M" | "1Y" | "All";
 export const statisticsTimeFrames: StatisticsTimeFrame[] = [
@@ -20,18 +24,33 @@ export const statisticsTimeFrames: StatisticsTimeFrame[] = [
   "All",
 ];
 
+type ChartDataType = {
+  x: string;
+  y: Record<"time", number>;
+};
+
 interface StatisticsContextValue {
   timeFrame: StatisticsTimeFrame;
   setTimeFrame: (timeFrame: StatisticsTimeFrame) => void;
   statisticsData: { date: string; time: number }[];
-  numDotsVisible: number;
+  chart: {
+    chartRef: RefObject<View>;
+    chartConfig: ReturnType<typeof useChart<ChartDataType>>["chartConfig"];
+    tooltip: ReturnType<typeof useChart<ChartDataType>>["tooltip"];
+  };
 }
 
 export const StatisticsContext = createContext<StatisticsContextValue>({
   timeFrame: "1W",
   setTimeFrame: () => {},
   statisticsData: [],
-  numDotsVisible: 0,
+  chart: {
+    chartRef: { current: null },
+    chartConfig: {} as ReturnType<
+      typeof useChart<ChartDataType>
+    >["chartConfig"],
+    tooltip: {} as ReturnType<typeof useChart<ChartDataType>>["tooltip"],
+  },
 });
 
 interface Props {
@@ -95,13 +114,35 @@ export default function StatisticsContextProvider({ children }: Props) {
     };
   }, [loadStatistics]);
 
+  const chartRef = useRef(null);
+
+  const { chartConfig, tooltip, resetTranslate } = useChart<ChartDataType>({
+    data: recentStatistics,
+    chartRef,
+    numDotsVisible,
+    yKey: "time",
+    initialState: {
+      x: format(new Date(), "yyyy-MM-dd"),
+      y: { time: 0 },
+    },
+    paddingX: 16,
+  });
+
+  useLayoutEffect(() => {
+    resetTranslate();
+  }, [resetTranslate, timeFrame]);
+
   return (
     <StatisticsContext.Provider
       value={{
         timeFrame,
         setTimeFrame,
         statisticsData: recentStatistics,
-        numDotsVisible,
+        chart: {
+          chartRef,
+          chartConfig,
+          tooltip,
+        },
       }}
     >
       {children}

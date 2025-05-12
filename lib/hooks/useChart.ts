@@ -138,7 +138,7 @@ export default function useChart<T extends ChartPressStateInit>({
     });
   }, [chartDimensions.height, chartDimensions.width, chartRef]);
 
-  const chartConfigMemo = useMemo(
+  const chartConfig = useMemo(
     () => ({
       chartPressState: pressState,
       transformState,
@@ -159,7 +159,7 @@ export default function useChart<T extends ChartPressStateInit>({
   );
 
   return {
-    chartConfig: chartConfigMemo,
+    chartConfig,
     tooltip: {
       isActive,
       x: {
