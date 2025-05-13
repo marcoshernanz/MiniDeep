@@ -39,4 +39,4 @@ yarn-error.*
 app-example
 .vscode
 
-minideep-*.json
+service-account-key.json
