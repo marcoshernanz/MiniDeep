@@ -11,7 +11,8 @@
     "dev": "APP_VARIANT=development npx expo start",
     "build:dev": "eas build --profile development",
     "build:preview": "eas build --profile preview",
-    "build:prod": "eas build --profile production"
+    "build:prod": "eas build --profile production",
+    "submit": "eas submit"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
