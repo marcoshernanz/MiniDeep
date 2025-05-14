@@ -1,17 +1,14 @@
-type TimerCallback = () => void;
-
-interface AccurateTimer {
+interface AccurateInterval {
   start: () => void;
   stop: () => void;
-  isPaused: () => boolean;
   pause: () => void;
   resume: () => void;
 }
 
-export default function createAccurateTimer(
-  callback: TimerCallback,
+export default function createAccurateInterval(
+  callback: () => void,
   interval: number = 1000,
-): AccurateTimer {
+): AccurateInterval {
   let expected: number = 0;
   let timeout: NodeJS.Timeout | null = null;
   let paused: boolean = true;
@@ -88,7 +85,6 @@ export default function createAccurateTimer(
   return {
     start,
     stop,
-    isPaused,
     pause,
     resume,
   };

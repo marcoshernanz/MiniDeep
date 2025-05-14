@@ -1,51 +1,36 @@
 import useTimer from "@/lib/hooks/useTimer";
-import { TimerState } from "@/zod/schemas/TrackerStateSchema";
+import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 import { createContext, useContext, useState } from "react";
+import useStopwatch from "@/lib/hooks/useStopwatch";
 
-interface StopWatchContextValue {
-  status: TimerState["status"];
-  startTimer: (duration: number) => void;
+interface StopwatchContextValue {
+  status: TrackerState["status"];
+  startStopwatch: () => void;
   togglePause: () => void;
-  stopTimer: () => void;
+  stopStopwatch: () => void;
 }
 
-export const StopWatchContext = createContext<StopWatchContextValue>({
-  selectedTime: 0,
-  setSelectedTime: () => {},
-
-  timer: {
-    timeLeft: 0,
-    status: "inactive",
-    startTimer: () => {},
-    togglePause: () => {},
-    stopTimer: () => {},
-  },
+export const StopwatchContext = createContext<StopwatchContextValue>({
+  status: "inactive",
+  startStopwatch: () => {},
+  togglePause: () => {},
+  stopStopwatch: () => {},
 });
 
 interface Props {
   children: React.ReactNode;
 }
 
-const defaultTime = 30 * 60 * 1000;
-
-export default function StopWatchContextProvider({ children }: Props) {
-  const timer = useTimer();
-
-  const [selectedTime, setSelectedTime] = useState(defaultTime);
+export default function StopwatchContextProvider({ children }: Props) {
+  const stopwatch = useStopwatch();
 
   return (
-    <StopWatchContext.Provider
-      value={{
-        selectedTime,
-        setSelectedTime,
-        timer,
-      }}
-    >
+    <StopwatchContext.Provider value={{ stopwatch }}>
       {children}
-    </StopWatchContext.Provider>
+    </StopwatchContext.Provider>
   );
 }
 
-export function StopWatchContextContext() {
-  return useContext(StopWatchContext);
+export function StopwatchContextContext() {
+  return useContext(StopwatchContext);
 }
