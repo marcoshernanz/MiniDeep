@@ -8,7 +8,7 @@ import { Button } from "../../ui/button";
 import extractTime from "@/lib/utils/extractTime";
 import { useTimerContext } from "@/context/TimerContext";
 
-export default function TimePickerScreen() {
+export default function TimerTimePickerScreen() {
   const {
     selectedTime,
     setSelectedTime,
