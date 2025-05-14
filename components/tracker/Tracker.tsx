@@ -1,10 +1,10 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import TimePickerScreen from "@/components/timer/TimePickerScreen";
-import TimerCompletedScreen from "@/components/timer/TimerCompletedScreen";
-import TimerRunningScreen from "@/components/timer/TimerRunningScreen";
+import TimePickerScreen from "@/components/tracker/TimePickerScreen";
+import TimerCompletedScreen from "@/components/tracker/TimerCompletedScreen";
+import TimerRunningScreen from "@/components/tracker/TimerRunningScreen";
 import { useTimerContext } from "@/context/TimerContext";
 
-export default function Timer() {
+export default function Tracker() {
   const {
     timer: { status },
   } = useTimerContext();
