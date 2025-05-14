@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AppState } from "react-native";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
-import getTimerState from "../tracker/getTimerState";
-import saveTimerState from "../tracker/saveTimerState";
+import getTimerState from "../tracker/getTrackerState";
+import saveTimerState from "../tracker/saveTrackerState";
 import * as Notifications from "expo-notifications";
 import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
-import { TimerState } from "@/zod/schemas/TimerStateSchema";
 import createAccurateTimer from "../utils/createAccurateTimer";
+import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
 const TIMER_CATEGORY = "timer_completed";
@@ -77,11 +77,11 @@ const cancelTimerNotifications = async () => {
 
 export default function useTimer() {
   const [timeLeft, setTimeLeft] = useState(0);
-  const [status, setStatus] = useState<TimerState["status"]>("inactive");
+  const [status, setStatus] = useState<TrackerState["status"]>("inactive");
 
   const timerRef = useRef({
     accurateTimer: null as ReturnType<typeof createAccurateTimer> | null,
-    status: "inactive" as TimerState["status"],
+    status: "inactive" as TrackerState["status"],
     sessionId: "",
     startTime: 0,
     endTime: 0,
