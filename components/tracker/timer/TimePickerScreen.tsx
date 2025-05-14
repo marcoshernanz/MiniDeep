@@ -2,9 +2,9 @@ import { View } from "react-native";
 import React, { useRef } from "react";
 import WheelNumberPicker, {
   WheelNumberPickerHandle,
-} from "../ui/WheelNumberPicker";
-import { Text } from "../ui/text";
-import { Button } from "../ui/button";
+} from "../../ui/WheelNumberPicker";
+import { Text } from "../../ui/text";
+import { Button } from "../../ui/button";
 import extractTime from "@/lib/utils/extractTime";
 import { useTimerContext } from "@/context/TimerContext";
 

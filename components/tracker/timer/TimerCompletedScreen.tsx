@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import { Text } from "../ui/text";
-import { Button } from "../ui/button";
+import { Text } from "../../ui/text";
+import { Button } from "../../ui/button";
 import * as Notifications from "expo-notifications";
 import stopSound from "@/lib/utils/sound/stopSound";
 import { Audio } from "expo-av";

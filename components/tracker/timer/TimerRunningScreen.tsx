@@ -1,7 +1,7 @@
 import { View } from "react-native";
-import { Text } from "../ui/text";
+import { Text } from "../../ui/text";
 import padWithZeros from "@/lib/utils/padWithZeros";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import extractTime from "@/lib/utils/extractTime";
 import { useTimerContext } from "@/context/TimerContext";
 
