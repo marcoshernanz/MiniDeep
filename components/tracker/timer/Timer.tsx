@@ -1,8 +1,8 @@
-import TimePickerScreen from "@/components/tracker/timer/TimePickerScreen";
 import TimerCompletedScreen from "@/components/tracker/timer/TimerCompletedScreen";
 import TimerRunningScreen from "@/components/tracker/timer/TimerRunningScreen";
 import { useTimerContext } from "@/context/TimerContext";
 import { View } from "react-native";
+import TimerTimePickerScreen from "./TimerTimePickerScreen";
 
 export default function Timer() {
   const {
@@ -11,7 +11,7 @@ export default function Timer() {
 
   return (
     <View className="size-full">
-      {status === "inactive" && <TimePickerScreen />}
+      {status === "inactive" && <TimerTimePickerScreen />}
 
       {(status === "running" || status === "paused") && <TimerRunningScreen />}
 
