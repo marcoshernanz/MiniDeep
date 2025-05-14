@@ -1,26 +1,31 @@
 import Swipable from "@/components/Swipable";
-import Tracker from "@/components/tracker/Tracker";
+import Stopwatch from "@/components/tracker/stopwatch/Stopwatch";
+import Timer from "@/components/tracker/timer/Timer";
 import TimerContextProvider from "@/context/TimerContext";
+import { SafeAreaView, View } from "react-native";
 
 export default function IndexScreen() {
   return (
-    <Swipable
-      data={[null, null]}
-      keyExtractor={(value, index) => `${value}-${index}`}
-      renderItem={({ item, index }) => (
-        <>
-          {index === 0 && (
-            <TimerContextProvider>
-              <Tracker />
-            </TimerContextProvider>
-          )}
-          {index === 1 && (
-            // <StopwatchContextProvider>
-            <Stopwatch />
-            // </StopwatchContextProvider>
-          )}
-        </>
-      )}
-    />
+    <SafeAreaView className="flex-1">
+      <Swipable
+        data={[null, null]}
+        keyExtractor={(value, index) => `${value}-${index}`}
+        renderItem={({ index }) => (
+          <>
+            {index === 0 && (
+              <TimerContextProvider>
+                <Timer />
+              </TimerContextProvider>
+            )}
+            {index === 1 && (
+              <View className="h-full w-full bg-blue-600"></View>
+              // <StopwatchContextProvider>
+              // <Stopwatch />
+              // </StopwatchContextProvider>
+            )}
+          </>
+        )}
+      />
+    </SafeAreaView>
   );
 }

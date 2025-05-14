@@ -1,21 +1,21 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import TimePickerScreen from "@/components/tracker/timer/TimePickerScreen";
 import TimerCompletedScreen from "@/components/tracker/timer/TimerCompletedScreen";
 import TimerRunningScreen from "@/components/tracker/timer/TimerRunningScreen";
 import { useTimerContext } from "@/context/TimerContext";
+import { View } from "react-native";
 
-export default function Tracker() {
+export default function Timer() {
   const {
     timer: { status },
   } = useTimerContext();
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center">
+    <View className="size-full flex-1">
       {status === "inactive" && <TimePickerScreen />}
 
       {(status === "running" || status === "paused") && <TimerRunningScreen />}
 
       {status === "completed" && <TimerCompletedScreen />}
-    </SafeAreaView>
+    </View>
   );
 }
