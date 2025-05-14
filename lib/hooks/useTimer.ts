@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AppState } from "react-native";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
-import getTimerState from "../tracker/getTrackerState";
-import saveTimerState from "../tracker/saveTrackerState";
+import getTrackerState from "../tracker/getTrackerState";
+import saveTrackerState from "../tracker/saveTrackerState";
 import * as Notifications from "expo-notifications";
 import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
@@ -205,7 +205,7 @@ export default function useTimer() {
 
     const remaining = timerRef.current.endTime - timerRef.current.tickTime;
 
-    saveTimerState({
+    saveTrackerState({
       type: "timer",
       status: timerRef.current.status,
       elapsedTime: 0,
@@ -224,7 +224,7 @@ export default function useTimer() {
     isRestoringState.current = true;
 
     try {
-      const savedState = getTimerState();
+      const savedState = getTrackerState();
 
       if (!savedState || savedState.status === "inactive") {
         timerRef.current.status = "inactive";
