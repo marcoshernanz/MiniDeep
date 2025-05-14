@@ -10,7 +10,7 @@ export default function Timer() {
   } = useTimerContext();
 
   return (
-    <View className="size-full flex-1">
+    <View className="size-full">
       {status === "inactive" && <TimePickerScreen />}
 
       {(status === "running" || status === "paused") && <TimerRunningScreen />}

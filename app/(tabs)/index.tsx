@@ -18,9 +18,8 @@ export default function IndexScreen() {
               </TimerContextProvider>
             )}
             {index === 1 && (
-              <View className="h-full w-full bg-blue-600"></View>
               // <StopwatchContextProvider>
-              // <Stopwatch />
+              <Stopwatch />
               // </StopwatchContextProvider>
             )}
           </>
