@@ -1,4 +1,3 @@
-import { ActivityType } from "@/lib/hooks/useActivity";
 import cn from "@/lib/utils/cn";
 import { memo } from "react";
 import { Pressable } from "react-native";
@@ -6,6 +5,7 @@ import { Text } from "../ui/text";
 import { format } from "date-fns";
 import { View } from "react-native";
 import formatTime from "@/lib/utils/formatTime";
+import { ActivityType } from "@/context/ActivityContext";
 
 interface WorkSessionItemProps {
   item: ActivityType["sessions"][number];

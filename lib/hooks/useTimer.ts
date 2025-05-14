@@ -137,6 +137,7 @@ export default function useTimer() {
     timerRef.current.accurateTimer?.start();
 
     const createdSessionId = await createNewSession({
+      type: "timer",
       duration,
       startTime: now,
     });
@@ -205,6 +206,7 @@ export default function useTimer() {
     const remaining = timerRef.current.endTime - timerRef.current.tickTime;
 
     saveTimerState({
+      type: "timer",
       status: timerRef.current.status,
       remainingTime: remaining,
       time: timerRef.current.tickTime,

@@ -1,9 +1,9 @@
 import React from "react";
 import { FlatList } from "react-native";
 import { Text } from "../ui/text";
-import { ActivityType } from "@/lib/hooks/useActivity";
 import { Card } from "../ui/card";
 import WorkSessionItem from "./WorkSessionItem";
+import { ActivityType } from "@/context/ActivityContext";
 
 interface Props {
   sessions: ActivityType["sessions"];

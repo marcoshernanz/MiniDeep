@@ -1,7 +1,6 @@
 import React from "react";
 import { Dimensions, View } from "react-native";
 import { Text } from "../ui/text";
-import { ActivityType } from "@/lib/hooks/useActivity";
 import { Card } from "../ui/card";
 import { CartesianChart, Area, Line, useChartPressState } from "victory-native";
 import {
@@ -15,6 +14,7 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { ReText } from "react-native-redash";
+import { ActivityType } from "@/context/ActivityContext";
 
 interface Props {
   timeDistribution: ActivityType["timeDistribution"];

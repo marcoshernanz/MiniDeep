@@ -49,6 +49,7 @@ export function seedWorkSessions(): void {
 
     return {
       id: sessionId,
+      type: "timer",
       startDate: sessionStart,
       plannedDuration,
       isActive: false,

@@ -3,6 +3,7 @@ import { TimeEventSchema } from "./TimeEventSchema";
 
 export const WorkSessionSchema = z.object({
   id: z.string(),
+  type: z.enum(["timer", "stopwatch"]),
   startDate: z.coerce.date(),
   plannedDuration: z.number(),
   isActive: z.boolean(),
