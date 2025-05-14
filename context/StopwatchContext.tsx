@@ -36,6 +36,6 @@ export default function StopwatchContextProvider({ children }: Props) {
   );
 }
 
-export function StopwatchContextContext() {
+export function useStopwatchContext() {
   return useContext(StopwatchContext);
 }
