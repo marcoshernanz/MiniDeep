@@ -8,12 +8,8 @@ interface Params {
   time: number;
 }
 
-export default async function addTimeEvent({
-  sessionId,
-  action,
-  time,
-}: Params): Promise<void> {
-  const sessions = await getWorkSessions();
+export default function addTimeEvent({ sessionId, action, time }: Params) {
+  const sessions = getWorkSessions();
   const sessionIndex = sessions.findIndex(
     (session) => session.id === sessionId,
   );
@@ -34,5 +30,5 @@ export default async function addTimeEvent({
   updatedSession.events = [...updatedSession.events, newEvent];
   sessions[sessionIndex] = updatedSession;
 
-  await saveWorkSessions(sessions);
+  saveWorkSessions(sessions);
 }

@@ -1,8 +1,8 @@
 import getWorkSessions from "./getWorkSessions";
 import saveWorkSessions from "./saveWorkSessions";
 
-export default async function markSessionAsCompleted(sessionId: string) {
-  const sessions = await getWorkSessions();
+export default function markSessionAsCompleted(sessionId: string) {
+  const sessions = getWorkSessions();
   const sessionIndex = sessions.findIndex(
     (session) => session.id === sessionId,
   );
@@ -11,5 +11,5 @@ export default async function markSessionAsCompleted(sessionId: string) {
 
   sessions[sessionIndex].isActive = false;
 
-  await saveWorkSessions(sessions);
+  saveWorkSessions(sessions);
 }

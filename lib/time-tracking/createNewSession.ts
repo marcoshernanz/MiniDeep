@@ -8,11 +8,11 @@ interface Params {
   startTime: number;
 }
 
-export default async function createNewSession({
+export default function createNewSession({
   type,
   duration,
   startTime,
-}: Params): Promise<string> {
+}: Params): string {
   const sessionId = Date.now().toString();
   const newSession: WorkSession = {
     id: sessionId,
@@ -23,8 +23,8 @@ export default async function createNewSession({
     events: [],
   };
 
-  const sessions = await getWorkSessions();
-  await saveWorkSessions([...sessions, newSession]);
+  const sessions = getWorkSessions();
+  saveWorkSessions([...sessions, newSession]);
 
   return sessionId;
 }

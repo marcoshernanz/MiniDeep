@@ -99,12 +99,12 @@ export default function useTimer() {
       await scheduleTimerCompletionNotification(0);
     }
 
-    await addTimeEvent({
+    addTimeEvent({
       sessionId: timerRef.current.sessionId,
       action: "stop",
       time: timerRef.current.tickTime,
     });
-    await markSessionAsCompleted(timerRef.current.sessionId);
+    markSessionAsCompleted(timerRef.current.sessionId);
   }, []);
 
   const timerTick = useCallback(() => {
@@ -124,7 +124,7 @@ export default function useTimer() {
     timerRef.current.accurateInterval = createAccurateInterval(timerTick, 250);
   }
 
-  const startTimer = async (duration: number) => {
+  const startTimer = (duration: number) => {
     const now = Date.now();
 
     timerRef.current.startTime = now;
@@ -136,21 +136,21 @@ export default function useTimer() {
     setTimeLeft(duration - 1);
     timerRef.current.accurateInterval?.start();
 
-    const createdSessionId = await createNewSession({
+    const createdSessionId = createNewSession({
       type: "timer",
       duration,
       startTime: now,
     });
     timerRef.current.sessionId = createdSessionId;
 
-    await addTimeEvent({
+    addTimeEvent({
       sessionId: timerRef.current.sessionId,
       action: "start",
       time: timerRef.current.tickTime,
     });
   };
 
-  const togglePause = async () => {
+  const togglePause = () => {
     if (status === "paused") {
       const now = Date.now();
       const remaining = timerRef.current.endTime - timerRef.current.tickTime;
@@ -163,7 +163,7 @@ export default function useTimer() {
       setStatus("running");
       timerRef.current.accurateInterval?.resume();
 
-      await addTimeEvent({
+      addTimeEvent({
         sessionId: timerRef.current.sessionId,
         action: "start",
         time: timerRef.current.tickTime,
@@ -174,7 +174,7 @@ export default function useTimer() {
       timerRef.current.status = "paused";
       setStatus("paused");
       timerRef.current.accurateInterval?.pause();
-      await addTimeEvent({
+      addTimeEvent({
         sessionId: timerRef.current.sessionId,
         action: "stop",
         time: timerRef.current.tickTime,
@@ -191,12 +191,12 @@ export default function useTimer() {
 
     await cancelTimerNotifications();
     if (!wasCompleted) {
-      await addTimeEvent({
+      addTimeEvent({
         sessionId: timerRef.current.sessionId,
         action: "stop",
         time: timerRef.current.tickTime,
       });
-      await markSessionAsCompleted(timerRef.current.sessionId);
+      markSessionAsCompleted(timerRef.current.sessionId);
     }
   };
 
@@ -223,7 +223,7 @@ export default function useTimer() {
     isRestoringState.current = true;
 
     try {
-      const savedState = await getTimerState();
+      const savedState = getTimerState();
 
       if (!savedState || savedState.status === "inactive") {
         timerRef.current.status = "inactive";
