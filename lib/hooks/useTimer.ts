@@ -208,6 +208,7 @@ export default function useTimer() {
     saveTimerState({
       type: "timer",
       status: timerRef.current.status,
+      elapsedTime: 0,
       remainingTime: remaining,
       time: timerRef.current.tickTime,
       sessionId: timerRef.current.sessionId,
