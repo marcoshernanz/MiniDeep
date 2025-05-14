@@ -17,6 +17,7 @@ export default function useStopwatch() {
     status: "inactive" as TrackerState["status"],
     sessionId: "",
     startTime: 0,
+    totalTimeElapsed: 0,
     tickTime: 0,
   });
   const isRestoringState = useRef(false);
@@ -26,7 +27,7 @@ export default function useStopwatch() {
 
     const now = Date.now();
     const elapsed = now - stopwatchRef.current.startTime;
-    setTimeElapsed(elapsed);
+    setTimeElapsed(elapsed + stopwatchRef.current.totalTimeElapsed);
     stopwatchRef.current.tickTime = now;
   }, []);
 
@@ -41,6 +42,7 @@ export default function useStopwatch() {
     const now = Date.now();
 
     stopwatchRef.current.startTime = now;
+    stopwatchRef.current.totalTimeElapsed = 0;
     stopwatchRef.current.tickTime = now;
 
     stopwatchRef.current.status = "running";
@@ -71,6 +73,7 @@ export default function useStopwatch() {
 
       stopwatchRef.current.status = "running";
       setStatus("running");
+
       stopwatchRef.current.accurateInterval?.resume();
 
       addTimeEvent({
@@ -83,6 +86,12 @@ export default function useStopwatch() {
 
       stopwatchRef.current.status = "paused";
       setStatus("paused");
+
+      const elapsed =
+        stopwatchRef.current.tickTime - stopwatchRef.current.startTime;
+      stopwatchRef.current.totalTimeElapsed += elapsed;
+      setTimeElapsed(stopwatchRef.current.totalTimeElapsed);
+
       stopwatchRef.current.accurateInterval?.pause();
       addTimeEvent({
         sessionId: stopwatchRef.current.sessionId,
@@ -110,11 +119,12 @@ export default function useStopwatch() {
 
     const elapsed =
       stopwatchRef.current.tickTime - stopwatchRef.current.startTime;
+    stopwatchRef.current.totalTimeElapsed += elapsed;
 
     saveTrackerState({
       type: "stopwatch",
       status: stopwatchRef.current.status,
-      elapsedTime: elapsed,
+      elapsedTime: stopwatchRef.current.totalTimeElapsed,
       remainingTime: 0,
       time: stopwatchRef.current.tickTime,
       sessionId: stopwatchRef.current.sessionId,
@@ -139,6 +149,7 @@ export default function useStopwatch() {
 
       stopwatchRef.current.status = savedState.status;
       stopwatchRef.current.startTime = savedState.time;
+      stopwatchRef.current.totalTimeElapsed = savedState.elapsedTime;
       stopwatchRef.current.tickTime = savedState.time;
       stopwatchRef.current.sessionId = savedState.sessionId;
 
