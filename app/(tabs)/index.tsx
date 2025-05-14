@@ -1,8 +1,9 @@
 import Swipable from "@/components/Swipable";
 import Stopwatch from "@/components/tracker/stopwatch/Stopwatch";
 import Timer from "@/components/tracker/timer/Timer";
+import StopwatchContextProvider from "@/context/StopwatchContext";
 import TimerContextProvider from "@/context/TimerContext";
-import { SafeAreaView, View } from "react-native";
+import { SafeAreaView } from "react-native";
 
 export default function IndexScreen() {
   return (
@@ -18,9 +19,9 @@ export default function IndexScreen() {
               </TimerContextProvider>
             )}
             {index === 1 && (
-              // <StopwatchContextProvider>
-              <Stopwatch />
-              // </StopwatchContextProvider>
+              <StopwatchContextProvider>
+                <Stopwatch />
+              </StopwatchContextProvider>
             )}
           </>
         )}
