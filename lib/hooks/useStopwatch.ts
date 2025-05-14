@@ -12,7 +12,7 @@ export default function useStopwatch() {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [status, setStatus] = useState<TrackerState["status"]>("inactive");
 
-  const timerRef = useRef({
+  const stopwatchRef = useRef({
     accurateInterval: null as ReturnType<typeof createAccurateInterval> | null,
     status: "inactive" as TrackerState["status"],
     sessionId: "",
@@ -21,41 +21,44 @@ export default function useStopwatch() {
   });
   const isRestoringState = useRef(false);
 
-  const timerTick = useCallback(() => {
-    if (timerRef.current.status !== "running") return;
+  const stopwatchTick = useCallback(() => {
+    if (stopwatchRef.current.status !== "running") return;
 
     const now = Date.now();
-    const elapsed = now - timerRef.current.startTime;
+    const elapsed = now - stopwatchRef.current.startTime;
     setTimeElapsed(elapsed);
-    timerRef.current.tickTime = now;
+    stopwatchRef.current.tickTime = now;
   }, []);
 
-  if (!timerRef.current.accurateInterval) {
-    timerRef.current.accurateInterval = createAccurateInterval(timerTick, 250);
+  if (!stopwatchRef.current.accurateInterval) {
+    stopwatchRef.current.accurateInterval = createAccurateInterval(
+      stopwatchTick,
+      250,
+    );
   }
 
   const startStopwatch = () => {
     const now = Date.now();
 
-    timerRef.current.startTime = now;
-    timerRef.current.tickTime = now;
+    stopwatchRef.current.startTime = now;
+    stopwatchRef.current.tickTime = now;
 
-    timerRef.current.status = "running";
+    stopwatchRef.current.status = "running";
     setStatus("running");
     setTimeElapsed(0);
-    timerRef.current.accurateInterval?.start();
+    stopwatchRef.current.accurateInterval?.start();
 
     const createdSessionId = createNewSession({
       type: "stopwatch",
       duration: 0,
       startTime: now,
     });
-    timerRef.current.sessionId = createdSessionId;
+    stopwatchRef.current.sessionId = createdSessionId;
 
     addTimeEvent({
-      sessionId: timerRef.current.sessionId,
+      sessionId: stopwatchRef.current.sessionId,
       action: "start",
-      time: timerRef.current.tickTime,
+      time: stopwatchRef.current.tickTime,
     });
   };
 
@@ -63,61 +66,62 @@ export default function useStopwatch() {
     if (status === "paused") {
       const now = Date.now();
 
-      timerRef.current.startTime = now;
-      timerRef.current.tickTime = now;
+      stopwatchRef.current.startTime = now;
+      stopwatchRef.current.tickTime = now;
 
-      timerRef.current.status = "running";
+      stopwatchRef.current.status = "running";
       setStatus("running");
-      timerRef.current.accurateInterval?.resume();
+      stopwatchRef.current.accurateInterval?.resume();
 
       addTimeEvent({
-        sessionId: timerRef.current.sessionId,
+        sessionId: stopwatchRef.current.sessionId,
         action: "start",
-        time: timerRef.current.tickTime,
+        time: stopwatchRef.current.tickTime,
       });
     } else if (status === "running") {
-      timerTick();
+      stopwatchTick();
 
-      timerRef.current.status = "paused";
+      stopwatchRef.current.status = "paused";
       setStatus("paused");
-      timerRef.current.accurateInterval?.pause();
+      stopwatchRef.current.accurateInterval?.pause();
       addTimeEvent({
-        sessionId: timerRef.current.sessionId,
+        sessionId: stopwatchRef.current.sessionId,
         action: "stop",
-        time: timerRef.current.tickTime,
+        time: stopwatchRef.current.tickTime,
       });
     }
   };
 
   const stopStopwatch = () => {
-    timerRef.current.status = "inactive";
+    stopwatchRef.current.status = "inactive";
     setStatus("inactive");
-    timerRef.current.accurateInterval?.stop();
+    stopwatchRef.current.accurateInterval?.stop();
 
     addTimeEvent({
-      sessionId: timerRef.current.sessionId,
+      sessionId: stopwatchRef.current.sessionId,
       action: "stop",
-      time: timerRef.current.tickTime,
+      time: stopwatchRef.current.tickTime,
     });
-    markSessionAsCompleted(timerRef.current.sessionId);
+    markSessionAsCompleted(stopwatchRef.current.sessionId);
   };
 
-  const saveCurrentTimerState = useCallback(() => {
+  const saveCurrentStopwatchState = useCallback(() => {
     if (isRestoringState.current) return;
 
-    const elapsed = timerRef.current.tickTime - timerRef.current.startTime;
+    const elapsed =
+      stopwatchRef.current.tickTime - stopwatchRef.current.startTime;
 
     saveTrackerState({
-      type: "timer",
-      status: timerRef.current.status,
+      type: "stopwatch",
+      status: stopwatchRef.current.status,
       elapsedTime: elapsed,
       remainingTime: 0,
-      time: timerRef.current.tickTime,
-      sessionId: timerRef.current.sessionId,
+      time: stopwatchRef.current.tickTime,
+      sessionId: stopwatchRef.current.sessionId,
     });
   }, []);
 
-  const restoreTimerState = useCallback(() => {
+  const restoreStopwatchState = useCallback(() => {
     if (isRestoringState.current) return;
     isRestoringState.current = true;
 
@@ -125,18 +129,18 @@ export default function useStopwatch() {
       const savedState = getTrackerState();
 
       if (!savedState || savedState.status === "inactive") {
-        timerRef.current.status = "inactive";
+        stopwatchRef.current.status = "inactive";
         setStatus("inactive");
         setTimeElapsed(0);
-        timerRef.current.accurateInterval?.stop();
+        stopwatchRef.current.accurateInterval?.stop();
         isRestoringState.current = false;
         return;
       }
 
-      timerRef.current.status = savedState.status;
-      timerRef.current.startTime = savedState.time;
-      timerRef.current.tickTime = savedState.time;
-      timerRef.current.sessionId = savedState.sessionId;
+      stopwatchRef.current.status = savedState.status;
+      stopwatchRef.current.startTime = savedState.time;
+      stopwatchRef.current.tickTime = savedState.time;
+      stopwatchRef.current.sessionId = savedState.sessionId;
 
       setStatus(savedState.status);
       setTimeElapsed(savedState.elapsedTime);
@@ -145,11 +149,11 @@ export default function useStopwatch() {
         const now = Date.now();
         const elapsed = now - savedState.time;
 
-        timerRef.current.tickTime = now;
+        stopwatchRef.current.tickTime = now;
         setTimeElapsed(savedState.elapsedTime + elapsed);
-        timerRef.current.accurateInterval?.resume();
+        stopwatchRef.current.accurateInterval?.resume();
       } else if (savedState.status === "paused") {
-        timerRef.current.accurateInterval?.pause();
+        stopwatchRef.current.accurateInterval?.pause();
       }
     } finally {
       isRestoringState.current = false;
@@ -159,38 +163,38 @@ export default function useStopwatch() {
   const handleAppStateChange = useCallback(
     (nextAppState: string) => {
       if (nextAppState === "active") {
-        restoreTimerState();
+        restoreStopwatchState();
       } else if (nextAppState === "background" || nextAppState === "inactive") {
-        if (timerRef.current.status === "running") {
-          timerRef.current.accurateInterval?.pause();
+        if (stopwatchRef.current.status === "running") {
+          stopwatchRef.current.accurateInterval?.pause();
         }
-        saveCurrentTimerState();
+        saveCurrentStopwatchState();
       }
     },
-    [restoreTimerState, saveCurrentTimerState],
+    [restoreStopwatchState, saveCurrentStopwatchState],
   );
 
   useEffect(() => {
-    restoreTimerState();
+    restoreStopwatchState();
 
     const appStateSubscription = AppState.addEventListener(
       "change",
       handleAppStateChange,
     );
 
-    const accurateInterval = timerRef.current.accurateInterval;
+    const accurateInterval = stopwatchRef.current.accurateInterval;
 
     return () => {
       appStateSubscription.remove();
       accurateInterval?.stop();
     };
-  }, [handleAppStateChange, restoreTimerState]);
+  }, [handleAppStateChange, restoreStopwatchState]);
 
   return {
     timeElapsed,
     status,
-    startTimer: startStopwatch,
+    startStopwatch,
     togglePause,
-    stopTimer: stopStopwatch,
+    stopStopwatch,
   };
 }
