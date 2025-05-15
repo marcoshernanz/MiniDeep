@@ -38,7 +38,7 @@ interface ActivityContextValue {
   scrollToDate: (date: Date) => void;
 }
 
-export const ActivityContext = createContext<ActivityContextValue>({
+const ActivityContext = createContext<ActivityContextValue>({
   selectedDate: new Date(),
   setSelectedDate: () => {},
   activity: [],

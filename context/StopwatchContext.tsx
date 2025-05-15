@@ -12,7 +12,7 @@ interface StopwatchContextValue {
   };
 }
 
-export const StopwatchContext = createContext<StopwatchContextValue>({
+const StopwatchContext = createContext<StopwatchContextValue>({
   stopwatch: {
     timeElapsed: 0,
     status: "inactive",

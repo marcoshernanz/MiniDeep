@@ -40,7 +40,7 @@ interface StatisticsContextValue {
   };
 }
 
-export const StatisticsContext = createContext<StatisticsContextValue>({
+const StatisticsContext = createContext<StatisticsContextValue>({
   timeFrame: "1W",
   setTimeFrame: () => {},
   statisticsData: [],

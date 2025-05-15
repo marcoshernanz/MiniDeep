@@ -15,7 +15,7 @@ interface TimerContextValue {
   };
 }
 
-export const TimerContext = createContext<TimerContextValue>({
+const TimerContext = createContext<TimerContextValue>({
   selectedTime: 0,
   setSelectedTime: () => {},
 
