@@ -1,6 +1,7 @@
 import useTimer from "@/lib/hooks/useTimer";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 import { createContext, useContext, useState } from "react";
+import { useTrackerContext } from "./TrackerContext";
 
 interface TimerContextValue {
   selectedTime: number;
@@ -35,6 +36,7 @@ interface Props {
 const defaultTime = 30 * 60 * 1000;
 
 export default function TimerContextProvider({ children }: Props) {
+  const { setTrackerType } = useTrackerContext();
   const timer = useTimer();
 
   const [selectedTime, setSelectedTime] = useState(defaultTime);
@@ -44,7 +46,17 @@ export default function TimerContextProvider({ children }: Props) {
       value={{
         selectedTime,
         setSelectedTime,
-        timer,
+        timer: {
+          ...timer,
+          stopTimer: () => {
+            setTrackerType(null);
+            timer.stopTimer();
+          },
+          startTimer: (duration: number) => {
+            setTrackerType("timer");
+            timer.startTimer(duration);
+          },
+        },
       }}
     >
       {children}
