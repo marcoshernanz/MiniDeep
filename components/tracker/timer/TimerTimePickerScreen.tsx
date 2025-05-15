@@ -42,41 +42,46 @@ export default function TimerTimePickerScreen() {
   };
 
   return (
-    <View className="flex-1 items-center justify-center">
-      <View className="gap-10">
-        <View className="relative">
-          <View className="h-72 flex-row items-center justify-center">
-            <WheelNumberPicker
-              number={hours}
-              setNumber={(hours) => handleSetTime({ hours })}
-              minValue={0}
-              maxValue={23}
-              containerHeight={256}
-            />
-            <Text className="h-full align-middle text-6xl font-medium">:</Text>
-            <WheelNumberPicker
-              ref={minutesPickerRef}
-              number={minutes}
-              setNumber={(minutes) => handleSetTime({ minutes })}
-              minValue={0}
-              maxValue={59}
-              interval={1}
-              containerHeight={256}
-            />
+    <>
+      <Text className="px-4 text-3xl font-bold text-foreground">Timer</Text>
+      <View className="flex-1 items-center justify-center">
+        <View className="gap-10">
+          <View className="relative">
+            <View className="h-72 flex-row items-center justify-center">
+              <WheelNumberPicker
+                number={hours}
+                setNumber={(hours) => handleSetTime({ hours })}
+                minValue={0}
+                maxValue={23}
+                containerHeight={256}
+              />
+              <Text className="h-full align-middle text-6xl font-medium">
+                :
+              </Text>
+              <WheelNumberPicker
+                ref={minutesPickerRef}
+                number={minutes}
+                setNumber={(minutes) => handleSetTime({ minutes })}
+                minValue={0}
+                maxValue={59}
+                interval={1}
+                containerHeight={256}
+              />
+            </View>
+            <View className="pointer-events-none absolute left-0 right-0 top-1/2 -mx-2 h-[4.5rem] -translate-y-1/2 rounded-lg border-2 border-primary"></View>
           </View>
-          <View className="pointer-events-none absolute left-0 right-0 top-1/2 -mx-2 h-[4.5rem] -translate-y-1/2 rounded-lg border-2 border-primary"></View>
-        </View>
 
-        <View className="h-14">
-          <Button
-            size="lg"
-            className="w-full"
-            onPress={() => startTimer(selectedTime)}
-          >
-            <Text className="native:text-2xl">Start</Text>
-          </Button>
+          <View className="h-14">
+            <Button
+              size="lg"
+              className="w-full"
+              onPress={() => startTimer(selectedTime)}
+            >
+              <Text className="native:text-2xl">Start</Text>
+            </Button>
+          </View>
         </View>
       </View>
-    </View>
+    </>
   );
 }

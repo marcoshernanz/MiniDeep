@@ -9,12 +9,15 @@ export default function StopwatchStartScreen() {
   } = useStopwatchContext();
 
   return (
-    <View className="flex-1 items-center justify-center">
-      <View className="h-14 w-56">
-        <Button size="lg" className="w-full" onPress={startStopwatch}>
-          <Text className="native:text-2xl">Start</Text>
-        </Button>
+    <>
+      <Text className="px-4 text-3xl font-bold text-foreground">Stopwatch</Text>
+      <View className="flex-1 items-center justify-center">
+        <View className="h-14 w-56">
+          <Button size="lg" className="w-full" onPress={startStopwatch}>
+            <Text className="native:text-2xl">Start</Text>
+          </Button>
+        </View>
       </View>
-    </View>
+    </>
   );
 }

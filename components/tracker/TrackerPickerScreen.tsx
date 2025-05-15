@@ -4,11 +4,12 @@ import StopwatchStartScreen from "./stopwatch/StopwatchStartScreen";
 import TimerTimePickerScreen from "./timer/TimerTimePickerScreen";
 import cn from "@/lib/utils/cn";
 import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TrackerPickerScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   return (
-    <>
+    <SafeAreaView className="flex-1 bg-background pb-16 pt-6">
       <Swipable
         data={[null, null]}
         keyExtractor={(value, index) => `${value}-${index}`}
@@ -36,6 +37,6 @@ export default function TrackerPickerScreen() {
           )}
         ></View>
       </View>
-    </>
+    </SafeAreaView>
   );
 }
