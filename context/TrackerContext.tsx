@@ -1,5 +1,5 @@
 import getTrackerState from "@/lib/tracker/getTrackerState";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import TimerContextProvider from "./TimerContext";
 import StopwatchContextProvider from "./StopwatchContext";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
@@ -23,7 +23,11 @@ interface Props {
 export default function TrackerContextProvider({ children }: Props) {
   const [trackerType, setTrackerType] = useState<TrackerType>(() => {
     const state = getTrackerState();
-    return state ? state.type : null;
+    if (state === null || state?.status === "inactive") {
+      return null;
+    }
+
+    return state.type;
   });
 
   return (
