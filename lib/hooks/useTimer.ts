@@ -8,7 +8,6 @@ import * as Notifications from "expo-notifications";
 import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 import createAccurateInterval from "../utils/createAccurateInterval";
-import { useTrackerContext } from "@/context/TrackerContext";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
 const TIMER_CATEGORY = "timer_completed";
@@ -77,7 +76,6 @@ const cancelTimerNotifications = async () => {
 };
 
 export default function useTimer() {
-  const { trackerType } = useTrackerContext();
   const [timeLeft, setTimeLeft] = useState(0);
   const [status, setStatus] = useState<TrackerState["status"]>("inactive");
 
@@ -203,7 +201,7 @@ export default function useTimer() {
   };
 
   const saveCurrentTimerState = useCallback(async () => {
-    if (isRestoringState.current || trackerType !== "timer") return;
+    if (isRestoringState.current) return;
 
     const remaining = timerRef.current.endTime - timerRef.current.tickTime;
 
@@ -219,7 +217,7 @@ export default function useTimer() {
     if (timerRef.current.status === "running") {
       await scheduleTimerCompletionNotification(remaining);
     }
-  }, [trackerType]);
+  }, []);
 
   const restoreTimerState = useCallback(async () => {
     if (isRestoringState.current) return;
@@ -278,14 +276,9 @@ export default function useTimer() {
     async (nextAppState: string) => {
       if (nextAppState === "active") {
         await restoreTimerState();
-      } else if (nextAppState === "background" || nextAppState === "inactive") {
-        if (timerRef.current.status === "running") {
-          timerRef.current.accurateInterval?.pause();
-        }
-        await saveCurrentTimerState();
       }
     },
-    [restoreTimerState, saveCurrentTimerState],
+    [restoreTimerState],
   );
 
   const handleNotificationResponse = useCallback(
@@ -330,5 +323,6 @@ export default function useTimer() {
     startTimer,
     togglePause,
     stopTimer,
+    saveCurrentTimerState,
   };
 }

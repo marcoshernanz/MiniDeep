@@ -32,8 +32,14 @@ export default function TrackerContextProvider({ children }: Props) {
 
   return (
     <TrackerContext.Provider value={{ trackerType, setTrackerType }}>
-      <TimerContextProvider setTrackerType={setTrackerType}>
-        <StopwatchContextProvider setTrackerType={setTrackerType}>
+      <TimerContextProvider
+        trackerType={trackerType}
+        setTrackerType={setTrackerType}
+      >
+        <StopwatchContextProvider
+          trackerType={trackerType}
+          setTrackerType={setTrackerType}
+        >
           {children}
         </StopwatchContextProvider>
       </TimerContextProvider>

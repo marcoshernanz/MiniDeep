@@ -1,7 +1,8 @@
 import useStopwatch from "@/lib/hooks/useStopwatch";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
-import { createContext, useContext } from "react";
+import { createContext, useCallback, useContext, useEffect } from "react";
 import { TrackerType, useTrackerContext } from "./TrackerContext";
+import { AppState } from "react-native";
 
 interface StopwatchContextValue {
   stopwatch: {
@@ -25,14 +26,38 @@ const StopwatchContext = createContext<StopwatchContextValue>({
 
 interface Props {
   children: React.ReactNode;
+  trackerType: TrackerType;
   setTrackerType: (type: TrackerType) => void;
 }
 
 export default function StopwatchContextProvider({
   children,
+  trackerType,
   setTrackerType,
 }: Props) {
   const stopwatch = useStopwatch();
+
+  const handleAppStateChange = useCallback(
+    async (nextAppState: string) => {
+      if (trackerType !== "stopwatch") return;
+
+      if (nextAppState === "background" || nextAppState === "inactive") {
+        await stopwatch.saveCurrentStopwatchState();
+      }
+    },
+    [stopwatch, trackerType],
+  );
+
+  useEffect(() => {
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange,
+    );
+
+    return () => {
+      appStateSubscription.remove();
+    };
+  }, [handleAppStateChange]);
 
   return (
     <StopwatchContext.Provider
@@ -40,12 +65,12 @@ export default function StopwatchContextProvider({
         stopwatch: {
           ...stopwatch,
           stopStopwatch: () => {
-            setTrackerType(null);
             stopwatch.stopStopwatch();
+            setTrackerType(null);
           },
           startStopwatch: () => {
-            setTrackerType("stopwatch");
             stopwatch.startStopwatch();
+            setTrackerType("stopwatch");
           },
         },
       }}

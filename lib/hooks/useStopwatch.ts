@@ -7,10 +7,8 @@ import saveTrackerState from "../tracker/saveTrackerState";
 import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 import createAccurateInterval from "../utils/createAccurateInterval";
-import { useTrackerContext } from "@/context/TrackerContext";
 
 export default function useStopwatch() {
-  const { trackerType } = useTrackerContext();
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [status, setStatus] = useState<TrackerState["status"]>("inactive");
 
@@ -117,7 +115,7 @@ export default function useStopwatch() {
   };
 
   const saveCurrentStopwatchState = useCallback(() => {
-    if (isRestoringState.current || trackerType !== "stopwatch") return;
+    if (isRestoringState.current) return;
 
     const elapsed =
       stopwatchRef.current.tickTime - stopwatchRef.current.startTime;
@@ -131,7 +129,7 @@ export default function useStopwatch() {
       time: stopwatchRef.current.tickTime,
       sessionId: stopwatchRef.current.sessionId,
     });
-  }, [trackerType]);
+  }, []);
 
   const restoreStopwatchState = useCallback(() => {
     if (isRestoringState.current) return;
@@ -177,14 +175,9 @@ export default function useStopwatch() {
     (nextAppState: string) => {
       if (nextAppState === "active") {
         restoreStopwatchState();
-      } else if (nextAppState === "background" || nextAppState === "inactive") {
-        if (stopwatchRef.current.status === "running") {
-          stopwatchRef.current.accurateInterval?.pause();
-        }
-        saveCurrentStopwatchState();
       }
     },
-    [restoreStopwatchState, saveCurrentStopwatchState],
+    [restoreStopwatchState],
   );
 
   useEffect(() => {
@@ -209,5 +202,6 @@ export default function useStopwatch() {
     startStopwatch,
     togglePause,
     stopStopwatch,
+    saveCurrentStopwatchState,
   };
 }
