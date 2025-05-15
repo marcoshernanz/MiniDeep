@@ -2,8 +2,9 @@ import getTrackerState from "@/lib/tracker/getTrackerState";
 import { createContext, useContext, useState } from "react";
 import TimerContextProvider from "./TimerContext";
 import StopwatchContextProvider from "./StopwatchContext";
+import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 
-type TrackerType = "timer" | "stopwatch" | null;
+export type TrackerType = TrackerState["type"] | null;
 
 interface TrackerContextValue {
   trackerType: TrackerType;
@@ -27,8 +28,10 @@ export default function TrackerContextProvider({ children }: Props) {
 
   return (
     <TrackerContext.Provider value={{ trackerType, setTrackerType }}>
-      <TimerContextProvider>
-        <StopwatchContextProvider>{children}</StopwatchContextProvider>
+      <TimerContextProvider setTrackerType={setTrackerType}>
+        <StopwatchContextProvider setTrackerType={setTrackerType}>
+          {children}
+        </StopwatchContextProvider>
       </TimerContextProvider>
     </TrackerContext.Provider>
   );

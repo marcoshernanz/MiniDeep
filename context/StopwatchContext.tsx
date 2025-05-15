@@ -1,7 +1,7 @@
 import useStopwatch from "@/lib/hooks/useStopwatch";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 import { createContext, useContext } from "react";
-import { useTrackerContext } from "./TrackerContext";
+import { TrackerType, useTrackerContext } from "./TrackerContext";
 
 interface StopwatchContextValue {
   stopwatch: {
@@ -25,10 +25,13 @@ const StopwatchContext = createContext<StopwatchContextValue>({
 
 interface Props {
   children: React.ReactNode;
+  setTrackerType: (type: TrackerType) => void;
 }
 
-export default function StopwatchContextProvider({ children }: Props) {
-  const { setTrackerType } = useTrackerContext();
+export default function StopwatchContextProvider({
+  children,
+  setTrackerType,
+}: Props) {
   const stopwatch = useStopwatch();
 
   return (
