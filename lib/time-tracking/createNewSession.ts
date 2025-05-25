@@ -1,21 +1,30 @@
-import { WorkSession } from "@/config/timeTrackingConfig";
+import { WorkSession } from "@/zod/schemas/WorkSessionSchema";
 import getWorkSessions from "./getWorkSessions";
 import saveWorkSessions from "./saveWorkSessions";
 
-export default async function createNewSession(
-  totalDuration: number,
-): Promise<string> {
+interface Params {
+  type: "timer" | "stopwatch";
+  duration: number;
+  startTime: number;
+}
+
+export default function createNewSession({
+  type,
+  duration,
+  startTime,
+}: Params): string {
   const sessionId = Date.now().toString();
   const newSession: WorkSession = {
     id: sessionId,
-    startDate: new Date(),
-    endDate: null,
-    duration: totalDuration,
-    completed: false,
+    type,
+    startDate: new Date(startTime),
+    plannedDuration: duration,
+    isActive: true,
     events: [],
   };
 
-  const sessions = await getWorkSessions();
-  await saveWorkSessions([...sessions, newSession]);
+  const sessions = getWorkSessions();
+  saveWorkSessions([...sessions, newSession]);
+
   return sessionId;
 }

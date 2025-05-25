@@ -1,7 +1,6 @@
 import React from "react";
 import { Dimensions, View } from "react-native";
 import { Text } from "../ui/text";
-import { ActivityType } from "@/lib/hooks/useActivity";
 import { Card } from "../ui/card";
 import { CartesianChart, Area, Line, useChartPressState } from "victory-native";
 import {
@@ -15,6 +14,7 @@ import Animated, {
   useDerivedValue,
 } from "react-native-reanimated";
 import { ReText } from "react-native-redash";
+import { ActivityType } from "@/context/ActivityContext";
 
 interface Props {
   timeDistribution: ActivityType["timeDistribution"];
@@ -33,7 +33,7 @@ const circleSize = 12;
 export default function WorkDistributionChart({ timeDistribution }: Props) {
   const { getColor } = useColors();
   const font = matchFont({ fontFamily: listFontFamilies()[0] });
-  const { state, isActive } = useChartPressState({ x: 0, y: { duration: 0 } });
+  const { state, isActive } = useChartPressState({ x: 0, y: { time: 0 } });
 
   const { width } = Dimensions.get("window");
 
@@ -42,7 +42,9 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
       ? `0${state.x.value.value}:00`
       : `${state.x.value.value}:00`,
   );
-  const duration = useDerivedValue(() => String(state.y.duration.value.value));
+  const duration = useDerivedValue(() =>
+    String(Math.round(state.y.time.value.value / (60 * 1000))),
+  );
 
   const lineStyle = useAnimatedStyle(() => ({
     width: 1,
@@ -53,7 +55,7 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
     width: circleSize,
     transform: [
       { translateX: state.x.position.value - circleSize / 2 },
-      { translateY: state.y.duration.position.value - circleSize / 2 },
+      { translateY: state.y.time.position.value - circleSize / 2 },
     ],
   }));
   const tooltipStyle = useAnimatedStyle(() => ({
@@ -76,9 +78,9 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
       <View className="h-72">
         <CartesianChart
           data={timeDistribution}
-          xKey="time"
-          yKeys={["duration"]}
-          domain={{ x: [0, 23], y: [-1, 61] }}
+          xKey="hour"
+          yKeys={["time"]}
+          domain={{ x: [0, 23], y: [-1, 61 * 60 * 1000] }}
           padding={{ bottom: 12, top: 32 }}
           xAxis={{
             font,
@@ -89,21 +91,21 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
             labelColor: getColor("mutedForeground"),
             formatXLabel: formatHour,
           }}
-          yAxis={[{ lineWidth: 0 }]}
+          yAxis={[{ lineWidth: 0, labelPosition: "inset" }]}
           chartPressState={state}
         >
           {({ points, chartBounds }) => (
             <>
               <Line
-                points={points.duration}
+                points={points.time}
                 color={getColor("primary")}
                 strokeWidth={1}
-                curveType="step"
+                curveType="bumpX"
               />
               <Area
-                points={points.duration}
+                points={points.time}
                 y0={chartBounds.bottom}
-                curveType="step"
+                curveType="bumpX"
                 opacity={0.5}
               >
                 <LinearGradient

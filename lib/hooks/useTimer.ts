@@ -1,12 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { AppState, Vibration } from "react-native";
-import createAccurateTimer from "../utils/createAccurateTimer";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { AppState } from "react-native";
 import addTimeEvent from "../time-tracking/addTimeEvent";
 import createNewSession from "../time-tracking/createNewSession";
-import getTimerState from "../timer/getTimerState";
-import saveTimerState from "../timer/saveTimerState";
+import getTrackerState from "../tracker/getTrackerState";
+import saveTrackerState from "../tracker/saveTrackerState";
 import * as Notifications from "expo-notifications";
-import * as Haptics from "expo-haptics";
+import markSessionAsCompleted from "../time-tracking/markSessionAsCompleted";
+import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
+import createAccurateInterval from "../utils/createAccurateInterval";
 
 const TIMER_CHANNEL_ID = "timer_completed_channel";
 const TIMER_CATEGORY = "timer_completed";
@@ -23,7 +24,6 @@ const setupNotifications = async () => {
     }),
   });
 
-  // Set up the notification category with dismiss action
   await Notifications.setNotificationCategoryAsync(TIMER_CATEGORY, [
     {
       identifier: DISMISS_ACTION_ID,
@@ -49,7 +49,7 @@ const setupNotifications = async () => {
   });
 };
 
-const scheduleTimerCompletionNotification = async (seconds: number) => {
+const scheduleTimerCompletionNotification = async (time: number) => {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
   await Notifications.scheduleNotificationAsync({
@@ -64,7 +64,7 @@ const scheduleTimerCompletionNotification = async (seconds: number) => {
       categoryIdentifier: TIMER_CATEGORY,
     },
     trigger: {
-      seconds,
+      ...(time > 0 ? { seconds: Math.floor(time / 1000) } : {}),
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       channelId: TIMER_CHANNEL_ID,
     },
@@ -76,364 +76,253 @@ const cancelTimerNotifications = async () => {
 };
 
 export default function useTimer() {
-  const [displayTime, setDisplayTime] = useState({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  const [status, setStatus] = useState({
-    isRunning: false,
-    isPaused: false,
-    isCompleted: false,
-  });
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [status, setStatus] = useState<TrackerState["status"]>("inactive");
 
   const timerRef = useRef({
-    totalSeconds: 0,
-    accurateTimer: null as ReturnType<typeof createAccurateTimer> | null,
+    accurateInterval: null as ReturnType<typeof createAccurateInterval> | null,
+    status: "inactive" as TrackerState["status"],
     sessionId: "",
-    initialDuration: 0,
+    startTime: 0,
+    endTime: 0,
+    tickTime: 0,
   });
+  const isRestoringState = useRef(false);
 
-  // Create a ref to track vibration state
-  const vibrationRef = useRef<NodeJS.Timeout | null>(null);
+  const handleTimerCompletion = useCallback(async (notify: boolean = true) => {
+    timerRef.current.accurateInterval?.stop();
+    timerRef.current.status = "completed";
+    setStatus("completed");
+    setTimeLeft(0);
 
-  // Function to start continuous vibration pattern
-  const startContinuousVibration = () => {
-    // Clear any existing vibration first
-    Vibration.cancel();
-
-    // Pattern for strong, continuous vibration:
-    // vibrate for 1000ms, pause for 500ms, repeat indefinitely
-    const pattern = [0, 1000, 500];
-
-    // Start vibration with repeat (passing -1 means infinite repeat)
-    Vibration.vibrate(pattern, true);
-
-    // Also use Haptics for immediate feedback on supported devices
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-      .then(() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      })
-      .catch((error) =>
-        console.error("Failed to trigger haptic feedback:", error),
-      );
-
-    // Set up a repeating heavy impact every 2 seconds for additional strength
-    vibrationRef.current = setInterval(() => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch((error) =>
-        console.error("Failed to trigger impact feedback:", error),
-      );
-    }, 2000);
-  };
-
-  // Function to stop vibration
-  const stopVibration = () => {
-    Vibration.cancel();
-    if (vibrationRef.current) {
-      clearInterval(vibrationRef.current);
-      vibrationRef.current = null;
-    }
-  };
-
-  const updateTimeRemaining = () => {
-    const totalSecondsLeft = timerRef.current.totalSeconds;
-
-    if (totalSecondsLeft <= 0) {
-      if (timerRef.current.accurateTimer) {
-        timerRef.current.accurateTimer.stop();
-      }
-      timerRef.current.totalSeconds = 0;
-      setStatus((prev) => ({ ...prev, isCompleted: true }));
-
-      if (timerRef.current.sessionId) {
-        addTimeEvent(
-          timerRef.current.sessionId,
-          "complete",
-          timerRef.current.initialDuration,
-        );
-      }
-
-      // Start continuous vibration when timer completes
-      startContinuousVibration();
+    if (notify) {
+      await scheduleTimerCompletionNotification(0);
     }
 
-    const hours = Math.floor(totalSecondsLeft / 3600);
-    const minutes = Math.floor((totalSecondsLeft % 3600) / 60);
-    const seconds = totalSecondsLeft % 60;
+    addTimeEvent({
+      sessionId: timerRef.current.sessionId,
+      action: "stop",
+      time: timerRef.current.tickTime,
+    });
+    markSessionAsCompleted(timerRef.current.sessionId);
+  }, []);
 
-    setDisplayTime({
-      hours,
-      minutes,
-      seconds,
+  const timerTick = useCallback(() => {
+    if (timerRef.current.status !== "running") return;
+
+    const now = Date.now();
+    const remaining = timerRef.current.endTime - now;
+    timerRef.current.tickTime = now;
+    setTimeLeft(remaining);
+
+    if (remaining <= 0) {
+      handleTimerCompletion();
+    }
+  }, [handleTimerCompletion]);
+
+  if (!timerRef.current.accurateInterval) {
+    timerRef.current.accurateInterval = createAccurateInterval(timerTick, 250);
+  }
+
+  const startTimer = (duration: number) => {
+    const now = Date.now();
+
+    timerRef.current.startTime = now;
+    timerRef.current.tickTime = now;
+    timerRef.current.endTime = now + duration;
+
+    timerRef.current.status = "running";
+    setStatus("running");
+    setTimeLeft(duration - 1);
+    timerRef.current.accurateInterval?.start();
+
+    const createdSessionId = createNewSession({
+      type: "timer",
+      duration,
+      startTime: now,
+    });
+    timerRef.current.sessionId = createdSessionId;
+
+    addTimeEvent({
+      sessionId: timerRef.current.sessionId,
+      action: "start",
+      time: timerRef.current.tickTime,
     });
   };
 
-  const timerTick = () => {
-    if (timerRef.current.totalSeconds > 0) {
-      timerRef.current.totalSeconds -= 1;
-      updateTimeRemaining();
+  const togglePause = () => {
+    if (status === "paused") {
+      const now = Date.now();
+      const remaining = timerRef.current.endTime - timerRef.current.tickTime;
+
+      timerRef.current.startTime = now;
+      timerRef.current.endTime = now + remaining;
+      timerRef.current.tickTime = now;
+
+      timerRef.current.status = "running";
+      setStatus("running");
+      timerRef.current.accurateInterval?.resume();
+
+      addTimeEvent({
+        sessionId: timerRef.current.sessionId,
+        action: "start",
+        time: timerRef.current.tickTime,
+      });
+    } else if (status === "running") {
+      timerTick();
+
+      timerRef.current.status = "paused";
+      setStatus("paused");
+      timerRef.current.accurateInterval?.pause();
+      addTimeEvent({
+        sessionId: timerRef.current.sessionId,
+        action: "stop",
+        time: timerRef.current.tickTime,
+      });
     }
-  };
-
-  // Cleanup any existing timer
-  const cleanupTimer = () => {
-    if (timerRef.current.accurateTimer) {
-      timerRef.current.accurateTimer.stop();
-      timerRef.current.accurateTimer = null;
-    }
-  };
-
-  const startTimer = async ({
-    hours = 0,
-    minutes = 0,
-    seconds = 0,
-  }: {
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-  }) => {
-    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
-    timerRef.current.totalSeconds = totalSeconds;
-    timerRef.current.initialDuration = totalSeconds;
-
-    cleanupTimer();
-    timerRef.current.accurateTimer = createAccurateTimer(timerTick, 1000);
-
-    setDisplayTime({
-      hours,
-      minutes,
-      seconds,
-    });
-
-    setStatus({
-      isRunning: true,
-      isPaused: false,
-      isCompleted: false,
-    });
-
-    const sessionId = await createNewSession(totalSeconds);
-    timerRef.current.sessionId = sessionId;
-
-    await addTimeEvent(sessionId, "start", totalSeconds);
-
-    // Schedule notification when timer starts
-    await scheduleTimerCompletionNotification(totalSeconds);
-
-    timerRef.current.accurateTimer.start();
-  };
-
-  const togglePause = async () => {
-    if (!timerRef.current.accurateTimer) return;
-
-    const remainingTime = timerRef.current.totalSeconds;
-
-    if (status.isPaused) {
-      timerRef.current.accurateTimer.resume();
-      await addTimeEvent(timerRef.current.sessionId, "resume", remainingTime);
-      await scheduleTimerCompletionNotification(remainingTime);
-      console.log(remainingTime);
-    } else {
-      timerRef.current.accurateTimer.pause();
-      await addTimeEvent(timerRef.current.sessionId, "pause", remainingTime);
-      await cancelTimerNotifications();
-    }
-
-    setStatus((prev) => ({
-      ...prev,
-      isPaused: !prev.isPaused,
-    }));
   };
 
   const stopTimer = async () => {
-    if (timerRef.current.accurateTimer) {
-      timerRef.current.accurateTimer.stop();
-      timerRef.current.accurateTimer = null;
+    const wasCompleted = timerRef.current.status === "completed";
 
-      const remainingTime = timerRef.current.totalSeconds;
-      const elapsedTime = timerRef.current.initialDuration - remainingTime;
-      await addTimeEvent(timerRef.current.sessionId, "stop", elapsedTime);
-      await cancelTimerNotifications();
-
-      // Stop vibration if any is ongoing
-      stopVibration();
-    }
-
-    setStatus({
-      isRunning: false,
-      isPaused: false,
-      isCompleted: false,
-    });
-
-    setDisplayTime({
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-    });
-  };
-
-  const resetTimer = async () => {
-    setStatus({
-      isRunning: false,
-      isPaused: false,
-      isCompleted: false,
-    });
-
-    setDisplayTime({
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-    });
-
-    timerRef.current.totalSeconds = 0;
-    timerRef.current.sessionId = "";
-
-    await saveTimerState({
-      state: "inactive",
-      remainingTime: 0,
-      initialDuration: 0,
-      date: new Date(),
-      sessionId: "",
-    });
+    timerRef.current.status = "inactive";
+    setStatus("inactive");
+    timerRef.current.accurateInterval?.stop();
 
     await cancelTimerNotifications();
-
-    // Stop vibration when timer is reset
-    stopVibration();
-  };
-
-  const saveCurrentTimerState = async () => {
-    if (status.isRunning) {
-      const state = status.isPaused ? "paused" : "running";
-      await saveTimerState({
-        state,
-        remainingTime: timerRef.current.totalSeconds,
-        initialDuration: timerRef.current.initialDuration,
-        date: new Date(),
+    if (!wasCompleted) {
+      addTimeEvent({
         sessionId: timerRef.current.sessionId,
+        action: "stop",
+        time: timerRef.current.tickTime,
       });
-
-      // Keep notification scheduling consistent with timer state
-      if (state === "running") {
-        await scheduleTimerCompletionNotification(
-          timerRef.current.totalSeconds,
-        );
-      } else {
-        await cancelTimerNotifications();
-      }
+      markSessionAsCompleted(timerRef.current.sessionId);
     }
   };
 
-  const restoreTimerState = async () => {
+  const saveCurrentTimerState = useCallback(async () => {
+    if (isRestoringState.current) return;
+
+    const remaining = timerRef.current.endTime - timerRef.current.tickTime;
+
+    saveTrackerState({
+      type: "timer",
+      status: timerRef.current.status,
+      elapsedTime: 0,
+      remainingTime: remaining,
+      time: timerRef.current.tickTime,
+      sessionId: timerRef.current.sessionId,
+    });
+
+    if (timerRef.current.status === "running") {
+      await scheduleTimerCompletionNotification(remaining);
+    }
+  }, []);
+
+  const restoreTimerState = useCallback(async () => {
+    if (isRestoringState.current) return;
+    isRestoringState.current = true;
+
     try {
-      cleanupTimer();
+      const savedState = getTrackerState();
 
-      const savedState = await getTimerState();
-
-      if (!savedState || savedState.state === "inactive") return;
-
-      timerRef.current.sessionId = savedState.sessionId;
-      timerRef.current.initialDuration = savedState.initialDuration;
-
-      let remainingTime = savedState.remainingTime;
-
-      if (savedState.state === "running") {
-        const elapsedSeconds = Math.floor(
-          (Date.now() - savedState.date.getTime()) / 1000,
-        );
-        remainingTime = Math.max(0, remainingTime - elapsedSeconds);
-      }
-
-      if (remainingTime <= 0 && savedState.state !== "completed") {
-        setStatus({ isRunning: false, isPaused: false, isCompleted: true });
-        await addTimeEvent(savedState.sessionId, "complete", 0);
-
-        // Start continuous vibration if timer completed while app was in background
-        startContinuousVibration();
+      if (!savedState || savedState.status === "inactive") {
+        timerRef.current.status = "inactive";
+        setStatus("inactive");
+        setTimeLeft(0);
+        timerRef.current.accurateInterval?.stop();
+        isRestoringState.current = false;
         return;
       }
 
-      timerRef.current.totalSeconds = remainingTime;
+      timerRef.current.status = savedState.status;
+      timerRef.current.startTime = savedState.time;
+      timerRef.current.endTime = savedState.time + savedState.remainingTime;
+      timerRef.current.tickTime = savedState.time;
+      timerRef.current.sessionId = savedState.sessionId;
 
-      const hours = Math.floor(remainingTime / 3600);
-      const minutes = Math.floor((remainingTime % 3600) / 60);
-      const seconds = remainingTime % 60;
+      setStatus(savedState.status);
+      setTimeLeft(savedState.remainingTime);
 
-      setDisplayTime({ hours, minutes, seconds });
+      if (savedState.status === "running") {
+        const now = Date.now();
+        const elapsed = now - savedState.time;
+        const remaining = savedState.remainingTime - elapsed;
 
-      setStatus({
-        isRunning:
-          savedState.state === "running" || savedState.state === "paused",
-        isPaused: savedState.state === "paused",
-        isCompleted: savedState.state === "completed",
-      });
-
-      if (savedState.state === "running") {
-        timerRef.current.accurateTimer = createAccurateTimer(timerTick, 1000);
-        timerRef.current.accurateTimer.start();
+        if (remaining > 0) {
+          timerRef.current.tickTime = now;
+          timerRef.current.endTime = now + remaining;
+          setTimeLeft(remaining);
+          timerRef.current.accurateInterval?.resume();
+        } else {
+          timerRef.current.tickTime = timerRef.current.endTime;
+          await handleTimerCompletion(false);
+          isRestoringState.current = false;
+          return;
+        }
+        await cancelTimerNotifications();
+      } else if (savedState.status === "paused") {
+        timerRef.current.accurateInterval?.pause();
+      } else if (savedState.status === "completed") {
+        setTimeLeft(0);
+        timerRef.current.accurateInterval?.stop();
       }
-    } catch (error) {
-      console.error("Error restoring timer state:", error);
+    } finally {
+      isRestoringState.current = false;
     }
-  };
+  }, [handleTimerCompletion]);
 
-  const handleAppStateChange = async (nextAppState: string) => {
-    if (nextAppState === "active") {
-      await restoreTimerState();
-    } else if (nextAppState === "background" || nextAppState === "inactive") {
-      await saveCurrentTimerState();
-    }
-  };
+  const handleAppStateChange = useCallback(
+    async (nextAppState: string) => {
+      if (nextAppState === "active") {
+        await restoreTimerState();
+      }
+    },
+    [restoreTimerState],
+  );
 
-  const handleNotificationResponse = async (
-    response: Notifications.NotificationResponse,
-  ) => {
-    const actionIdentifier = response.actionIdentifier;
+  const handleNotificationResponse = useCallback(
+    async (response: Notifications.NotificationResponse) => {
+      const actionIdentifier = response.actionIdentifier;
 
-    if (actionIdentifier === DISMISS_ACTION_ID) {
-      await Notifications.dismissNotificationAsync(
-        response.notification.request.identifier,
-      );
-
-      // Stop vibration when notification is dismissed
-      stopVibration();
-      await resetTimer();
-    }
-  };
+      if (actionIdentifier === DISMISS_ACTION_ID) {
+        await Notifications.dismissNotificationAsync(
+          response.notification.request.identifier,
+        );
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     setupNotifications();
     restoreTimerState();
 
-    const subscription = AppState.addEventListener(
+    const appStateSubscription = AppState.addEventListener(
       "change",
       handleAppStateChange,
     );
 
-    // Set up notification response handler with the separate function
     const notificationResponseSubscription =
       Notifications.addNotificationResponseReceivedListener(
         handleNotificationResponse,
       );
 
+    const accurateInterval = timerRef.current.accurateInterval;
+
     return () => {
-      cleanupTimer();
-      stopVibration(); // Ensure vibration stops when component unmounts
-      subscription.remove();
+      appStateSubscription.remove();
       notificationResponseSubscription.remove();
+      accurateInterval?.stop();
     };
-  }, []);
+  }, [handleAppStateChange, handleNotificationResponse, restoreTimerState]);
 
   return {
-    hours: displayTime.hours,
-    minutes: displayTime.minutes,
-    seconds: displayTime.seconds,
-    isRunning: status.isRunning,
-    isPaused: status.isPaused,
-    isCompleted: status.isCompleted,
+    timeLeft,
+    status,
     startTimer,
     togglePause,
     stopTimer,
-    resetTimer,
+    saveCurrentTimerState,
   };
 }
