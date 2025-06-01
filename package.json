@@ -4,9 +4,6 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
-    "android:dev": "eas run --platform android --local --profile dev",
-    "android:preview": "eas run --platform android --local --profile preview",
-    "android:prod": "eas run --platform android --local --profile production",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "eslint .",
