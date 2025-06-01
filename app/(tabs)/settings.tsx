@@ -1,7 +1,6 @@
 import { View, Text, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { EraserIcon, MoonIcon, UploadIcon } from "lucide-react-native";
-import { useColorScheme } from "@/lib/hooks/useColorScheme";
+import { EraserIcon, UploadIcon } from "lucide-react-native";
 import { seedWorkSessions, clearWorkSessions } from "@/lib/seedData";
 import SettingsGroup from "@/components/settings/SettingsGroup";
 import SettingsItem from "@/components/settings/SettingsItem";
@@ -11,11 +10,9 @@ const appVariant = Constants.expoConfig?.extra?.APP_VARIANT;
 const isProduction = appVariant !== "development" && appVariant !== "preview";
 
 export default function SettingsScreen() {
-  const { isDarkColorScheme, setColorScheme } = useColorScheme();
-
   const seedData = async () => {
     try {
-      await seedWorkSessions();
+      seedWorkSessions();
       Alert.alert("Success", "Dummy data seeded");
     } catch (e) {
       console.error(e);
@@ -25,7 +22,7 @@ export default function SettingsScreen() {
 
   const clearData = async () => {
     try {
-      await clearWorkSessions();
+      clearWorkSessions();
       Alert.alert("Success", "Data cleared");
     } catch (e) {
       console.error(e);
@@ -44,18 +41,6 @@ export default function SettingsScreen() {
         </View>
 
         <View className="gap-4">
-          <SettingsGroup>
-            <SettingsItem
-              Icon={MoonIcon}
-              text="Dark Mode"
-              onPress={() =>
-                setColorScheme(isDarkColorScheme ? "light" : "dark")
-              }
-              isSwitch={true}
-              initialIsChecked={isDarkColorScheme}
-            />
-          </SettingsGroup>
-
           {!isProduction && (
             <SettingsGroup>
               <SettingsItem
