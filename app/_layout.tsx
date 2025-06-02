@@ -6,6 +6,7 @@ import { DarkTheme, Theme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useLayoutEffect, useRef, useState } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const DARK_THEME: Theme = {
   ...DarkTheme,
@@ -30,13 +31,15 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={DARK_THEME}>
-      <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={DARK_THEME}>
+        <StatusBar style="light" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
