@@ -100,7 +100,7 @@ function AlertDialogFooter({ className, ...props }: ViewProps) {
   return (
     <View
       className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        "flex flex-row justify-end gap-2 sm:flex-row sm:justify-end",
         className,
       )}
       {...props}
@@ -166,10 +166,10 @@ function AlertDialogCancel({
 }) {
   return (
     <TextClassContext.Provider
-      value={buttonTextVariants({ className, variant: "outline" })}
+      value={buttonTextVariants({ className, variant: "secondary" })}
     >
       <AlertDialogPrimitive.Cancel
-        className={cn(buttonVariants({ variant: "outline", className }))}
+        className={cn(buttonVariants({ variant: "secondary", className }))}
         {...props}
       />
     </TextClassContext.Provider>

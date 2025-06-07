@@ -1,5 +1,6 @@
 import "@/global.css";
 
+import { PortalHost } from "@rn-primitives/portal";
 import { NAV_THEME } from "@/lib/constants/colors";
 import { DarkTheme, Theme, ThemeProvider } from "@react-navigation/native";
 
@@ -39,6 +40,7 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
+        <PortalHost />
       </ThemeProvider>
     </SafeAreaProvider>
   );
