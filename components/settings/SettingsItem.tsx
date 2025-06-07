@@ -34,7 +34,7 @@ export default function SettingsItem({
 
   return (
     <Pressable
-      className="flex-1 flex-row items-center gap-3 px-5 py-3 transition active:bg-muted"
+      className="flex-1 flex-row items-center gap-3 px-5 py-3 active:bg-muted"
       onPress={handlePress}
     >
       <Icon color={getColor("foreground")} size={18} />
