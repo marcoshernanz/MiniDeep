@@ -1,28 +1,64 @@
-import * as Slot from "@rn-primitives/slot";
-import type { SlottableTextProps, TextRef } from "@rn-primitives/types";
-import * as React from "react";
-import { Text as RNText } from "react-native";
-import cn from "@/lib/utils/cn";
+import getColor from "@/lib/utils/getColor";
+import React from "react";
+import {
+  Platform,
+  Text as RNText,
+  StyleProp,
+  TextProps,
+  TextStyle,
+} from "react-native";
 
-const TextClassContext = React.createContext<string | undefined>(undefined);
+const resolveFontFamily = (style: StyleProp<TextStyle>) => {
+  const flatStyle = Array.isArray(style)
+    ? Object.assign({}, ...style)
+    : style || {};
 
-const Text = React.forwardRef<TextRef, SlottableTextProps>(
-  ({ className, asChild = false, ...props }, ref) => {
-    const textClass = React.useContext(TextClassContext);
-    const Component = asChild ? Slot.Text : RNText;
-    return (
-      <Component
-        className={cn(
-          "text-base text-foreground web:select-text",
-          textClass,
-          className,
-        )}
-        ref={ref}
-        {...props}
-      />
-    );
-  },
-);
-Text.displayName = "Text";
+  const weight = flatStyle.fontWeight || "400";
+  const isItalic = flatStyle.fontStyle === "italic";
 
-export { Text, TextClassContext };
+  const weightMap: Record<string, string> = {
+    "100": "100Thin",
+    "200": "200ExtraLight",
+    "300": "300Light",
+    "400": "400Regular",
+    "500": "500Medium",
+    "600": "600SemiBold",
+    "700": "700Bold",
+    "800": "800ExtraBold",
+    "900": "900Black",
+  };
+
+  const expoFontName = weightMap[weight.toString()] || "400Regular";
+  const fontNameAndroid = `Inter_${expoFontName}${isItalic ? "_Italic" : ""}`;
+
+  const fontNameIOSMap: Record<string, string> = {
+    "100Thin": "Inter-Thin",
+    "200ExtraLight": "Inter-ExtraLight",
+    "300Light": "Inter-Light",
+    "400Regular": "Inter-Regular",
+    "500Medium": "Inter-Medium",
+    "600SemiBold": "Inter-SemiBold",
+    "700Bold": "Inter-Bold",
+    "800ExtraBold": "Inter-ExtraBold",
+    "900Black": "Inter-Black",
+  };
+
+  let fontFamily = Platform.select({
+    android: fontNameAndroid,
+    ios: isItalic
+      ? `${fontNameIOSMap[expoFontName]}Italic`
+      : fontNameIOSMap[expoFontName],
+  });
+
+  return fontFamily;
+};
+
+export default function Text({ style, ...props }: TextProps) {
+  const fontFamily = resolveFontFamily(style);
+  return (
+    <RNText
+      {...props}
+      style={[{ fontFamily, color: getColor("foreground") }, style]}
+    />
+  );
+}
