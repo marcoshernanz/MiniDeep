@@ -1,62 +1,76 @@
 import { Tabs } from "expo-router";
-import { BrainIcon } from "@/lib/icons/BrainIcon";
-import { ActivityIcon } from "@/lib/icons/ActivityIcon";
-import { BarChartIcon } from "@/lib/icons/BarChartIcon";
-import { SettingsIcon } from "@/lib/icons/SettingsIcon";
-import useColors from "@/lib/hooks/useColors";
+import { forwardRef } from "react";
+import { Pressable, PressableProps, View } from "react-native";
+import getColor from "@/lib/utils/getColor";
+import {
+  ActivityIcon,
+  BarChartIcon,
+  HomeIcon,
+  SettingsIcon,
+} from "lucide-react-native";
+
+const TabBarPressableButton = forwardRef<any, PressableProps>((props, ref) => (
+  <Pressable
+    {...props}
+    ref={ref}
+    android_ripple={{ color: getColor("muted"), borderless: true }}
+  />
+));
+TabBarPressableButton.displayName = "TabBarPressableButton";
 
 export default function TabLayout() {
-  const { getColor } = useColors();
-
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: getColor("primary"),
-        tabBarInactiveTintColor: getColor("mutedForeground"),
-        tabBarStyle: {
-          backgroundColor: getColor("background"),
-          borderColor: getColor("border"),
-          borderTopWidth: 1,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          tabBarLabel: "Deep Work",
-          tabBarIcon: ({ color, size }) => (
-            <BrainIcon color={color} size={size} />
-          ),
+    <View style={{ flex: 1 }}>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: getColor("primary"),
+          tabBarInactiveTintColor: getColor("mutedForeground"),
+          tabBarStyle: {
+            backgroundColor: getColor("background"),
+            borderColor: getColor("border"),
+            borderTopWidth: 1,
+          },
+          tabBarButton: (props) => <TabBarPressableButton {...props} />,
         }}
-      />
-      <Tabs.Screen
-        name="activity"
-        options={{
-          tabBarLabel: "Activity",
-          tabBarIcon: ({ color, size }) => (
-            <ActivityIcon color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="statistics"
-        options={{
-          tabBarLabel: "Statistics",
-          tabBarIcon: ({ color, size }) => (
-            <BarChartIcon color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          tabBarLabel: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <SettingsIcon color={color} size={size} />
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarLabel: "Home",
+            tabBarIcon: ({ color, size }) => (
+              <HomeIcon color={color} strokeWidth={1.75} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="activity"
+          options={{
+            tabBarLabel: "Activity",
+            tabBarIcon: ({ color, size }) => (
+              <ActivityIcon color={color} strokeWidth={1.75} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="statistics"
+          options={{
+            tabBarLabel: "Statistics",
+            tabBarIcon: ({ color, size }) => (
+              <BarChartIcon color={color} strokeWidth={1.75} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            tabBarLabel: "Settings",
+            tabBarIcon: ({ color, size }) => (
+              <SettingsIcon color={color} strokeWidth={1.75} size={size} />
+            ),
+          }}
+        />
+      </Tabs>
+    </View>
   );
 }
