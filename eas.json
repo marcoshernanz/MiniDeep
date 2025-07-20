@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 15.0.12",
+    "version": ">= 16.6.2",
     "appVersionSource": "remote"
   },
   "build": {
@@ -12,24 +12,13 @@
       }
     },
     "preview": {
-      "distribution": "internal",
-      "env": {
-        "APP_VARIANT": "preview"
-      }
+      "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "env": {
-        "APP_VARIANT": "production"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
-    "production": {
-      "android": {
-        "serviceAccountKeyPath": "./service-account-key.json",
-        "track": "internal"
-      }
-    }
+    "production": {}
   }
 }
