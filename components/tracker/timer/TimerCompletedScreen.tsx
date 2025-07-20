@@ -2,9 +2,6 @@ import { View } from "react-native";
 import { Text } from "../../ui/text";
 import { Button } from "../../ui/button";
 import * as Notifications from "expo-notifications";
-import stopSound from "@/lib/utils/sound/stopSound";
-import { Audio } from "expo-av";
-import { useEffect, useRef } from "react";
 import { useTimerContext } from "@/context/TimerContext";
 
 export default function TimerCompletedScreen() {
@@ -12,24 +9,8 @@ export default function TimerCompletedScreen() {
     timer: { stopTimer },
   } = useTimerContext();
 
-  const soundRef = useRef<Audio.Sound | null>(null);
-
-  useEffect(() => {
-    const sound = soundRef.current;
-
-    return () => {
-      if (sound) {
-        stopSound(sound);
-      }
-    };
-  }, []);
-
   const handleDone = async () => {
     await Notifications.dismissAllNotificationsAsync();
-
-    if (soundRef.current) {
-      await stopSound(soundRef.current);
-    }
 
     stopTimer();
   };
