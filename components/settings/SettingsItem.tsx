@@ -1,58 +1,52 @@
-import { LucideIcon } from "lucide-react-native";
-import { Pressable, Switch, View } from "react-native";
-import { Text } from "../ui/text";
-import useColors from "@/lib/hooks/useColors";
-import { useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import Text from "../ui/Text";
+import getColor from "@/lib/utils/getColor";
 
-interface Props {
-  Icon: LucideIcon;
+export interface SettingsItemProps {
   text: string;
   onPress?: () => void;
-  isSwitch?: boolean;
-  initialIsChecked?: boolean;
+  isLast?: boolean;
+  isFirst?: boolean;
 }
 
 export default function SettingsItem({
-  Icon,
   text,
   onPress,
-  isSwitch,
-  initialIsChecked,
-}: Props) {
-  const [isChecked, setIsChecked] = useState<boolean>(initialIsChecked || true);
-  const { getColor } = useColors();
-
-  const handlePress = () => {
-    if (onPress) {
-      onPress();
-    }
-
-    if (isSwitch) {
-      setIsChecked((prev) => !prev);
-    }
-  };
-
+  isFirst,
+  isLast,
+}: SettingsItemProps) {
   return (
-    <Pressable
-      className="flex-1 flex-row items-center gap-3 px-5 py-3 active:bg-muted"
-      onPress={handlePress}
+    <View
+      style={[styles.container, isFirst && styles.first, isLast && styles.last]}
     >
-      <Icon color={getColor("foreground")} size={18} />
-      <Text className="font-medium">{text}</Text>
-
-      {isSwitch && (
-        <View className="ml-auto">
-          <Switch
-            value={isChecked}
-            onValueChange={handlePress}
-            trackColor={{
-              false: getColor("mutedForeground"),
-              true: getColor("primary"),
-            }}
-            thumbColor={getColor("foreground")}
-          />
-        </View>
-      )}
-    </Pressable>
+      <Pressable
+        style={styles.pressable}
+        onPress={onPress}
+        android_ripple={{ color: getColor("muted") }}
+      >
+        <Text>{text}</Text>
+      </Pressable>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderBottomWidth: 1,
+    borderBottomColor: getColor("border"),
+    overflow: "hidden",
+  },
+  pressable: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  first: {
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  last: {
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    borderBottomWidth: 0,
+  },
+});
