@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const StopwatchSession = z.object({
+export const StopwatchSessionSchema = z.object({
   id: z.string(),
   createdAt: z.date(),
   type: z.literal("stopwatch"),
@@ -12,4 +12,4 @@ export const StopwatchSession = z.object({
   ),
 });
 
-export type StopwatchSession = z.infer<typeof StopwatchSession>;
+export type StopwatchSession = z.infer<typeof StopwatchSessionSchema>;

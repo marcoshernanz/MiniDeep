@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const TimerSession = z.object({
+export const TimerSessionSchema = z.object({
   id: z.string(),
   createdAt: z.date(),
   type: z.literal("timer"),
@@ -13,4 +13,4 @@ export const TimerSession = z.object({
   ),
 });
 
-export type TimerSession = z.infer<typeof TimerSession>;
+export type TimerSession = z.infer<typeof TimerSessionSchema>;

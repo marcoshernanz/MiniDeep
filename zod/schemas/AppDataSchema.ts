@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { WorkSession } from "./WorkSession";
+import { WorkSessionSchema } from "./WorkSessionSchema";
 
 export const AppDataSchema = z
   .object({
-    sessions: WorkSession.array(),
+    sessions: WorkSessionSchema.array(),
   })
   .strict()
   .default({ sessions: [] });
