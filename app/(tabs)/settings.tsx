@@ -1,5 +1,4 @@
 import { ScrollView, StyleSheet } from "react-native";
-import Constants from "expo-constants";
 import SafeArea from "@/components/ui/SafeArea";
 import Title from "@/components/ui/Title";
 import DummyData from "@/components/settings/options/DummyData";
