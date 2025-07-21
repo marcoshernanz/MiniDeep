@@ -22,7 +22,7 @@ const createDefaultHourlyDistribution = (): {
 
 export default function getTimeDistribution(): TimeDistribution {
   const sessions = getWorkSessions().sort(
-    (a, b) => a.startDate.getTime() - b.startDate.getTime(),
+    (a, b) => a.startDate.getTime() - b.startDate.getTime()
   );
 
   const distributionMap = new Map<string, { hour: number; time: number }[]>();
@@ -74,7 +74,7 @@ export default function getTimeDistribution(): TimeDistribution {
 
       if (hourlyDistributionSegment) {
         const hourEntrySegment = hourlyDistributionSegment.find(
-          (entry) => entry.hour === segmentHour,
+          (entry) => entry.hour === segmentHour
         );
         if (hourEntrySegment) {
           hourEntrySegment.time += delta;
@@ -86,7 +86,7 @@ export default function getTimeDistribution(): TimeDistribution {
   }
 
   const distributionResult: TimeDistribution = Array.from(
-    distributionMap.entries(),
+    distributionMap.entries()
   ).map(([dateTimestampString, hourlyDist]) => {
     const resultDate = new Date(parseInt(dateTimestampString));
 

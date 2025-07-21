@@ -106,7 +106,7 @@ export default function StatisticsContextProvider({ children }: Props) {
 
   useEffect(() => {
     const subscription = DeviceEventEmitter.addListener("sessionsChanged", () =>
-      loadStatistics(),
+      loadStatistics()
     );
 
     return () => {
