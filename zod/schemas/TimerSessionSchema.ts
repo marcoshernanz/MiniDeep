@@ -2,13 +2,13 @@ import { z } from "zod";
 
 export const TimerSessionSchema = z.object({
   id: z.string(),
-  createdAt: z.date(),
+  createdAt: z.coerce.date(),
   type: z.literal("timer"),
   inputDuration: z.number(),
   events: z.array(
     z.object({
-      start: z.date(),
-      stop: z.date().nullable(),
+      start: z.coerce.date(),
+      stop: z.coerce.date().nullable(),
     })
   ),
 });
