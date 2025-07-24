@@ -85,7 +85,7 @@ export default function StatisticsScreen() {
           height={chartHeight}
           pointsPerLabel={pointsPerLabel}
           numPointsVisible={numPointsVisible}
-          tooltipWidth={110}
+          tooltipWidth={130}
         />
       </View>
     </SafeArea>
