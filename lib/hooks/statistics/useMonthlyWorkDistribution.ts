@@ -1,6 +1,12 @@
 import useDailyWorkDistribution from "@/lib/hooks/statistics/useDailyWorkDistribution";
 import { useMemo } from "react";
-import { startOfMonth, addMonths, format, parseISO } from "date-fns";
+import {
+  startOfMonth,
+  addMonths,
+  format,
+  parseISO,
+  getDaysInMonth,
+} from "date-fns";
 
 export default function useMonthlyWorkDistribution(): Record<string, number> {
   const daily = useDailyWorkDistribution();
@@ -29,6 +35,11 @@ export default function useMonthlyWorkDistribution(): Record<string, number> {
       if (distribution[monthKey] != null) {
         distribution[monthKey] += daily[dayKey];
       }
+    });
+
+    Object.keys(distribution).forEach((monthKey) => {
+      const daysCount = getDaysInMonth(parseISO(monthKey));
+      distribution[monthKey] = distribution[monthKey] / daysCount;
     });
     return distribution;
   }, [daily]);

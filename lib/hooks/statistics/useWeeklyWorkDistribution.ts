@@ -34,6 +34,10 @@ export default function useWeeklyWorkDistribution(): Record<string, number> {
         distribution[weekKey] += daily[dayKey];
       }
     });
+
+    Object.keys(distribution).forEach((weekKey) => {
+      distribution[weekKey] = distribution[weekKey] / 7;
+    });
     return distribution;
   }, [daily]);
 }
