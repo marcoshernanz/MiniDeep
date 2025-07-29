@@ -27,12 +27,12 @@ export default function ActivityItem({ item }: Props) {
               totalTime={item.totalTime}
               totalSessions={item.totalSessions}
             />
-            <ActivityWorkDistribution />
-            {/* <Text style={styles.activityTitle}>Activity</Text> */}
+            <ActivityWorkDistribution date={item.date} />
+            <Text style={styles.sessionsTitle}>Sessions</Text>
           </View>
         )}
         contentContainerStyle={{ paddingBottom: 16 }}
-        renderItem={({ item }) => <ActivitySessionItem />}
+        renderItem={({ item }) => <ActivitySessionItem session={item} />}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         overScrollMode="never"
@@ -50,5 +50,10 @@ const styles = StyleSheet.create({
   description: {
     marginBottom: 20,
     paddingHorizontal: 16,
+  },
+  sessionsTitle: {
+    fontSize: 24,
+    fontWeight: 600,
+    paddingBottom: 12,
   },
 });
