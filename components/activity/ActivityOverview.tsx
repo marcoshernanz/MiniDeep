@@ -11,13 +11,18 @@ interface Props {
 export default function ActivityOverview({ totalTime, totalSessions }: Props) {
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Total Time</Text>
-        <Text style={styles.cardValue}>{formatTime(totalTime)}</Text>
+      <View>
+        <Text style={styles.title}>Overview</Text>
       </View>
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Total Sessions</Text>
-        <Text style={styles.cardValue}>{totalSessions}</Text>
+      <View style={styles.cardsContainer}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Total Time</Text>
+          <Text style={styles.cardValue}>{formatTime(totalTime)}</Text>
+        </View>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Total Sessions</Text>
+          <Text style={styles.cardValue}>{totalSessions}</Text>
+        </View>
       </View>
     </View>
   );
@@ -25,6 +30,14 @@ export default function ActivityOverview({ totalTime, totalSessions }: Props) {
 
 const styles = StyleSheet.create({
   container: {
+    paddingBottom: 32,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 600,
+    paddingBottom: 12,
+  },
+  cardsContainer: {
     gap: 12,
     flexDirection: "row",
   },
