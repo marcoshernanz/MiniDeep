@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Text } from "../../ui/text";
+import { Text } from "../../ui/Text";
 import padWithZeros from "@/lib/utils/padWithZeros";
 import { Button } from "../../ui/button";
 import extractTime from "@/lib/utils/extractTime";

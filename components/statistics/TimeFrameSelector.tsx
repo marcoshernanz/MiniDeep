@@ -1,5 +1,5 @@
 import { Pressable, View } from "react-native";
-import { Text } from "../ui/text";
+import { Text } from "../ui/Text";
 import {
   statisticsTimeFrames,
   useStatisticsContext,
@@ -17,7 +17,7 @@ export default function TimeFrameSelector() {
           key={timeFrame}
           className={cn(
             "flex-1 items-center justify-center rounded-full py-1 text-primary-foreground",
-            selectedTimeFrame === timeFrame ? "bg-primary" : "bg-secondary",
+            selectedTimeFrame === timeFrame ? "bg-primary" : "bg-secondary"
           )}
           onPress={() => setSelectedTimeFrame(timeFrame)}
         >

@@ -1,5 +1,5 @@
 import { View, Dimensions, TouchableOpacity } from "react-native";
-import { Text } from "../ui/text";
+import { Text } from "../ui/Text";
 import groupDaysIntoWeeks from "@/lib/utils/groupDaysIntoWeeks";
 import cn from "@/lib/utils/cn";
 import Swipable from "../Swipable";
@@ -16,8 +16,8 @@ export default function ActivityDayPicker() {
 
   const currentIndex = weeks.findIndex((week) =>
     week.some(
-      (day) => day && day.toDateString() === selectedDate.toDateString(),
-    ),
+      (day) => day && day.toDateString() === selectedDate.toDateString()
+    )
   );
 
   const onPress = (day: Date) => {
@@ -41,7 +41,7 @@ export default function ActivityDayPicker() {
               className={cn(
                 "aspect-square size-12 items-center justify-center rounded-full bg-muted disabled:bg-muted/50",
                 selectedDate.toDateString() === (day?.toDateString() || "") &&
-                  "bg-primary text-primary-foreground",
+                  "bg-primary text-primary-foreground"
               )}
               disabled={!day}
             >

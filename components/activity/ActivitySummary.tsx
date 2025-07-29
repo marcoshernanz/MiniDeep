@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { Card } from "../ui/card";
-import { Text } from "../ui/text";
+import { Text } from "../ui/Text";
 import formatTime from "@/lib/utils/formatTime";
 
 interface ActivitySummaryProps {

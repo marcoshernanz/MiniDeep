@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import { ReText } from "react-native-redash";
 import formatTime from "@/lib/utils/formatTime";
 import { format, parseISO } from "date-fns";
-import { Text } from "../ui/text";
+import { Text } from "../ui/Text";
 import { useStatisticsContext } from "@/context/StatisticsContext";
 
 type DataType = {
@@ -28,14 +28,11 @@ export default function TimeWorkedChart() {
 
   const formattedDates = useMemo(
     () =>
-      statisticsData.reduce(
-        (acc, item) => {
-          acc[item.date] = format(parseISO(item.date), "MMM dd, yyyy");
-          return acc;
-        },
-        {} as Record<string, string>,
-      ),
-    [statisticsData],
+      statisticsData.reduce((acc, item) => {
+        acc[item.date] = format(parseISO(item.date), "MMM dd, yyyy");
+        return acc;
+      }, {} as Record<string, string>),
+    [statisticsData]
   );
 
   const date = useDerivedValue(() => formattedDates[tooltip.x.value.value]);
@@ -56,7 +53,7 @@ export default function TimeWorkedChart() {
       {
         translateX: Math.min(
           width - 100,
-          Math.max(0, tooltip.x.position.value - 50),
+          Math.max(0, tooltip.x.position.value - 50)
         ),
       },
     ],

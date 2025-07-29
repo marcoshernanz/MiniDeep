@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text";
 import { useStopwatchContext } from "@/context/StopwatchContext";
 import { View } from "react-native";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, View } from "react-native";
-import { Text } from "../ui/text";
+import { Text } from "../ui/Text";
 import { Card } from "../ui/card";
 import { CartesianChart, Area, Line, useChartPressState } from "victory-native";
 import {
@@ -40,10 +40,10 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
   const time = useDerivedValue(() =>
     state.x.value.value < 10
       ? `0${state.x.value.value}:00`
-      : `${state.x.value.value}:00`,
+      : `${state.x.value.value}:00`
   );
   const duration = useDerivedValue(() =>
-    String(Math.round(state.y.time.value.value / (60 * 1000))),
+    String(Math.round(state.y.time.value.value / (60 * 1000)))
   );
 
   const lineStyle = useAnimatedStyle(() => ({
@@ -64,7 +64,7 @@ export default function WorkDistributionChart({ timeDistribution }: Props) {
       {
         translateX: Math.min(
           width - 158,
-          Math.max(0, state.x.position.value - 50),
+          Math.max(0, state.x.position.value - 50)
         ),
       },
     ],

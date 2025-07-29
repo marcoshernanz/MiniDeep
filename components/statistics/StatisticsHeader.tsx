@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Text } from "../ui/text";
+import { Text } from "../ui/Text";
 
 export default function StatisticsHeader() {
   return (

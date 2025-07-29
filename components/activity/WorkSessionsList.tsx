@@ -1,6 +1,6 @@
 import React from "react";
 import { FlatList } from "react-native";
-import { Text } from "../ui/text";
+import { Text } from "../ui/Text";
 import { Card } from "../ui/card";
 import WorkSessionItem from "./WorkSessionItem";
 import { ActivityType } from "@/context/ActivityContext";

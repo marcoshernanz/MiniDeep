@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import WheelNumberPicker, {
   WheelNumberPickerHandle,
 } from "../../ui/WheelNumberPicker";
-import { Text } from "../../ui/text";
+import { Text } from "../../ui/Text";
 import { Button } from "../../ui/button";
 import extractTime from "@/lib/utils/extractTime";
 import { useTimerContext } from "@/context/TimerContext";

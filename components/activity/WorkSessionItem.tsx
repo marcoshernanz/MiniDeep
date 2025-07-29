@@ -1,9 +1,8 @@
 import cn from "@/lib/utils/cn";
 import { memo } from "react";
-import { Pressable } from "react-native";
-import { Text } from "../ui/text";
+import { Pressable, View } from "react-native";
+import { Text } from "../ui/Text";
 import { format } from "date-fns";
-import { View } from "react-native";
 import formatTime from "@/lib/utils/formatTime";
 import { ActivityType } from "@/context/ActivityContext";
 
@@ -17,7 +16,7 @@ const WorkSessionItem = memo<WorkSessionItemProps>(
     <Pressable
       className={cn(
         "flex-row items-center justify-between",
-        index !== 0 && "mt-2 border-t border-t-muted pt-2",
+        index !== 0 && "mt-2 border-t border-t-muted pt-2"
       )}
     >
       <Text className="font-medium text-foreground">
@@ -28,7 +27,9 @@ const WorkSessionItem = memo<WorkSessionItemProps>(
           {formatTime(item.duration / 1000)}
         </Text>
         <View
-          className={`size-3 rounded-full ${item.completed ? "bg-green/80" : "bg-red/80"}`}
+          className={`size-3 rounded-full ${
+            item.completed ? "bg-green/80" : "bg-red/80"
+          }`}
         />
       </View>
     </Pressable>
@@ -37,7 +38,7 @@ const WorkSessionItem = memo<WorkSessionItemProps>(
     prev.item.startDate.getTime() === next.item.startDate.getTime() &&
     prev.item.duration === next.item.duration &&
     prev.item.completed === next.item.completed &&
-    prev.index === next.index,
+    prev.index === next.index
 );
 
 export default WorkSessionItem;
