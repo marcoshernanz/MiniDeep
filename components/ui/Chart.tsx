@@ -248,7 +248,7 @@ export default function Chart({
       text: selectedPoint.value.key,
     })),
     selectedPointValue: useAnimatedProps(() => ({
-      text: formatTime(selectedPoint.value.value / 1000),
+      text: formatTime(selectedPoint.value.value),
     })),
   };
 
