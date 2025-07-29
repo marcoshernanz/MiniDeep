@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Dimensions, FlatList, StyleSheet, View } from "react-native";
 import Description from "../ui/Description";
 import ActivitySessionItem from "./ActivitySessionItem";
-import ActivityCards from "./ActivityCards";
+import ActivityOverview from "./ActivityOverview";
 import ActivityWorkDistribution from "./ActivityWorkDistribution";
 import Text from "../ui/Text";
 
@@ -23,7 +23,7 @@ export default function ActivityItem({ item }: Props) {
         keyExtractor={(item) => item.id}
         ListHeaderComponent={() => (
           <View style={{ paddingHorizontal: 16 }}>
-            <ActivityCards
+            <ActivityOverview
               totalTime={item.totalTime}
               totalSessions={item.totalSessions}
             />

@@ -8,7 +8,7 @@ interface Props {
   totalSessions: number;
 }
 
-export default function ActivityCards({ totalTime, totalSessions }: Props) {
+export default function ActivityOverview({ totalTime, totalSessions }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
