@@ -40,9 +40,10 @@ interface Props {
   tooltipWidth?: number;
   pointsPerLabel?: number;
   labelStart?: number;
+  maxValue?: number;
 }
 
-const bottomPadding = 0.1;
+const bottomPadding = 0.25;
 const tooltipMargin = 12;
 const baseLabelHeight = 24;
 const circleRadius = 4;
@@ -57,6 +58,7 @@ export default function SimpleChart({
   tooltipWidth = 100,
   pointsPerLabel = 0,
   labelStart = 1,
+  maxValue: propMaxValue,
 }: Props) {
   const labelHeight = pointsPerLabel ? baseLabelHeight : 0;
   const chartHeight = height - tooltipHeight - tooltipMargin - labelHeight;
@@ -66,7 +68,12 @@ export default function SimpleChart({
   const numTotalLabels =
     pointsPerLabel === 0 ? 0 : Math.floor(dataLength / pointsPerLabel);
   const dataKeys = Object.keys(data);
-  const minValue = Math.min(...Object.values(data).filter((v) => v !== null));
+  const numericValues = Object.values(data).filter(
+    (v): v is number => v != null
+  );
+  const minValue = numericValues.length ? Math.min(...numericValues) : 0;
+  const computedMax = numericValues.length ? Math.max(...numericValues) : 0;
+  const usedMaxValue = propMaxValue !== undefined ? propMaxValue : computedMax;
 
   const { linePath, areaPath, points } = useMemo(
     () =>
@@ -76,9 +83,10 @@ export default function SimpleChart({
         height: chartHeight,
         bottomPadding,
         topOffset: chartTop,
-        minValue: minValue,
+        minValue,
+        maxValue: usedMaxValue,
       }),
-    [data, width, chartHeight, chartTop, minValue]
+    [data, width, chartHeight, chartTop, minValue, usedMaxValue]
   );
 
   const pressX = useSharedValue<number>(0);

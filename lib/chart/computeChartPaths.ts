@@ -17,6 +17,7 @@ interface Params {
   bottomPadding: number;
   topOffset?: number;
   minValue?: number;
+  maxValue?: number;
   numVisiblePoints?: number;
 }
 
@@ -27,6 +28,7 @@ export function computeChartPaths({
   bottomPadding,
   topOffset = 0,
   minValue,
+  maxValue,
   numVisiblePoints = 0,
 }: Params): {
   linePath: SkPath;
@@ -46,7 +48,8 @@ export function computeChartPaths({
   const numericValues = entries
     .map(([, v]) => v)
     .filter((v): v is number => v != null);
-  const max = numericValues.length ? Math.max(...numericValues) : 0;
+  const defaultMax = numericValues.length ? Math.max(...numericValues) : 0;
+  const max = maxValue !== undefined ? maxValue : defaultMax;
   const dataMin = numericValues.length ? Math.min(...numericValues) : 0;
   const min = minValue !== undefined ? minValue : dataMin;
 
