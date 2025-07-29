@@ -55,7 +55,7 @@ export default function SimpleChart({
   width,
   height,
   tooltipHeight = 32,
-  tooltipWidth = 100,
+  tooltipWidth = 96,
   pointsPerLabel = 0,
   labelStart = 1,
   maxValue: propMaxValue,
@@ -204,7 +204,7 @@ export default function SimpleChart({
       text: selectedPoint.value.key,
     })),
     selectedPointValue: useAnimatedProps(() => ({
-      text: selectedPoint.value.value.toFixed(1),
+      text: `${selectedPoint.value.value / 1000 / 60}m`,
     })),
   };
 
