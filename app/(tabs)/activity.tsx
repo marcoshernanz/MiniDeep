@@ -2,6 +2,7 @@ import SafeArea from "@/components/ui/SafeArea";
 import Title from "@/components/ui/Title";
 import { Dimensions, FlatList, StyleSheet } from "react-native";
 import useActivity from "@/lib/hooks/useActivity";
+import ActivityItem from "@/components/activity/ActivityItem";
 
 export default function ActivityScreen() {
   const data = useActivity();
