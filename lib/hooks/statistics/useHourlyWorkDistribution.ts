@@ -30,7 +30,7 @@ export default function useHourlyWorkDistribution(): Record<
     intervals.sort((a, b) => a.start.getTime() - b.start.getTime());
 
     const firstDay = startOfDay(intervals[0].start);
-    const lastDay = startOfDay(intervals[intervals.length - 1].end);
+    const lastDay = startOfDay(new Date());
 
     const days = eachDayOfInterval({ start: firstDay, end: lastDay });
     const distribution: Record<string, Record<string, number>> = {};
