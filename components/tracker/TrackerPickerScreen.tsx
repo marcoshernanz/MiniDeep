@@ -27,13 +27,13 @@ export default function TrackerPickerScreen() {
         <View
           className={cn(
             "mr-3 size-3 rounded-full bg-muted",
-            activeIndex === 0 && "bg-primary",
+            activeIndex === 0 && "bg-primary"
           )}
         ></View>
         <View
           className={cn(
             "size-3 rounded-full bg-muted",
-            activeIndex === 1 && "bg-primary",
+            activeIndex === 1 && "bg-primary"
           )}
         ></View>
       </View>
