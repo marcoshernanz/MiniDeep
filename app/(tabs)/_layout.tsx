@@ -5,7 +5,7 @@ import getColor from "@/lib/utils/getColor";
 import {
   ActivityIcon,
   BarChartIcon,
-  HomeIcon,
+  BrainIcon,
   SettingsIcon,
 } from "lucide-react-native";
 
@@ -37,9 +37,9 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            tabBarLabel: "Home",
+            tabBarLabel: "Deep Work",
             tabBarIcon: ({ color, size }) => (
-              <HomeIcon color={color} strokeWidth={1.75} size={size} />
+              <BrainIcon color={color} strokeWidth={1.75} size={size} />
             ),
           }}
         />
