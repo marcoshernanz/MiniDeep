@@ -1,12 +1,32 @@
+import DeepWorkStopwatch from "@/components/deepWork/DeepWorkStopwatch";
+import DeepWorkTimer from "@/components/deepWork/DeepWorkTimer";
 import Tracker from "@/components/tracker/Tracker";
+import SafeArea from "@/components/ui/SafeArea";
 import TrackerContextProvider from "@/context/TrackerContext";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 
 export default function IndexScreen() {
-  return null;
-
-  // return (
-  //   <TrackerContextProvider>
-  //     <Tracker />
-  //   </TrackerContextProvider>
-  // );
+  return (
+    <View style={styles.container}>
+      <ScrollView
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        overScrollMode="never"
+        scrollEventThrottle={16}
+      >
+        <DeepWorkTimer />
+        <DeepWorkStopwatch />
+      </ScrollView>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    height: Dimensions.get("screen").height,
+  },
+  safeArea: {
+    width: Dimensions.get("screen").width,
+  },
+});
