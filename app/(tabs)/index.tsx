@@ -24,7 +24,7 @@ export default function IndexScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    height: Dimensions.get("screen").height,
+    flex: 1,
   },
   safeArea: {
     width: Dimensions.get("screen").width,

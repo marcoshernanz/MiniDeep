@@ -26,7 +26,7 @@ export default function WheelNumberPicker({
   value,
   onValueChange,
   height,
-  fontSize = 50,
+  fontSize = 42,
   min,
   max,
   interval = 1,
@@ -83,7 +83,12 @@ export default function WheelNumberPicker({
           <Text
             style={[
               styles.text,
-              { height: height / 3, fontSize, opacity: item == null ? 0 : 1 },
+              {
+                height: itemHeight,
+                fontSize,
+                lineHeight: itemHeight,
+                opacity: item == null ? 0 : 1,
+              },
             ]}
           >
             {item != null
@@ -97,12 +102,12 @@ export default function WheelNumberPicker({
 
       <LinearGradient
         colors={[getColor("background"), getColor("background", 0)]}
-        style={[styles.gradient, { height: height / 3, top: 0 }]}
+        style={[styles.gradient, { height: itemHeight, top: 0 }]}
         pointerEvents="none"
       />
       <LinearGradient
         colors={[getColor("background", 0), getColor("background")]}
-        style={[styles.gradient, { height: height / 3, bottom: 0 }]}
+        style={[styles.gradient, { height: itemHeight, bottom: 0 }]}
         pointerEvents="none"
       />
     </View>
