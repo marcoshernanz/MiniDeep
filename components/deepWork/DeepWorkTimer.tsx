@@ -34,7 +34,7 @@ export default function DeepWorkTimer() {
             max={23}
             padWithZeros
           />
-          <Text style={styles.middleDots}>:</Text>
+          <Text style={styles.colon}>:</Text>
           <WheelNumberPicker
             value={minutes}
             onValueChange={setMinutes}
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 8,
   },
-  middleDots: {
+  colon: {
     fontSize: 42,
     fontWeight: 900,
     transform: [{ translateY: -5 }],
