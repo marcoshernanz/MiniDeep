@@ -1,8 +1,5 @@
 import DeepWorkStopwatch from "@/components/deepWork/DeepWorkStopwatch";
 import DeepWorkTimer from "@/components/deepWork/DeepWorkTimer";
-import Tracker from "@/components/tracker/Tracker";
-import SafeArea from "@/components/ui/SafeArea";
-import TrackerContextProvider from "@/context/TrackerContext";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 
 export default function IndexScreen() {
