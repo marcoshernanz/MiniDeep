@@ -1,4 +1,5 @@
 # TODO
+- [ ] Change 700 font
 
 - [ ] Swipe weekly day picker in activity
 - [ ] Stopwatch option.
