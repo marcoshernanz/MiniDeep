@@ -2,13 +2,14 @@ import { Dimensions, StyleSheet, View } from "react-native";
 import SafeArea from "../ui/SafeArea";
 import Title from "../ui/Title";
 import Button from "../ui/Button";
+import TimeCounter from "./TimeCounter";
 
 export default function DeepWorkStopwatch() {
   return (
     <SafeArea style={styles.safeArea}>
       <Title style={styles.title}>Stopwatch</Title>
       <View style={styles.container}>
-        <Button>Start</Button>
+        <TimeCounter hours={1} minutes={32} seconds={59} />
       </View>
     </SafeArea>
   );
