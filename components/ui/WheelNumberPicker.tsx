@@ -22,11 +22,12 @@ export default function WheelNumberPicker({
   padWithZeros = false,
 }: Props) {
   const values = useMemo(() => {
-    const result = [];
+    const result: (number | null)[] = [];
     for (let i = min; i <= max; i += interval) {
       result.push(i);
     }
-    return result;
+    // add blank entry at start and end for transparent spacing
+    return [null, ...result, null];
   }, [min, max, interval]);
 
   return (
@@ -38,10 +39,17 @@ export default function WheelNumberPicker({
         decelerationRate="fast"
         overScrollMode="never"
         renderItem={({ item }) => (
-          <Text style={[styles.text, { height: height / 3, fontSize }]}>
-            {item
-              .toString()
-              .padStart(padWithZeros ? max.toString().length : 0, "0")}
+          <Text
+            style={[
+              styles.text,
+              { height: height / 3, fontSize, opacity: item == null ? 0 : 1 },
+            ]}
+          >
+            {item != null
+              ? item
+                  .toString()
+                  .padStart(padWithZeros ? max.toString().length : 0, "0")
+              : ""}
           </Text>
         )}
       />
