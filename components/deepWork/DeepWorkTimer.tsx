@@ -5,6 +5,7 @@ import WheelNumberPicker from "../ui/WheelNumberPicker";
 import { useState } from "react";
 import Text from "../ui/Text";
 import getColor from "@/lib/utils/getColor";
+import Button from "../ui/Button";
 
 export default function DeepWorkTimer() {
   const [hours, setHours] = useState(0);
@@ -16,25 +17,33 @@ export default function DeepWorkTimer() {
     <SafeArea style={styles.safeArea}>
       <Title style={styles.title}>Timer</Title>
       <View style={styles.container}>
-        <View style={styles.box}></View>
-        <WheelNumberPicker
-          value={hours}
-          onValueChange={setHours}
-          height={250}
-          min={0}
-          max={23}
-          padWithZeros
-        />
-        <Text style={styles.middleDots}>:</Text>
-        <WheelNumberPicker
-          value={minutes}
-          onValueChange={setMinutes}
-          height={250}
-          min={0}
-          max={59}
-          interval={5}
-          padWithZeros
-        />
+        <View style={styles.timePickerContainer}>
+          <View style={styles.box}></View>
+          <WheelNumberPicker
+            value={hours}
+            onValueChange={setHours}
+            height={250}
+            min={0}
+            max={23}
+            padWithZeros
+          />
+          <Text style={styles.middleDots}>:</Text>
+          <WheelNumberPicker
+            value={minutes}
+            onValueChange={setMinutes}
+            height={250}
+            min={0}
+            max={59}
+            interval={5}
+            padWithZeros
+          />
+        </View>
+        <Button
+          containerStyle={styles.startButtonContainer}
+          textStyle={styles.startButtonText}
+        >
+          Start
+        </Button>
       </View>
     </SafeArea>
   );
@@ -48,12 +57,16 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   container: {
-    gap: 12,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    gap: 36,
+  },
+  timePickerContainer: {
     flexDirection: "row",
-    position: "relative",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
   },
   box: {
     borderWidth: 2,
@@ -70,5 +83,11 @@ const styles = StyleSheet.create({
     fontSize: 42,
     fontWeight: 900,
     transform: [{ translateY: -5 }],
+  },
+  startButtonContainer: {
+    width: 194,
+  },
+  startButtonText: {
+    fontSize: 16,
   },
 });
