@@ -6,7 +6,7 @@ import WheelNumberPicker, {
 import { Text } from "../../ui/Text";
 import { Button } from "../../ui/button";
 import extractTime from "@/lib/utils/extractTime";
-import { useTimerContext } from "@/context/TimerContext";
+import { useTimerContext } from "@/context/OLDTimerContext";
 
 export default function TimerTimePickerScreen() {
   const {

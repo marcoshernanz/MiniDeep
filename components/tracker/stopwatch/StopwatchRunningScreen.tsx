@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/Text";
-import { useStopwatchContext } from "@/context/StopwatchContext";
+import { useStopwatchContext } from "@/context/OLDStopwatchContext";
 import extractTime from "@/lib/utils/extractTime";
 import padWithZeros from "@/lib/utils/padWithZeros";
 import { View } from "react-native";

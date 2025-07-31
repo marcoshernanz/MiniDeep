@@ -1,4 +1,4 @@
-import useTimer from "@/lib/hooks/useTimer";
+import useTimer from "@/lib/hooks/OLDuseTimer";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 import {
   createContext,
@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { TrackerType } from "./TrackerContext";
+import { TrackerType } from "./OLDTrackerContext";
 import { AppState } from "react-native";
 
 interface TimerContextValue {
@@ -61,13 +61,13 @@ export default function TimerContextProvider({
         await timer.saveCurrentTimerState();
       }
     },
-    [timer, trackerType],
+    [timer, trackerType]
   );
 
   useEffect(() => {
     const appStateSubscription = AppState.addEventListener(
       "change",
-      handleAppStateChange,
+      handleAppStateChange
     );
 
     return () => {

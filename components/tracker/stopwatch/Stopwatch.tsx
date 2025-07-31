@@ -1,4 +1,4 @@
-import { useStopwatchContext } from "@/context/StopwatchContext";
+import { useStopwatchContext } from "@/context/OLDStopwatchContext";
 import { View } from "react-native";
 import StopwatchRunningScreen from "./StopwatchRunningScreen";
 

@@ -2,7 +2,7 @@ import { View } from "react-native";
 import { Text } from "../../ui/Text";
 import { Button } from "../../ui/button";
 import * as Notifications from "expo-notifications";
-import { useTimerContext } from "@/context/TimerContext";
+import { useTimerContext } from "@/context/OLDTimerContext";
 
 export default function TimerCompletedScreen() {
   const {

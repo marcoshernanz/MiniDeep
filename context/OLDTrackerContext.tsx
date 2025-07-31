@@ -1,7 +1,7 @@
 import getTrackerState from "@/lib/tracker/getTrackerState";
 import { createContext, useContext, useEffect, useState } from "react";
-import TimerContextProvider from "./TimerContext";
-import StopwatchContextProvider from "./StopwatchContext";
+import TimerContextProvider from "./OLDTimerContext";
+import StopwatchContextProvider from "./OLDStopwatchContext";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 
 export type TrackerType = TrackerState["type"] | null;

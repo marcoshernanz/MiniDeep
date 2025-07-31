@@ -1,7 +1,7 @@
-import useStopwatch from "@/lib/hooks/useStopwatch";
+import useStopwatch from "@/lib/hooks/OLDuseStopwatch";
 import { TrackerState } from "@/zod/schemas/TrackerStateSchema";
 import { createContext, useCallback, useContext, useEffect } from "react";
-import { TrackerType, useTrackerContext } from "./TrackerContext";
+import { TrackerType, useTrackerContext } from "./OLDTrackerContext";
 import { AppState } from "react-native";
 
 interface StopwatchContextValue {
@@ -45,13 +45,13 @@ export default function StopwatchContextProvider({
         await stopwatch.saveCurrentStopwatchState();
       }
     },
-    [stopwatch, trackerType],
+    [stopwatch, trackerType]
   );
 
   useEffect(() => {
     const appStateSubscription = AppState.addEventListener(
       "change",
-      handleAppStateChange,
+      handleAppStateChange
     );
 
     return () => {

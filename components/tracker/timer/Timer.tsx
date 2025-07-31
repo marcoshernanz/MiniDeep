@@ -1,6 +1,6 @@
 import TimerCompletedScreen from "@/components/tracker/timer/TimerCompletedScreen";
 import TimerRunningScreen from "@/components/tracker/timer/TimerRunningScreen";
-import { useTimerContext } from "@/context/TimerContext";
+import { useTimerContext } from "@/context/OLDTimerContext";
 import { View } from "react-native";
 
 export default function Timer() {
