@@ -48,7 +48,7 @@ export default function WheelNumberPicker({
     if (index >= 0 && listRef.current) {
       listRef.current.scrollToOffset({
         offset: index * itemHeight,
-        animated: false,
+        animated: true,
       });
     }
   }, [value, values, itemHeight]);
