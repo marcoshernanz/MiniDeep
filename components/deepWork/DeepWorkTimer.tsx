@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: 36,
+    gap: 48,
   },
   timePickerContainer: {
     flexDirection: "row",

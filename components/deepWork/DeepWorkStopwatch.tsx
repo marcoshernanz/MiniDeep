@@ -9,7 +9,13 @@ export default function DeepWorkStopwatch() {
     <SafeArea style={styles.safeArea}>
       <Title style={styles.title}>Stopwatch</Title>
       <View style={styles.container}>
-        <TimeCounter hours={1} minutes={32} seconds={59} />
+        <TimeCounter hours={0} minutes={0} seconds={0} />
+        <Button
+          containerStyle={styles.startButtonContainer}
+          textStyle={styles.startButtonText}
+        >
+          Start
+        </Button>
       </View>
     </SafeArea>
   );
@@ -26,5 +32,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    gap: 48,
+  },
+  startButtonContainer: {
+    width: 194,
+  },
+  startButtonText: {
+    fontSize: 16,
   },
 });
