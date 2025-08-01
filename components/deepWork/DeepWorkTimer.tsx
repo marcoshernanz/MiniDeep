@@ -11,14 +11,11 @@ export default function DeepWorkTimer() {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(30);
 
-  // Reset to 5 minutes if time reaches 0:00
   useEffect(() => {
     if (hours === 0 && minutes === 0) {
       setMinutes(5);
     }
   }, [hours, minutes]);
-
-  console.log(hours);
 
   return (
     <SafeArea style={styles.safeArea}>
