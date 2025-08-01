@@ -1,5 +1,7 @@
+import { useAppContext } from "@/context/AppContext";
 import * as Notifications from "expo-notifications";
-import { useState } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import calculateSessionDuration from "../sessions/calculateSessionDuration";
 
 const TIMER_CATEGORY = "MiniLift_timer_completed";
 const TIMER_CHANNEL_ID = "MiniLift_timer_completed_channel";
@@ -67,5 +69,71 @@ const cancelNotifications = async () => {
 };
 
 export default function useTimer() {
-  const [timeLeft, setTimeLeft] = useState(0);
+  const { appData, setAppData } = useAppContext();
+
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const { status, timeLeft } = useMemo(() => {
+    const timerSessions = appData.sessions.filter((s) => s.type === "timer");
+    if (timerSessions.length === 0) {
+      return { status: "finished", timeLeft: 0 };
+    }
+
+    const latestTimer = timerSessions[timerSessions.length - 1];
+    const status = latestTimer.status;
+    const timeLeft =
+      latestTimer.inputDuration - calculateSessionDuration(latestTimer, now);
+    return { status, timeLeft };
+  }, [appData.sessions, now]);
+
+  const togglePause = useCallback(async () => {
+    const sessions = appData.sessions;
+    if (sessions.length === 0) return;
+
+    const session = appData.sessions[appData.sessions.length - 1];
+    if (session.type !== "timer") return;
+
+    const nowDate = new Date();
+
+    if (session.status === "running") {
+      const updatedEvents = session.events.map((e, i) =>
+        i === session.events.length - 1 ? { ...e, stop: nowDate } : e
+      );
+      await cancelNotifications();
+      setAppData((prev) => ({
+        ...prev,
+        sessions: prev.sessions.map((s, i) =>
+          i === sessions.length - 1
+            ? { ...session, status: "paused", events: updatedEvents }
+            : s
+        ),
+      }));
+    } else if (session.status === "paused") {
+      const newEvent = { start: nowDate, stop: null };
+      const remaining =
+        session.inputDuration -
+        calculateSessionDuration(session, nowDate.getTime());
+      await setupNotifications();
+      await scheduleNotification(remaining);
+      setAppData((prev) => ({
+        ...prev,
+        sessions: prev.sessions.map((s, i) =>
+          i === sessions.length - 1
+            ? {
+                ...session,
+                status: "running",
+                events: [...session.events, newEvent],
+              }
+            : s
+        ),
+      }));
+    }
+  }, [appData.sessions, setAppData]);
+
+  return { status, timeLeft, togglePause };
 }
