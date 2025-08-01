@@ -1,5 +1,7 @@
 # TODO
+
 - [ ] Change 700 font
+- [ ] Check whether the toggle updates the timer
 
 - [ ] Swipe weekly day picker in activity
 - [ ] Stopwatch option.
