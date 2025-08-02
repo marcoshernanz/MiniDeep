@@ -113,6 +113,8 @@ export default function useTimer() {
             : s
         ),
       }));
+
+      setNow(nowDate.getTime());
     } else if (session.status === "paused") {
       const newEvent = { start: nowDate, stop: null };
       const remaining =
@@ -132,8 +134,37 @@ export default function useTimer() {
             : s
         ),
       }));
+
+      setNow(nowDate.getTime());
     }
   }, [appData.sessions, setAppData]);
 
-  return { status, timeLeft, togglePause };
+  const stop = useCallback(async () => {
+    const sessions = appData.sessions;
+    if (sessions.length === 0) return;
+
+    const session = sessions[sessions.length - 1];
+    if (session.type !== "timer") return;
+
+    const nowDate = new Date();
+    let updatedEvents = session.events;
+    if (session.status === "running") {
+      updatedEvents = session.events.map((e, i) =>
+        i === session.events.length - 1 ? { ...e, stop: nowDate } : e
+      );
+    }
+
+    await cancelNotifications();
+    setAppData((prev) => ({
+      ...prev,
+      sessions: prev.sessions.map((s, i) =>
+        i === sessions.length - 1
+          ? { ...session, status: "finished", events: updatedEvents }
+          : s
+      ),
+    }));
+    setNow(nowDate.getTime());
+  }, [appData.sessions, setAppData]);
+
+  return { status, timeLeft, togglePause, stop };
 }
