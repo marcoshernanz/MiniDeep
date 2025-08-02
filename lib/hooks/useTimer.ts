@@ -2,6 +2,7 @@ import { useAppContext } from "@/context/AppContext";
 import * as Notifications from "expo-notifications";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import calculateSessionDuration from "../sessions/calculateSessionDuration";
+import uuid from "../utils/uuidv4";
 
 const TIMER_CATEGORY = "MiniLift_timer_completed";
 const TIMER_CHANNEL_ID = "MiniLift_timer_completed_channel";
@@ -166,5 +167,30 @@ export default function useTimer() {
     setNow(nowDate.getTime());
   }, [appData.sessions, setAppData]);
 
-  return { status, timeLeft, togglePause, stop };
+  const start = useCallback(
+    async (inputDuration: number) => {
+      if (status !== "finished") return;
+
+      const nowDate = new Date();
+      await setupNotifications();
+      await scheduleNotification(inputDuration);
+
+      const newSession = {
+        id: uuid(),
+        createdAt: nowDate,
+        type: "timer" as const,
+        status: "running" as const,
+        inputDuration,
+        events: [{ start: nowDate, stop: null }],
+      };
+      setAppData((prev) => ({
+        ...prev,
+        sessions: [...prev.sessions, newSession],
+      }));
+      setNow(nowDate.getTime());
+    },
+    [status, setAppData]
+  );
+
+  return { status, timeLeft, togglePause, stop, start };
 }
