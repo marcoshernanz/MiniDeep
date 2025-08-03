@@ -21,6 +21,8 @@ export default function calculateSessionDuration(
       const { start, end } = interval;
       if (end) {
         totalDuration += end.getTime() - start.getTime();
+      } else {
+        totalDuration += now - start.getTime();
       }
     }
   }
