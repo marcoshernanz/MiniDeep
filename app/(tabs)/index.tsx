@@ -7,6 +7,7 @@ import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 
 export default function IndexScreen() {
   const { appData } = useAppContext();
+
   const active = useMemo(() => {
     const sessions = appData.sessions;
     if (sessions.length === 0) {
