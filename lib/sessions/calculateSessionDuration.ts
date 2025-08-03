@@ -15,7 +15,7 @@ export default function calculateSessionDuration(
       }
     }
 
-    totalDuration = Math.max(totalDuration, session.inputDuration);
+    totalDuration = Math.min(totalDuration, session.inputDuration);
   } else if (session.type === "stopwatch") {
     for (const interval of session.intervals) {
       const { start, end } = interval;
