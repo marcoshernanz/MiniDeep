@@ -1,4 +1,5 @@
 import { Dimensions, StyleSheet, View } from "react-native";
+import useTimer from "@/lib/hooks/useTimer";
 import SafeArea from "../ui/SafeArea";
 import Title from "../ui/Title";
 import WheelNumberPicker from "../ui/WheelNumberPicker";
@@ -10,6 +11,8 @@ import Button from "../ui/Button";
 export default function DeepWorkTimer() {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(30);
+
+  const { start } = useTimer();
 
   useEffect(() => {
     if (hours === 0 && minutes === 0) {
@@ -43,6 +46,7 @@ export default function DeepWorkTimer() {
           />
         </View>
         <Button
+          onPress={() => start(hours * 3600000 + minutes * 60000)}
           containerStyle={styles.startButtonContainer}
           textStyle={styles.startButtonText}
         >
