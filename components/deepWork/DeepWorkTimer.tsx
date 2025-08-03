@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Text from "../ui/Text";
 import getColor from "@/lib/utils/getColor";
 import Button from "../ui/Button";
+import getTime from "@/lib/utils/getTime";
 
 export default function DeepWorkTimer() {
   const [hours, setHours] = useState(0);
@@ -46,7 +47,7 @@ export default function DeepWorkTimer() {
           />
         </View>
         <Button
-          onPress={() => start(hours * 3600000 + minutes * 60000)}
+          onPress={() => start(getTime({ hours, minutes }))}
           containerStyle={styles.startButtonContainer}
           textStyle={styles.startButtonText}
         >
