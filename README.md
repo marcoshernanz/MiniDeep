@@ -5,6 +5,7 @@
 - [ ] Save timer duration
 - [ ] Save tracking mode
 - [ ] Tracking mode swipe animation & progress
+- [ ] Timer & stopwatch not running when not active.
 
 - [ ] Swipe weekly day picker in activity
 - [ ] Stopwatch option.
