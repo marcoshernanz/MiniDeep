@@ -24,7 +24,7 @@ export default function useStopwatch() {
     return { status, timeElapsed: elapsed };
   }, [appData.sessions, now]);
 
-  const startStopwatch = useCallback(() => {
+  const start = useCallback(() => {
     if (status !== "finished") return;
     const nowDate = new Date();
     const newSession: StopwatchSession = {
@@ -78,7 +78,7 @@ export default function useStopwatch() {
     }
   }, [appData.sessions, setAppData]);
 
-  const stopStopwatch = useCallback(() => {
+  const stop = useCallback(() => {
     const sessions = appData.sessions;
     if (sessions.length === 0) return;
     const session = sessions[sessions.length - 1];
@@ -101,5 +101,5 @@ export default function useStopwatch() {
     setNow(nowDate.getTime());
   }, [appData.sessions, setAppData]);
 
-  return { status, timeElapsed, startStopwatch, togglePause, stopStopwatch };
+  return { status, timeElapsed, start, togglePause, stop };
 }
