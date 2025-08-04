@@ -157,7 +157,6 @@ export default function useTimer() {
       );
     }
 
-    await cancelNotifications();
     setAppData((prev) => ({
       ...prev,
       sessions: prev.sessions.map((s, i) =>
@@ -167,6 +166,7 @@ export default function useTimer() {
       ),
     }));
     setNow(nowDate.getTime());
+    await cancelNotifications();
   }, [appData.sessions, setAppData]);
 
   const start = useCallback(
@@ -174,8 +174,6 @@ export default function useTimer() {
       if (status !== "finished") return;
 
       const nowDate = new Date();
-      await setupNotifications();
-      await scheduleNotification(inputDuration);
 
       const newSession = {
         id: uuid(),
@@ -190,6 +188,8 @@ export default function useTimer() {
         sessions: [...prev.sessions, newSession],
       }));
       setNow(nowDate.getTime());
+      await setupNotifications();
+      await scheduleNotification(inputDuration);
     },
     [status, setAppData]
   );
