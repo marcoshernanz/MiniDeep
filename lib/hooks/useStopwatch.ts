@@ -44,9 +44,12 @@ export default function useStopwatch() {
   const togglePause = useCallback(() => {
     const sessions = appData.sessions;
     if (sessions.length === 0) return;
+
     const session = sessions[sessions.length - 1];
     if (session.type !== "stopwatch") return;
+
     const nowDate = new Date();
+
     if (session.status === "running") {
       const updatedIntervals = session.intervals.map((intv, i) =>
         i === session.intervals.length - 1 ? { ...intv, end: nowDate } : intv
@@ -59,6 +62,7 @@ export default function useStopwatch() {
             : s
         ),
       }));
+
       setNow(nowDate.getTime());
     } else if (session.status === "paused") {
       const newInterval = { start: nowDate, end: null };
@@ -74,6 +78,7 @@ export default function useStopwatch() {
             : s
         ),
       }));
+
       setNow(nowDate.getTime());
     }
   }, [appData.sessions, setAppData]);

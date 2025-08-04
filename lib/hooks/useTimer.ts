@@ -105,7 +105,6 @@ export default function useTimer() {
       const updatedEvents = session.events.map((e, i) =>
         i === session.events.length - 1 ? { ...e, stop: nowDate } : e
       );
-      await cancelNotifications();
       setAppData((prev) => ({
         ...prev,
         sessions: prev.sessions.map((s, i) =>
@@ -116,13 +115,12 @@ export default function useTimer() {
       }));
 
       setNow(nowDate.getTime());
+      await cancelNotifications();
     } else if (session.status === "paused") {
       const newEvent = { start: nowDate, stop: null };
       const remaining =
         session.inputDuration -
         calculateSessionDuration(session, nowDate.getTime());
-      await setupNotifications();
-      await scheduleNotification(remaining);
       setAppData((prev) => ({
         ...prev,
         sessions: prev.sessions.map((s, i) =>
@@ -137,6 +135,8 @@ export default function useTimer() {
       }));
 
       setNow(nowDate.getTime());
+      await setupNotifications();
+      await scheduleNotification(remaining);
     }
   }, [appData.sessions, setAppData]);
 
