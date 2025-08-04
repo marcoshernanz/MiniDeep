@@ -8,11 +8,6 @@ export default function useStopwatch() {
   const { appData, setAppData } = useAppContext();
   const [now, setNow] = useState(Date.now());
 
-  useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 200);
-    return () => clearInterval(interval);
-  }, []);
-
   const { status, timeElapsed } = useMemo(() => {
     const swSessions = appData.sessions.filter((s) => s.type === "stopwatch");
     if (swSessions.length === 0) {
@@ -23,6 +18,13 @@ export default function useStopwatch() {
     const elapsed = calculateSessionDuration(latest, now);
     return { status, timeElapsed: elapsed };
   }, [appData.sessions, now]);
+
+  useEffect(() => {
+    if (status === "running") {
+      const interval = setInterval(() => setNow(Date.now()), 200);
+      return () => clearInterval(interval);
+    }
+  }, [status]);
 
   const start = useCallback(() => {
     if (status !== "finished") return;

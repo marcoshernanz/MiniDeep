@@ -74,11 +74,6 @@ export default function useTimer() {
 
   const [now, setNow] = useState(Date.now());
 
-  useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 200);
-    return () => clearInterval(interval);
-  }, []);
-
   const { status, timeLeft } = useMemo(() => {
     const timerSessions = appData.sessions.filter((s) => s.type === "timer");
     if (timerSessions.length === 0) {
@@ -91,6 +86,13 @@ export default function useTimer() {
       latestTimer.inputDuration - calculateSessionDuration(latestTimer, now);
     return { status, timeLeft };
   }, [appData.sessions, now]);
+
+  useEffect(() => {
+    if (status === "running") {
+      const interval = setInterval(() => setNow(Date.now()), 200);
+      return () => clearInterval(interval);
+    }
+  }, [status]);
 
   const togglePause = useCallback(async () => {
     const sessions = appData.sessions;
