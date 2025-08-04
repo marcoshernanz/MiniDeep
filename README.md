@@ -1,7 +1,6 @@
 # TODO
 
 - [ ] Change 700 font
-- [ ] Check whether the toggle updates the timer
 - [ ] Save timer duration
 - [ ] Save tracking mode
 - [ ] Tracking mode swipe animation & progress
