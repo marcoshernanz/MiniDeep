@@ -42,7 +42,8 @@ export default function DeepWorkTimer() {
             height={250}
             min={0}
             max={59}
-            interval={5}
+            // interval={5} TODO
+            interval={1}
             padWithZeros
           />
         </View>
