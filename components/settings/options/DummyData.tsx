@@ -54,6 +54,7 @@ export default function DummyData() {
           id: uuidv4(),
           createdAt: start,
           type: "timer",
+          status: "finished",
           inputDuration: sessionMs,
           events: [{ start, stop: end }],
         });
