@@ -60,15 +60,13 @@ export default function DummyData() {
         });
       }
     }
-    setAppData(() => ({ sessions }));
+    setAppData((prev) => ({ ...prev, sessions }));
 
     Toast.show({ text: "Dummy data loaded", variant: "success" });
   };
 
   const clearDummyData = () => {
-    setAppData(() => ({
-      sessions: [],
-    }));
+    setAppData((prev) => ({ ...prev, sessions: [] }));
 
     Toast.show({ text: "Dummy data cleared", variant: "success" });
   };
