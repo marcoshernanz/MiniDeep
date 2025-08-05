@@ -58,8 +58,8 @@ const scheduleNotification = async (time: number) => {
       categoryIdentifier: TIMER_CATEGORY,
     },
     trigger: {
-      seconds: Math.floor(time / 1000),
-      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: new Date(Date.now() + time),
       channelId: TIMER_CHANNEL_ID,
     },
   });

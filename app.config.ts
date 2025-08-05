@@ -42,6 +42,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: getUniqueIdentifier(),
     edgeToEdgeEnabled: true,
     softwareKeyboardLayoutMode: "pan",
+    permissions: ["SCHEDULE_EXACT_ALARM"],
   },
   plugins: [
     "expo-router",
