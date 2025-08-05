@@ -14,8 +14,6 @@ export default function DeepWorkTimer() {
   const { appData, setAppData } = useAppContext();
   const { hours, minutes } = appData.state.timer;
 
-  console.log(hours, minutes);
-
   const { start } = useTimer();
 
   useEffect(() => {
