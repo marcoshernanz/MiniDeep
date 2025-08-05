@@ -1,7 +1,6 @@
 # TODO
 
 - [ ] Change 700 font
-- [ ] Tracking mode swipe animation & progress
 
 - [ ] Swipe weekly day picker in activity
 - [ ] Stopwatch option.
