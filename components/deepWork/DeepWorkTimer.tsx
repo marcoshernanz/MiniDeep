@@ -3,23 +3,32 @@ import useTimer from "@/lib/hooks/useTimer";
 import SafeArea from "../ui/SafeArea";
 import Title from "../ui/Title";
 import WheelNumberPicker from "../ui/WheelNumberPicker";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useAppContext } from "@/context/AppContext";
 import Text from "../ui/Text";
 import getColor from "@/lib/utils/getColor";
 import Button from "../ui/Button";
 import getTime from "@/lib/utils/getTime";
 
 export default function DeepWorkTimer() {
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(30);
+  const { appData, setAppData } = useAppContext();
+  const { hours, minutes } = appData.state.timer;
+
+  console.log(hours, minutes);
 
   const { start } = useTimer();
 
   useEffect(() => {
     if (hours === 0 && minutes === 0) {
-      setMinutes(5);
+      setAppData((prev) => ({
+        ...prev,
+        state: {
+          ...prev.state,
+          timer: { hours: 0, minutes: 5 },
+        },
+      }));
     }
-  }, [hours, minutes]);
+  }, [hours, minutes, setAppData]);
 
   return (
     <SafeArea style={styles.safeArea}>
@@ -29,7 +38,15 @@ export default function DeepWorkTimer() {
           <View style={styles.box}></View>
           <WheelNumberPicker
             value={hours}
-            onValueChange={setHours}
+            onValueChange={(h) =>
+              setAppData((prev) => ({
+                ...prev,
+                state: {
+                  ...prev.state,
+                  timer: { hours: h, minutes: prev.state.timer.minutes },
+                },
+              }))
+            }
             height={250}
             min={0}
             max={23}
@@ -38,7 +55,15 @@ export default function DeepWorkTimer() {
           <Text style={styles.colon}>:</Text>
           <WheelNumberPicker
             value={minutes}
-            onValueChange={setMinutes}
+            onValueChange={(m) =>
+              setAppData((prev) => ({
+                ...prev,
+                state: {
+                  ...prev.state,
+                  timer: { hours: prev.state.timer.hours, minutes: m },
+                },
+              }))
+            }
             height={250}
             min={0}
             max={59}
