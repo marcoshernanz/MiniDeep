@@ -9,8 +9,6 @@ const TIMER_CHANNEL_ID = "MiniLift_timer_completed_channel";
 const DISMISS_ACTION_ID = "MiniLift_dismiss";
 
 const setupNotifications = async () => {
-  await Notifications.requestPermissionsAsync();
-
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       priority: Notifications.AndroidNotificationPriority.HIGH,
@@ -43,6 +41,8 @@ const setupNotifications = async () => {
       contentType: Notifications.AndroidAudioContentType.SONIFICATION,
     },
   });
+
+  await Notifications.requestPermissionsAsync();
 };
 
 const scheduleNotification = async (time: number) => {
