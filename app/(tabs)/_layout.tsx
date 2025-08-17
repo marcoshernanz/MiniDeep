@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { forwardRef } from "react";
-import { Pressable, PressableProps, View } from "react-native";
+import { Platform, Pressable, PressableProps, View } from "react-native";
 import getColor from "@/lib/utils/getColor";
 import {
   ActivityIcon,
@@ -13,6 +13,10 @@ const TabBarPressableButton = forwardRef<any, PressableProps>((props, ref) => (
   <Pressable
     {...props}
     ref={ref}
+    style={(state) => [
+      Platform.OS === "ios" && state.pressed && { opacity: 0.675 },
+      typeof props.style === "function" ? props.style(state) : props.style,
+    ]}
     android_ripple={{ color: getColor("muted"), borderless: true }}
   />
 ));

@@ -1,6 +1,7 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Text from "../ui/Text";
 import getColor from "@/lib/utils/getColor";
+import Button from "../ui/Button";
 
 export interface SettingsItemProps {
   text: string;
@@ -16,35 +17,38 @@ export default function SettingsItem({
   isLast,
 }: SettingsItemProps) {
   return (
-    <View
-      style={[styles.container, isFirst && styles.first, isLast && styles.last]}
+    <Button
+      variant="ghost"
+      containerStyle={[
+        styles.container,
+        isFirst && styles.containerFirst,
+        isLast && styles.containerLast,
+      ]}
+      pressableStyle={styles.pressable}
+      onPress={onPress}
     >
-      <Pressable
-        style={styles.pressable}
-        onPress={onPress}
-        android_ripple={{ color: getColor("muted") }}
-      >
-        <Text>{text}</Text>
-      </Pressable>
-    </View>
+      <Text>{text}</Text>
+    </Button>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    borderRadius: 0,
     borderBottomWidth: 1,
     borderBottomColor: getColor("border"),
-    overflow: "hidden",
   },
   pressable: {
+    borderRadius: 0,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 10,
+    alignItems: "flex-start",
   },
-  first: {
+  containerFirst: {
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  last: {
+  containerLast: {
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
     borderBottomWidth: 0,

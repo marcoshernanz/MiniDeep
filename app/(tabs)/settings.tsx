@@ -13,8 +13,6 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         overScrollMode="never"
-        bounces={false}
-        alwaysBounceVertical={false}
       >
         <DummyData />
         <ImportExportData />
@@ -29,6 +27,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   title: {
-    paddingBottom: 16,
+    paddingBottom: 18,
   },
 });
