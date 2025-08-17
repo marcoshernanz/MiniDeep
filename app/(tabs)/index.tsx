@@ -90,6 +90,7 @@ export default function IndexScreen() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         overScrollMode="never"
+        bounces={false}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
         onMomentumScrollEnd={(e) => {
