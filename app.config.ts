@@ -1,3 +1,4 @@
+import "tsx/cjs";
 import { ConfigContext, ExpoConfig } from "@expo/config";
 
 const appVariant = process.env.APP_VARIANT;
