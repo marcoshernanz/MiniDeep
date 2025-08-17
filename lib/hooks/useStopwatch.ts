@@ -21,7 +21,7 @@ export default function useStopwatch() {
 
   useEffect(() => {
     if (status === "running") {
-      const interval = setInterval(() => setNow(Date.now()), 200);
+      const interval = setInterval(() => setNow(Date.now()), 100);
       return () => clearInterval(interval);
     }
   }, [status]);
