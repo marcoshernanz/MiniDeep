@@ -1,3 +1,4 @@
+import "tsx/cjs";
 import { ConfigContext, ExpoConfig } from "@expo/config";
 
 const appVariant = process.env.APP_VARIANT;
@@ -45,12 +46,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: getUniqueIdentifier(),
     edgeToEdgeEnabled: true,
     softwareKeyboardLayoutMode: "pan",
-    permissions: [
-      "android.permission.USE_EXACT_ALARM",
-      "android.permission.SCHEDULE_EXACT_ALARM",
-    ],
+    permissions: ["android.permission.USE_EXACT_ALARM"],
   },
   plugins: [
+    "./plugins/withExactAlarmPermission.ts",
     "expo-router",
     [
       "expo-splash-screen",
