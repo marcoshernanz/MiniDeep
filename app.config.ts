@@ -51,7 +51,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
   },
   plugins: [
-    "./plugins/withExactAlarmPermission.ts",
     "expo-router",
     [
       "expo-splash-screen",
