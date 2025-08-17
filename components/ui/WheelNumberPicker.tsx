@@ -42,14 +42,18 @@ export default function WheelNumberPicker({
 
   const listRef = useRef<FlatList<number | null>>(null);
   const itemHeight = height / 3;
+  const hasSyncedOnce = useRef(false);
 
   useEffect(() => {
     const index = values.findIndex((v) => v === value) - 1;
     if (index >= 0 && listRef.current) {
       listRef.current.scrollToOffset({
         offset: index * itemHeight,
-        animated: true,
+        animated: hasSyncedOnce.current,
       });
+    }
+    if (!hasSyncedOnce.current) {
+      hasSyncedOnce.current = true;
     }
   }, [value, values, itemHeight]);
 
