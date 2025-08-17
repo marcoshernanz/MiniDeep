@@ -27,6 +27,7 @@ interface ButtonProps extends Omit<PressableProps, "style"> {
   pressableStyle?: StyleProp<ViewStyle>;
   text?: boolean;
   dimOnPress?: boolean;
+  ref?: React.Ref<React.ComponentRef<typeof Pressable>>;
 }
 
 export default function Button({
@@ -37,6 +38,7 @@ export default function Button({
   textStyle,
   text = true,
   dimOnPress = true,
+  ref,
   ...props
 }: ButtonProps) {
   const rippleColor =
@@ -51,6 +53,7 @@ export default function Button({
   return (
     <View style={[styles.wrapperView, containerStyle]}>
       <Pressable
+        ref={ref}
         style={({ pressed }) => [
           styles.baseButton,
           styles[`${variant}Button`],
