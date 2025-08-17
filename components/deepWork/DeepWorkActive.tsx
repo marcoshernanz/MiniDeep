@@ -62,14 +62,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 48,
   },
-  startButtonContainer: { width: 194 },
-  pauseButtonContainer: { width: 150 },
-  stopButtonContainer: { width: 150 },
+  pauseButtonContainer: {
+    flex: 1,
+  },
+  stopButtonContainer: {
+    flex: 1,
+  },
   startButtonText: { fontSize: 16 },
   buttonRow: {
+    width: 250,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 32,
+    gap: 16,
   },
 });
