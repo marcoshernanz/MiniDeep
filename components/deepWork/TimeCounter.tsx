@@ -1,5 +1,5 @@
 import getColor from "@/lib/utils/getColor";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Text from "../ui/Text";
 
 interface Props {
@@ -30,17 +30,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    gap: 4,
+    gap: 5,
   },
   text: {
     fontSize: 46,
     fontWeight: 400,
     letterSpacing: -2.5,
     fontVariant: ["tabular-nums"],
-    ...(Platform.OS === "android" ? { fontFeatureSettings: "tnum" } : {}),
   },
   colon: {
+    fontVariant: ["tabular-nums"],
     fontSize: 36,
-    fontWeight: 300,
+    fontWeight: 400,
   },
 });
