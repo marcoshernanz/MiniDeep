@@ -78,6 +78,13 @@ export default function IndexScreen() {
     scrollRef.current?.scrollTo({ x: index * width, animated: false });
   }, [mode]);
 
+  useEffect(() => {
+    if (!active) {
+      const index = mode === "timer" ? 0 : 1;
+      scrollX.value = index * screenWidth;
+    }
+  }, [active, mode, screenWidth, scrollX]);
+
   if (active) {
     return <DeepWorkActive type={active} />;
   }
@@ -91,6 +98,7 @@ export default function IndexScreen() {
         showsHorizontalScrollIndicator={false}
         overScrollMode="never"
         bounces={false}
+        contentOffset={{ x: mode === "timer" ? 0 : screenWidth, y: 0 }}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
         onMomentumScrollEnd={(e) => {
