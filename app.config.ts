@@ -50,6 +50,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "./plugins/withExactAlarmPermission.ts",
+    "@notifee/react-native",
     "expo-router",
     [
       "expo-splash-screen",
