@@ -15,7 +15,7 @@ import Animated, {
   Extrapolation,
 } from "react-native-reanimated";
 
-import notifee from "@notifee/react-native";
+import notifee, { TriggerType } from "@notifee/react-native";
 
 export default function IndexScreen() {
   const notification = async () => {
@@ -27,20 +27,23 @@ export default function IndexScreen() {
       const channelId = await notifee.createChannel({
         id: "default",
         name: "Default Channel",
+        sound: "timer_done",
       });
 
-      // Display a notification
-      await notifee.displayNotification({
-        title: "Notification Title",
-        body: "Main body content of the notification",
-        android: {
-          channelId,
-          // pressAction is needed if you want the notification to open the app when pressed
-          pressAction: {
-            id: "default",
+      await notifee.createTriggerNotification(
+        {
+          title: "Title",
+          body: "Body",
+          android: {
+            channelId,
+            sound: "timer_done",
           },
         },
-      });
+        {
+          type: TriggerType.TIMESTAMP,
+          timestamp: Date.now() + 1000,
+        }
+      );
     } catch (err) {
       console.error(err);
     }

@@ -50,8 +50,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "./plugins/withExactAlarmPermission.ts",
-    "@notifee/react-native",
     "expo-router",
+    [
+      "expo-custom-assets",
+      {
+        assetsPaths: ["./assets/raw/"],
+      },
+    ],
     [
       "expo-splash-screen",
       {
@@ -62,11 +67,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     [
-      "expo-notifications",
+      "expo-build-properties",
       {
-        sounds: ["./assets/audio/timer_done.wav"],
-        icon: "./assets/images/icon.png",
-        color: "#ffffff",
+        android: {
+          extraMavenRepos: [
+            "../../node_modules/@notifee/react-native/android/libs",
+          ],
+        },
       },
     ],
     [
