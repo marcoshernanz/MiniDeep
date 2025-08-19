@@ -3,8 +3,12 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import uuid from "../utils/uuidv4";
 import type { StopwatchSession } from "@/zod/schemas/StopwatchSessionSchema";
 import calculateSessionDuration from "../sessions/calculateSessionDuration";
-import notifee from "@notifee/react-native";
+import notifee, { AndroidAction } from "@notifee/react-native";
 import extractTime from "../utils/extractTime";
+import {
+  registerStopwatchControls,
+  clearStopwatchControls,
+} from "../controls/stopwatchControls";
 
 export default function useStopwatch() {
   const { appData, setAppData } = useAppContext();
@@ -46,6 +50,25 @@ export default function useStopwatch() {
         .map(titleFormat)
         .join(":");
       const body = status === "running" ? "Stopwatch" : "Stopwatch Paused";
+
+      const actions: AndroidAction[] = [];
+
+      if (status === "running") {
+        actions.push({
+          title: "Pause",
+          pressAction: { id: "pause", launchActivity: "none" },
+        });
+      } else if (status === "paused") {
+        actions.push({
+          title: "Resume",
+          pressAction: { id: "resume", launchActivity: "none" },
+        });
+      }
+
+      actions.push({
+        title: "Stop",
+        pressAction: { id: "stop", launchActivity: "none" },
+      });
 
       await notifee.displayNotification({
         id: "stopwatch",
@@ -141,6 +164,12 @@ export default function useStopwatch() {
     }));
     setNow(nowDate.getTime());
   }, [appData.sessions, setAppData]);
+
+  // Register global controls so notification actions can control the stopwatch
+  useEffect(() => {
+    registerStopwatchControls({ start, togglePause, stop });
+    return () => clearStopwatchControls();
+  }, [start, togglePause, stop]);
 
   return { status, timeElapsed, start, togglePause, stop };
 }
