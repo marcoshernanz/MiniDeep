@@ -3,6 +3,8 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import uuid from "../utils/uuidv4";
 import type { StopwatchSession } from "@/zod/schemas/StopwatchSessionSchema";
 import calculateSessionDuration from "../sessions/calculateSessionDuration";
+import notifee from "@notifee/react-native";
+import extractTime from "../utils/extractTime";
 
 export default function useStopwatch() {
   const { appData, setAppData } = useAppContext();
@@ -19,12 +21,37 @@ export default function useStopwatch() {
     return { status, timeElapsed: elapsed };
   }, [appData.sessions, now]);
 
+  const { hours, minutes, seconds } = useMemo(
+    () => extractTime(timeElapsed),
+    [timeElapsed]
+  );
+
   useEffect(() => {
     if (status === "running") {
       const interval = setInterval(() => setNow(Date.now()), 100);
       return () => clearInterval(interval);
     }
   }, [status]);
+
+  useEffect(() => {
+    (async () => {
+      const channelId = await notifee.createChannel({
+        id: "timer",
+        name: "Timer",
+      });
+
+      await notifee.displayNotification({
+        id: "timer_service",
+        title: "Timer Running",
+        body: `${hours}:${minutes}:${seconds}`,
+        android: {
+          channelId,
+          asForegroundService: true,
+          ongoing: true,
+        },
+      });
+    })();
+  }, [hours, minutes, seconds]);
 
   const start = useCallback(() => {
     if (status !== "finished") return;
