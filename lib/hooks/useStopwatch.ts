@@ -36,14 +36,21 @@ export default function useStopwatch() {
   useEffect(() => {
     (async () => {
       const channelId = await notifee.createChannel({
-        id: "timer",
-        name: "Timer",
+        id: "stopwatch",
+        name: "Stopwatch",
       });
 
+      const titleFormat = (n: number) => n.toString().padStart(2, "0");
+      const title = [hours, minutes, seconds]
+        .slice(hours > 0 ? 0 : 1)
+        .map(titleFormat)
+        .join(":");
+      const body = status === "running" ? "Stopwatch" : "Stopwatch Paused";
+
       await notifee.displayNotification({
-        id: "timer_service",
-        title: "Timer Running",
-        body: `${hours}:${minutes}:${seconds}`,
+        id: "stopwatch",
+        title,
+        body,
         android: {
           channelId,
           asForegroundService: true,
@@ -51,7 +58,7 @@ export default function useStopwatch() {
         },
       });
     })();
-  }, [hours, minutes, seconds]);
+  }, [hours, minutes, seconds, status]);
 
   const start = useCallback(() => {
     if (status !== "finished") return;
