@@ -53,3 +53,16 @@ export default function getColor(name: ColorName, opacity?: number) {
 
   return `rgb(${color.join(", ")})`;
 }
+
+// Returns a hex color string like "#3B82F6" for the given color name.
+// Useful for APIs that require hex (e.g., some Android-specific options).
+export function getColorHex(
+  name: ColorName,
+  includeHash: boolean = true
+): string {
+  "worklet";
+  const [r, g, b] = colors[name];
+  const toHex = (v: number) => v.toString(16).padStart(2, "0");
+  const hex = `${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+  return includeHash ? `#${hex}` : hex;
+}
