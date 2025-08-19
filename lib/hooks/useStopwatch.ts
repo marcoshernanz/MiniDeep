@@ -78,6 +78,7 @@ export default function useStopwatch() {
           channelId,
           asForegroundService: true,
           ongoing: true,
+          actions,
         },
       });
     })();
