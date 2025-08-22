@@ -33,20 +33,32 @@ export default function DeepWorkActive({ type }: Props) {
       <View style={styles.container}>
         <TimeCounter hours={hours} minutes={minutes} seconds={seconds} />
         <View style={styles.buttonRow}>
-          <Button
-            onPress={togglePause}
-            containerStyle={styles.pauseButtonContainer}
-            textStyle={styles.startButtonText}
-          >
-            {status === "running" ? "Pause" : "Resume"}
-          </Button>
-          <Button
-            onPress={stop}
-            containerStyle={styles.stopButtonContainer}
-            textStyle={styles.startButtonText}
-          >
-            Stop
-          </Button>
+          {!isTimer || time > 0 ? (
+            <>
+              <Button
+                onPress={togglePause}
+                containerStyle={styles.buttonContainer}
+                textStyle={styles.buttonText}
+              >
+                {status === "running" ? "Pause" : "Resume"}
+              </Button>
+              <Button
+                onPress={stop}
+                containerStyle={styles.buttonContainer}
+                textStyle={styles.buttonText}
+              >
+                Stop
+              </Button>
+            </>
+          ) : (
+            <Button
+              onPress={stop}
+              containerStyle={styles.buttonContainer}
+              textStyle={styles.buttonText}
+            >
+              Stop
+            </Button>
+          )}
         </View>
       </View>
     </SafeArea>
@@ -62,13 +74,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 48,
   },
-  pauseButtonContainer: {
+  buttonContainer: {
     flex: 1,
   },
-  stopButtonContainer: {
-    flex: 1,
+  buttonText: {
+    fontSize: 16,
   },
-  startButtonText: { fontSize: 16 },
   buttonRow: {
     width: 250,
     flexDirection: "row",
