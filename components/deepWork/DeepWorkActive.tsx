@@ -32,33 +32,28 @@ export default function DeepWorkActive({ type }: Props) {
       <Title style={styles.title}>{isTimer ? "Timer" : "Stopwatch"}</Title>
       <View style={styles.container}>
         <TimeCounter hours={hours} minutes={minutes} seconds={seconds} />
-        <View style={styles.buttonRow}>
-          {!isTimer || time > 0 ? (
-            <>
-              <Button
-                onPress={togglePause}
-                containerStyle={styles.buttonContainer}
-                textStyle={styles.buttonText}
-              >
-                {status === "running" ? "Pause" : "Resume"}
-              </Button>
-              <Button
-                onPress={stop}
-                containerStyle={styles.buttonContainer}
-                textStyle={styles.buttonText}
-              >
-                Stop
-              </Button>
-            </>
-          ) : (
+        <View
+          style={[
+            styles.buttonRow,
+            { width: isTimer && time === 0 ? 194 : 250 },
+          ]}
+        >
+          {(!isTimer || time > 0) && (
             <Button
-              onPress={stop}
+              onPress={togglePause}
               containerStyle={styles.buttonContainer}
               textStyle={styles.buttonText}
             >
-              Stop
+              {status === "running" ? "Pause" : "Resume"}
             </Button>
           )}
+          <Button
+            onPress={stop}
+            containerStyle={styles.buttonContainer}
+            textStyle={styles.buttonText}
+          >
+            {!isTimer || time > 0 ? "Stop" : "Finish"}
+          </Button>
         </View>
       </View>
     </SafeArea>
@@ -81,7 +76,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   buttonRow: {
-    width: 250,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
