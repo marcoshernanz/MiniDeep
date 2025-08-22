@@ -1,64 +1,20 @@
 import DeepWorkActive from "@/components/deepWork/DeepWorkActive";
 import DeepWorkStopwatch from "@/components/deepWork/DeepWorkStopwatch";
 import DeepWorkTimer from "@/components/deepWork/DeepWorkTimer";
-import Button from "@/components/ui/Button";
 import { useAppContext } from "@/context/AppContext";
-import getColor, { getColorHex } from "@/lib/utils/getColor";
-// import getColor from "@/lib/utils/getColor";
-// import { useMemo, useRef, useEffect } from "react";
-// import { Dimensions, StyleSheet, View } from "react-native";
-// import Animated, {
-//   useSharedValue,
-//   useAnimatedScrollHandler,
-//   useAnimatedStyle,
-//   interpolate,
-//   interpolateColor,
-//   Extrapolation,
-// } from "react-native-reanimated";
-
-import notifee, { TriggerType } from "@notifee/react-native";
-import { useEffect, useMemo, useRef } from "react";
+import getColor from "@/lib/utils/getColor";
+import { useMemo, useRef, useEffect } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
-  Extrapolation,
-  interpolate,
-  interpolateColor,
+  useSharedValue,
   useAnimatedScrollHandler,
   useAnimatedStyle,
-  useSharedValue,
+  interpolate,
+  interpolateColor,
+  Extrapolation,
 } from "react-native-reanimated";
 
 export default function IndexScreen() {
-  // const notification = async () => {
-  //   try {
-  //     const channelId = await notifee.createChannel({
-  //       id: "timer",
-  //       name: "Timer",
-  //     });
-
-  //     // Display foreground notification
-  //     await notifee.displayNotification({
-  //       id: "timer_service",
-  //       title: "Timer Running",
-  //       body: `${60} seconds left`,
-  //       data: { remaining: 60 }, // pass initial time
-  //       android: {
-  //         channelId,
-  //         asForegroundService: true,
-  //         ongoing: true,
-  //       },
-  //     });
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
-
-  // return (
-  //   <Button onPress={notification} containerStyle={{ marginTop: 200 }}>
-  //     Start
-  //   </Button>
-  // );
-
   const { appData, setAppData } = useAppContext();
   const scrollRef = useRef<any>(null);
 

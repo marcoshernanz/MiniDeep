@@ -52,12 +52,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "./plugins/withExactAlarmPermission.ts",
     "expo-router",
     [
-      "expo-custom-assets",
-      {
-        assetsPaths: ["./assets/raw/"],
-      },
-    ],
-    [
       "expo-splash-screen",
       {
         backgroundColor: "#020817",
@@ -67,13 +61,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     [
-      "expo-build-properties",
+      "expo-notifications",
       {
-        android: {
-          extraMavenRepos: [
-            "../../node_modules/@notifee/react-native/android/libs",
-          ],
-        },
+        sounds: ["./assets/audio/timer_done.wav"],
+        icon: "./assets/images/icon.png",
+        color: "#ffffff",
       },
     ],
     [

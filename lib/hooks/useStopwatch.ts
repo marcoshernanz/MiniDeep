@@ -3,12 +3,6 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import uuid from "../utils/uuidv4";
 import type { StopwatchSession } from "@/zod/schemas/StopwatchSessionSchema";
 import calculateSessionDuration from "../sessions/calculateSessionDuration";
-import notifee, { AndroidAction } from "@notifee/react-native";
-import extractTime from "../utils/extractTime";
-import {
-  registerStopwatchControls,
-  clearStopwatchControls,
-} from "../controls/stopwatchControls";
 
 export default function useStopwatch() {
   const { appData, setAppData } = useAppContext();
@@ -25,64 +19,12 @@ export default function useStopwatch() {
     return { status, timeElapsed: elapsed };
   }, [appData.sessions, now]);
 
-  const { hours, minutes, seconds } = useMemo(
-    () => extractTime(timeElapsed),
-    [timeElapsed]
-  );
-
   useEffect(() => {
     if (status === "running") {
       const interval = setInterval(() => setNow(Date.now()), 100);
       return () => clearInterval(interval);
     }
   }, [status]);
-
-  useEffect(() => {
-    (async () => {
-      const channelId = await notifee.createChannel({
-        id: "stopwatch",
-        name: "Stopwatch",
-      });
-
-      const titleFormat = (n: number) => n.toString().padStart(2, "0");
-      const title = [hours, minutes, seconds]
-        .slice(hours > 0 ? 0 : 1)
-        .map(titleFormat)
-        .join(":");
-      const body = status === "running" ? "Stopwatch" : "Stopwatch Paused";
-
-      const actions: AndroidAction[] = [];
-
-      if (status === "running") {
-        actions.push({
-          title: "Pause",
-          pressAction: { id: "pause", launchActivity: "none" },
-        });
-      } else if (status === "paused") {
-        actions.push({
-          title: "Resume",
-          pressAction: { id: "resume", launchActivity: "none" },
-        });
-      }
-
-      actions.push({
-        title: "Stop",
-        pressAction: { id: "stop", launchActivity: "none" },
-      });
-
-      await notifee.displayNotification({
-        id: "stopwatch",
-        title,
-        body,
-        android: {
-          channelId,
-          asForegroundService: true,
-          ongoing: true,
-          actions,
-        },
-      });
-    })();
-  }, [hours, minutes, seconds, status]);
 
   const start = useCallback(() => {
     if (status !== "finished") return;
@@ -165,12 +107,6 @@ export default function useStopwatch() {
     }));
     setNow(nowDate.getTime());
   }, [appData.sessions, setAppData]);
-
-  // Register global controls so notification actions can control the stopwatch
-  useEffect(() => {
-    registerStopwatchControls({ start, togglePause, stop });
-    return () => clearStopwatchControls();
-  }, [start, togglePause, stop]);
 
   return { status, timeElapsed, start, togglePause, stop };
 }

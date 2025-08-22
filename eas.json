@@ -15,8 +15,7 @@
       }
     },
     "preview": {
-      "distribution": "internal",
-      "APP_VARIANT": "preview"
+      "distribution": "internal"
     },
     "production": {
       "autoIncrement": true
