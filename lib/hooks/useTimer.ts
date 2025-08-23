@@ -166,6 +166,7 @@ export default function useTimer() {
     }));
     setNow(nowDate.getTime());
     await cancelNotifications();
+    await Notifications.dismissAllNotificationsAsync();
   }, [appData.sessions, setAppData]);
 
   const start = useCallback(
@@ -198,7 +199,7 @@ export default function useTimer() {
       async (response) => {
         if (response.actionIdentifier === FINISH_ACTION_ID) {
           await Notifications.dismissAllNotificationsAsync();
-          stop();
+          await stop();
         }
       }
     );
