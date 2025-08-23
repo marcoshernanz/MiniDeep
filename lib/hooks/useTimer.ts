@@ -6,7 +6,7 @@ import uuid from "../utils/uuidv4";
 
 const TIMER_CATEGORY = "MiniLift_timer_completed";
 const TIMER_CHANNEL_ID = "MiniLift_timer_completed_channel";
-const DISMISS_ACTION_ID = "MiniLift_dismiss";
+const FINISH_ACTION_ID = "MiniLift_finish";
 
 const setupNotifications = async () => {
   await Notifications.requestPermissionsAsync();
@@ -15,16 +15,16 @@ const setupNotifications = async () => {
     handleNotification: async () => ({
       priority: Notifications.AndroidNotificationPriority.HIGH,
       shouldShowBanner: true,
-      shouldShowList: true,
+      shouldShowList: false,
       shouldPlaySound: true,
-      shouldSetBadge: true,
+      shouldSetBadge: false,
     }),
   });
 
   await Notifications.setNotificationCategoryAsync(TIMER_CATEGORY, [
     {
-      identifier: DISMISS_ACTION_ID,
-      buttonTitle: "Dismiss",
+      identifier: FINISH_ACTION_ID,
+      buttonTitle: "Finish",
       options: {
         opensAppToForeground: true,
       },
@@ -49,7 +49,6 @@ const scheduleNotification = async (time: number) => {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "Timer Complete",
-      body: "Your timer has finished!",
       sound: "timer_done.wav",
       sticky: true,
       autoDismiss: false,
@@ -193,6 +192,19 @@ export default function useTimer() {
     },
     [status, setAppData]
   );
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      async (response) => {
+        if (response.actionIdentifier === FINISH_ACTION_ID) {
+          await Notifications.dismissAllNotificationsAsync();
+          stop();
+        }
+      }
+    );
+
+    return () => subscription.remove();
+  }, [stop]);
 
   return { status, timeLeft, togglePause, stop, start };
 }
