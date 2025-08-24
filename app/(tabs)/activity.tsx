@@ -21,12 +21,15 @@ export default function ActivityScreen() {
         showsHorizontalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         keyExtractor={({ date }) => date.toDateString()}
-        initialScrollIndex={data.length - 1}
         getItemLayout={(_, index) => ({
           length: screenWidth,
           offset: screenWidth * index,
           index,
         })}
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        initialScrollIndex={Math.max(data.length - 1, 0)}
         renderItem={({ item }) => (
           <ActivityItem key={item.date.toDateString()} item={item} />
         )}
