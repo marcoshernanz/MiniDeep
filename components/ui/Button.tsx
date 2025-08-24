@@ -26,7 +26,6 @@ interface ButtonProps extends Omit<PressableProps, "style"> {
   textStyle?: StyleProp<TextStyle>;
   pressableStyle?: StyleProp<ViewStyle>;
   text?: boolean;
-  dimOnPress?: boolean;
   ref?: React.Ref<React.ComponentRef<typeof Pressable>>;
 }
 
@@ -37,7 +36,6 @@ export default function Button({
   pressableStyle,
   textStyle,
   text = true,
-  dimOnPress = true,
   ref,
   ...props
 }: ButtonProps) {
@@ -57,7 +55,7 @@ export default function Button({
         style={({ pressed }) => [
           styles.baseButton,
           styles[`${variant}Button`],
-          dimOnPress && Platform.OS === "ios" && pressed && { opacity: 0.675 },
+          Platform.OS === "ios" && pressed && { opacity: 0.675 },
           pressableStyle,
         ]}
         android_ripple={{ color: rippleColor }}

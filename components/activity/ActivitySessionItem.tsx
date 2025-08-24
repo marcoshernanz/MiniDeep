@@ -1,11 +1,12 @@
 import getColor from "@/lib/utils/getColor";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Text from "../ui/Text";
 import { WorkSession } from "@/zod/schemas/WorkSessionSchema";
 import { ClockIcon, TimerIcon } from "lucide-react-native";
 import { format } from "date-fns";
 import calculateSessionDuration from "@/lib/sessions/calculateSessionDuration";
 import formatTime from "@/lib/utils/formatTime";
+import Button from "../ui/Button";
 
 interface Props {
   session: WorkSession;
@@ -26,9 +27,12 @@ export default function ActivitySessionItem({
 
   return (
     <View style={styles.container}>
-      <Pressable
-        style={styles.pressable}
+      <Button
+        variant="ghost"
+        containerStyle={styles.buttonContainer}
+        pressableStyle={styles.buttonPressable}
         android_ripple={{ color: getColor("muted") }}
+        text={false}
         onPress={() => {}}
       >
         <View style={styles.iconContainer}>
@@ -50,7 +54,7 @@ export default function ActivitySessionItem({
             ]}
           ></View>
         </View>
-      </Pressable>
+      </Button>
     </View>
   );
 }
@@ -61,7 +65,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 8,
   },
-  pressable: {
+  buttonContainer: {
+    borderRadius: 8,
+  },
+  buttonPressable: {
     flexDirection: "row",
     alignItems: "center",
     padding: 8,
