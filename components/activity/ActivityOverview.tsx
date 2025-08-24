@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     borderColor: getColor("border"),
     borderRadius: 8,
     padding: 16,
-    gap: 2,
+    gap: 4,
   },
   cardTitle: {
     fontSize: 12,
@@ -55,6 +55,6 @@ const styles = StyleSheet.create({
   },
   cardValue: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 700,
   },
 });
