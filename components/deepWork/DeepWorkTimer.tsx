@@ -3,18 +3,21 @@ import useTimer from "@/lib/hooks/useTimer";
 import SafeArea from "../ui/SafeArea";
 import Title from "../ui/Title";
 import WheelNumberPicker from "../ui/WheelNumberPicker";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import Text from "../ui/Text";
 import getColor from "@/lib/utils/getColor";
 import Button from "../ui/Button";
 import getTime from "@/lib/utils/getTime";
+import AlertDialog from "../ui/AlertDialog";
+import * as Linking from "expo-linking";
 
 export default function DeepWorkTimer() {
   const { appData, setAppData } = useAppContext();
   const { hours, minutes } = appData.state.timer;
 
   const { start } = useTimer();
+  const [showPermissionDialog, setShowPermissionDialog] = useState(false);
 
   useEffect(() => {
     if (hours === 0 && minutes === 0) {
@@ -70,13 +73,30 @@ export default function DeepWorkTimer() {
           />
         </View>
         <Button
-          onPress={() => start(getTime({ hours, minutes }))}
+          onPress={async () => {
+            const duration = getTime({ hours, minutes });
+            const result = await start(duration);
+            if (result === "permission-denied") {
+              setShowPermissionDialog(true);
+            }
+          }}
           containerStyle={styles.startButtonContainer}
           textStyle={styles.startButtonText}
         >
           Start
         </Button>
       </View>
+      <AlertDialog
+        visible={showPermissionDialog}
+        title="Enable Notifications"
+        content="To alert you when the timer finishes, enable notifications in system settings."
+        confirmText="Open Settings"
+        onCancel={async () => setShowPermissionDialog(false)}
+        onConfirm={async () => {
+          await Linking.openSettings();
+          setShowPermissionDialog(false);
+        }}
+      />
     </SafeArea>
   );
 }

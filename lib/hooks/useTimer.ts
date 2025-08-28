@@ -9,7 +9,9 @@ const TIMER_CHANNEL_ID = "MiniLift_timer_completed_channel";
 const FINISH_ACTION_ID = "MiniLift_finish";
 
 const setupNotifications = async () => {
-  await Notifications.requestPermissionsAsync();
+  const { status } = await Notifications.requestPermissionsAsync();
+
+  if (status !== "granted") return false;
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -43,6 +45,8 @@ const setupNotifications = async () => {
       contentType: Notifications.AndroidAudioContentType.SONIFICATION,
     },
   });
+
+  return true;
 };
 
 const scheduleNotification = async (time: number) => {
@@ -170,10 +174,22 @@ export default function useTimer() {
   }, [appData.sessions, setAppData]);
 
   const start = useCallback(
-    async (inputDuration: number) => {
-      if (status !== "finished") return;
+    async (
+      inputDuration: number,
+      options: { ignorePermission?: boolean } = {}
+    ): Promise<"started" | "permission-denied"> => {
+      if (status !== "finished") return "started";
 
-      await setupNotifications();
+      let notificationsReady = false;
+      try {
+        notificationsReady = await setupNotifications();
+      } catch {
+        notificationsReady = false;
+      }
+
+      if (!notificationsReady && !options.ignorePermission) {
+        return "permission-denied";
+      }
 
       const nowDate = new Date();
       const newSession = {
@@ -191,7 +207,11 @@ export default function useTimer() {
       }));
       setNow(nowDate.getTime());
 
-      await scheduleNotification(inputDuration);
+      if (notificationsReady) {
+        await scheduleNotification(inputDuration);
+      }
+
+      return "started";
     },
     [status, setAppData]
   );
