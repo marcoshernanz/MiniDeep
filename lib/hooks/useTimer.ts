@@ -173,8 +173,9 @@ export default function useTimer() {
     async (inputDuration: number) => {
       if (status !== "finished") return;
 
-      const nowDate = new Date();
+      await setupNotifications();
 
+      const nowDate = new Date();
       const newSession = {
         id: uuid(),
         createdAt: nowDate,
@@ -183,12 +184,13 @@ export default function useTimer() {
         inputDuration,
         events: [{ start: nowDate, stop: null }],
       };
+
       setAppData((prev) => ({
         ...prev,
         sessions: [...prev.sessions, newSession],
       }));
       setNow(nowDate.getTime());
-      await setupNotifications();
+
       await scheduleNotification(inputDuration);
     },
     [status, setAppData]
