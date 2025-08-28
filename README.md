@@ -1,7 +1,5 @@
 # TODO
 
-- [ ] Change 700 font
-
 - [ ] Swipe weekly day picker in activity
 - [ ] Stopwatch option.
 - [ ] Alarm option.
@@ -12,3 +10,5 @@
 - [ ] Smoother scrolling in wheel picker.
 - [ ] Nicer finish screen.
 - [ ] Improved settings screen.
+
+- [ ] Fix font weight
