@@ -10,5 +10,3 @@
 - [ ] Smoother scrolling in wheel picker.
 - [ ] Nicer finish screen.
 - [ ] Improved settings screen.
-
-- [ ] Fix font weight
