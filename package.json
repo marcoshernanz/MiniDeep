@@ -1,7 +1,7 @@
 {
   "name": "minideep",
   "main": "index.ts",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "scripts": {
     "dev": "APP_VARIANT=development npx expo start",
     "prebuild": "APP_VARIANT=development npx expo prebuild",
