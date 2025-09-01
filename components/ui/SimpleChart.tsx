@@ -1,5 +1,6 @@
 import { computeChartPaths } from "@/lib/chart/computeChartPaths";
 import getColor from "@/lib/utils/getColor";
+import formatTime from "@/lib/utils/formatTime";
 import {
   Canvas,
   LinearGradient,
@@ -204,7 +205,7 @@ export default function SimpleChart({
       text: selectedPoint.value.key,
     })),
     selectedPointValue: useAnimatedProps(() => ({
-      text: selectedPoint.value.value.toFixed(1),
+      text: formatTime(selectedPoint.value.value),
     })),
   };
 
