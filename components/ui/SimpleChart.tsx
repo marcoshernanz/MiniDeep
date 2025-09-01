@@ -40,25 +40,27 @@ interface Props {
   tooltipWidth?: number;
   pointsPerLabel?: number;
   labelStart?: number;
-  maxValue?: number;
+  maxValue: number;
 }
 
-const bottomPadding = 0.25;
+const bottomPadding = 0.1;
 const tooltipMargin = 12;
 const baseLabelHeight = 24;
 const circleRadius = 4;
 const lineWidth = 1;
 const animationDuration = 1000;
+const tooltipHorizontalPadding = 12;
+const tooltipVerticalPadding = 6;
 
 export default function SimpleChart({
   data,
   width,
   height,
   tooltipHeight = 32,
-  tooltipWidth = 96,
+  tooltipWidth = 100,
   pointsPerLabel = 0,
   labelStart = 1,
-  maxValue: propMaxValue,
+  maxValue,
 }: Props) {
   const labelHeight = pointsPerLabel ? baseLabelHeight : 0;
   const chartHeight = height - tooltipHeight - tooltipMargin - labelHeight;
@@ -68,12 +70,7 @@ export default function SimpleChart({
   const numTotalLabels =
     pointsPerLabel === 0 ? 0 : Math.floor(dataLength / pointsPerLabel);
   const dataKeys = Object.keys(data);
-  const numericValues = Object.values(data).filter(
-    (v): v is number => v != null
-  );
-  const minValue = numericValues.length ? Math.min(...numericValues) : 0;
-  const computedMax = numericValues.length ? Math.max(...numericValues) : 0;
-  const usedMaxValue = propMaxValue !== undefined ? propMaxValue : computedMax;
+  const minValue = Math.min(...Object.values(data).filter((v) => v !== null));
 
   const { linePath, areaPath, points } = useMemo(
     () =>
@@ -83,14 +80,17 @@ export default function SimpleChart({
         height: chartHeight,
         bottomPadding,
         topOffset: chartTop,
-        minValue,
-        maxValue: usedMaxValue,
+        minValue: minValue,
+        maxValue,
       }),
-    [data, width, chartHeight, chartTop, minValue, usedMaxValue]
+    [data, width, chartHeight, chartTop, minValue, maxValue]
   );
 
   const pressX = useSharedValue<number>(0);
   const showTooltip = useSharedValue<boolean>(false);
+
+  const tooltipContentWidth = useSharedValue<number>(tooltipWidth);
+  const tooltipContentHeight = useSharedValue<number>(tooltipHeight);
 
   const animationProgress = useSharedValue(0);
   const animatedLinePath = usePathValue((path) => {
@@ -180,15 +180,15 @@ export default function SimpleChart({
     tooltipBox: useAnimatedStyle(() => ({
       position: "absolute",
       left: Math.min(
-        Math.max(pressX.value - tooltipWidth / 2, 0),
-        width - tooltipWidth
+        Math.max(pressX.value - tooltipContentWidth.value / 2, 0),
+        width - tooltipContentWidth.value
       ),
       top: 0,
-      width: tooltipWidth,
-      height: tooltipHeight,
       flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
+      paddingHorizontal: tooltipHorizontalPadding,
+      paddingVertical: tooltipVerticalPadding,
       borderWidth: 1,
       borderColor: getColor("primary"),
       backgroundColor: getColor("primary", 0.1),
@@ -204,7 +204,7 @@ export default function SimpleChart({
       text: selectedPoint.value.key,
     })),
     selectedPointValue: useAnimatedProps(() => ({
-      text: `${selectedPoint.value.value / 1000 / 60}m`,
+      text: selectedPoint.value.value.toFixed(1),
     })),
   };
 
@@ -309,10 +309,19 @@ export default function SimpleChart({
 
         <Animated.View style={animatedStyles.tooltipContainer}>
           <Animated.View style={animatedStyles.tooltipLine} />
-
           <Animated.View style={animatedStyles.tooltipCircle} />
-
-          <Animated.View style={animatedStyles.tooltipBox}>
+          <Animated.View
+            style={animatedStyles.tooltipBox}
+            onLayout={(e) => {
+              const { width: boxW, height: boxH } = e.nativeEvent.layout;
+              if (Math.abs(tooltipContentWidth.value - boxW) > 0.5) {
+                tooltipContentWidth.value = boxW;
+              }
+              if (Math.abs(tooltipContentHeight.value - boxH) > 0.5) {
+                tooltipContentHeight.value = boxH;
+              }
+            }}
+          >
             <AnimateableText
               animatedProps={animatedProps.selectedPointKey}
               style={[
